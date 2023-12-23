@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('sales_note')->nullable();
             $table->string('admin_note')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
+            $table->foreignId('sale_stage_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->timestamps();
         });
     }

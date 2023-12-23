@@ -12,7 +12,15 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $users = [];
+        if ($user->isAdmin) {
+            $users = User::all();
+        } elseif ($user->isManager) {
+            $users = $user->created_users;
+        }
+        $sales_stages = SalesStage::all();
+    	return view('customer.index', compact('users', 'sales_stages'));
     }
 
     /**
@@ -36,7 +44,8 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        //
+        $sales_stages = SalesStage::all();
+    	return view('customer.show', compact('customer', 'sales_stages'));
     }
 
     /**
@@ -52,7 +61,18 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        //
+        $request->validate([
+            'sales_stage' => 'exists:sales_stages,id'
+        ]);
+        
+        $customer->sales_stage_id = $request->sales_stage;
+    	$customer->description = $request->description;
+    	if (Auth::user()->role) {
+	    	$customer->sales_admin_noted = $request->sales_admin_noted;
+    	}
+    	$customer->save();
+
+    	return redirect()->back()->withSuccess('Lưu thành công.');
     }
 
     /**
