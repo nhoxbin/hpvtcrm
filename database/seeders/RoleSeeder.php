@@ -1,27 +1,28 @@
 <?php
 
-use Illuminate\Database\Seeder;
+namespace Database\Seeders;
 
-class RolesTableSeeder extends Seeder
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class RoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         DB::table('roles')->delete();
 
     	DB::table('roles')->insert([
             [
-                'id' => '0',
+                'name' => 'Super Admin',
+            ], [
                 'name' => 'Admin',
             ], [
-                'id' => '1',
                 'name' => 'Manager',
             ], [
-                'id' => '2',
                 'name' => 'Sales',
             ]
         ]);

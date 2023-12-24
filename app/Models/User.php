@@ -43,4 +43,6 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+    
+    protected function getDefaultGuardName(): string { return 'web'; }
 }

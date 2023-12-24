@@ -37,13 +37,13 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 Route::group(['middleware' => 'auth'], function() {
-	Route::get('/', 'HomeController@index')->name('home');
+	Route::get('/', [DashboardController::class, 'index'])->name('home');
+	Route::get('/home', 'HomeController@index')->name('home');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-	Route::get('/home', 'HomeController@index')->name('home');
 
     Route::resource('user', 'UserController', [
         'only' => ['show', 'update']
@@ -59,3 +59,4 @@ Route::group(['middleware' => 'auth'], function() {
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';
