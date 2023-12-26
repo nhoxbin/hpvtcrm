@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\User;
-use App\Role;
-use App\Customer;
+use App\Models\User;
+use App\Models\Customer;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;

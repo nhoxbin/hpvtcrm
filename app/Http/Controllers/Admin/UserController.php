@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Auth;
-use App\User;
+use App\Models\User;
 use App\Role;
-use App\CreatedUser;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -27,13 +26,9 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->username = $request->username;
             $user->password = bcrypt($request->password);
-            $user->role_id = $request->user()->isAdmin ? $request->role : Role::where('name', 'sales')->pluck('id')[0];
+            $user->created_by_user_id = $request->user()->id;
+            // $user->role_id = $request->user()->isAdmin ? $request->role : Role::where('name', 'sales')->pluck('id')[0];
             $user->save();
-
-            $new_user = new CreatedUser;
-            $new_user->user_id = $user->id;
-            $new_user->by_id = $request->user()->id;
-            $new_user->save();
         } catch (\Exception $e) {
             return back()->withError('Có lỗi khi tạo mới nhân viên! ' . $e->getMessage());
         }

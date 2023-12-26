@@ -1,7 +1,18 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+Route::group([
+	// 'as' => 'admin.',
+	'prefix' => 'admin',
+	// 'namespace' => 'Admin',
+], function() {
+    // Auth::routes(['register' => false]);
+
+    // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+});
+    
 Route::group([
 	'as' => 'admin.',
 	'prefix' => 'admin',

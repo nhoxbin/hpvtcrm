@@ -37,7 +37,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 Route::group(['middleware' => 'auth'], function() {
-	Route::get('/', [DashboardController::class, 'index'])->name('home');
+	// Route::get('/', ['DashboardController', 'index'])->name('home');
 	Route::get('/home', 'HomeController@index')->name('home');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -45,9 +45,9 @@ Route::group(['middleware' => 'auth'], function() {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    Route::resource('user', 'UserController', [
+    /* Route::resource('user', UserController::class, [
         'only' => ['show', 'update']
-    ]);
+    ]); */
 
 	Route::get('dashboard', 'DashboardController@index')->name('dashboard');
 

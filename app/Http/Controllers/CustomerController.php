@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\SaleStage;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -19,7 +22,7 @@ class CustomerController extends Controller
         } elseif ($user->isManager) {
             $users = $user->created_users;
         }
-        $sales_stages = SalesStage::all();
+        $sales_stages = SaleStage::all();
     	return view('customer.index', compact('users', 'sales_stages'));
     }
 
@@ -44,7 +47,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $sales_stages = SalesStage::all();
+        $sales_stages = SaleStage::all();
     	return view('customer.show', compact('customer', 'sales_stages'));
     }
 

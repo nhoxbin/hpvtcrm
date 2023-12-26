@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\User;
-use App\Customer;
+use App\Models\Customer;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {

@@ -45,4 +45,12 @@ class User extends Authenticatable
     ];
     
     protected function getDefaultGuardName(): string { return 'web'; }
+
+    public function created_by_user() {
+        return $this->hasOne(self::class, 'created_by_user_id');
+    }
+
+    public function customers() {
+        return $this->hasMany(Customer::class);
+    }
 }
