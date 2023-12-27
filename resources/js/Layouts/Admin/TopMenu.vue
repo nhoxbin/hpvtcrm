@@ -42,6 +42,6 @@
 </template>
 
 <script setup>
-import Dropdown from '@/Components/Dropdown.vue'
-import DropdownLink from '@/Components/DropdownLink.vue'
+import Dropdown from '@/Components/Admin/Dropdown.vue'
+import DropdownLink from '@/Components/Admin/DropdownLink.vue'
 </script>

@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue'
+import ResponsiveNavLink from '@/Components/Admin/ResponsiveNavLink.vue'
 import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue'
 

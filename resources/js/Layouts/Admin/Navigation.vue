@@ -1,13 +1,13 @@
 <template>
   <aside class="z-20 hidden w-64 overflow-y-auto bg-white md:block flex-shrink-0">
     <div class="py-4 text-gray-500">
-      <Link class="ml-6 text-lg font-bold text-gray-800" :href="route('dashboard')">
-        Windmill
+      <Link class="ml-6 text-lg font-bold text-gray-800" :href="route('admin.dashboard')">
+        HPVTCRM
       </Link>
 
       <ul class="mt-6">
         <li class="relative px-6 py-3">
-          <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+          <NavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">
             <template #icon>
               <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round"
                    stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
@@ -20,7 +20,7 @@
         </li>
 
         <li class="relative px-6 py-3">
-          <NavLink :href="route('users.index')" :active="route().current('users.index')">
+          <NavLink :href="route('admin.users.index')" :active="route().current('admin.users.index')">
             <template #icon>
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg">
@@ -33,7 +33,7 @@
         </li>
 
         <li class="relative px-6 py-3">
-          <NavLink :href="route('about')" :active="route().current('about')">
+          <NavLink :href="route('admin.about')" :active="route().current('admin.about')">
             <template #icon>
               <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round"
                    stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import NavLink from '@/Components/NavLink.vue'
+import NavLink from '@/Components/Admin/NavLink.vue'
 import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue'
 

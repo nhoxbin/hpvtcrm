@@ -54,8 +54,8 @@
 </template>
 
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Pagination from '@/Components/Pagination.vue';
+import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
+import Pagination from '@/Components/Admin/Pagination.vue';
 import { Head } from '@inertiajs/vue3';
 
 const props = defineProps({

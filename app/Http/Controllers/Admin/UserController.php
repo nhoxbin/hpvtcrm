@@ -7,17 +7,21 @@ use App\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
     public function index() {
-        $user = Auth::user();
+        return Inertia::render('Admin/Users/Index', [
+            'users' => User::paginate()
+        ]);
+        /* $user = Auth::user();
         if ($user->isAdmin) {
             $users = User::all();
         } elseif ($user->isManager) {
             $users = $user->created_users;
         }
-        return view('admin.user', compact('users'));
+        return view('admin.user', compact('users')); */
     }
 
     public function store(Request $request) {
