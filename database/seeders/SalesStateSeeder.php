@@ -6,16 +6,16 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class SaleStageSeeder extends Seeder
+class SalesStateSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        DB::table('sale_stages')->delete();
+        DB::table('sales_states')->delete();
 
-		DB::table('sale_stages')->insert([
+		DB::table('sales_states')->insert([
             [
                 'name' => 'Không nghe máy',
             ], [

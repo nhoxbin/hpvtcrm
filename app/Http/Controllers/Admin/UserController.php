@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
-use App\Role;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\User\StoreUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     public function index() {
         return Inertia::render('Admin/Users/Index', [
-            'users' => User::paginate()
+            'auth_id' => Auth::id(),
+            'users' => User::with(['roles', 'created_by_user'])->withCount('customers')->paginate()
         ]);
         /* $user = Auth::user();
         if ($user->isAdmin) {
@@ -24,22 +28,24 @@ class UserController extends Controller
         return view('admin.user', compact('users')); */
     }
 
-    public function store(Request $request) {
-        try {
-            $user = new User;
-            $user->name = $request->name;
-            $user->username = $request->username;
-            $user->password = bcrypt($request->password);
-            $user->created_by_user_id = $request->user()->id;
-            // $user->role_id = $request->user()->isAdmin ? $request->role : Role::where('name', 'sales')->pluck('id')[0];
-            $user->save();
-        } catch (\Exception $e) {
-            return back()->withError('Có lỗi khi tạo mới nhân viên! ' . $e->getMessage());
-        }
-        return back()->withSuccess('Thêm mới nhân viên thành công.');
+    public function store(StoreUserRequest $request) {
+        $user = User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'created_by_user_id' => Auth::id(),
+        ]);
+        $user->assignRole($request->role);
+        return response('Thêm mới nhân viên thành công.');
     }
 
     public function edit(User $user) {
+        /* return Inertia::render('Tweets/Show')
+            ->with([
+                'user' => $user,
+                // 'tweet' => $tweet,
+            ])
+            ->baseRoute('users.index', $user); */
         return response($user);
     }
 
@@ -56,6 +62,7 @@ class UserController extends Controller
     }
 
     public function destroy(User $user) {
+        $this->authorize('');
         $user->delete();
         return response('Xóa nhân viên thành công.');
     }
