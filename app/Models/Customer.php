@@ -17,7 +17,7 @@ class Customer extends Model
     	return $this->belongsTo(User::class);
     }
 
-    public function sale_stage() {
+    public function sales_state() {
     	return $this->belongsTo(SalesState::class);
     }
 }

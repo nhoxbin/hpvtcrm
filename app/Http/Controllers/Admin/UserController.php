@@ -15,8 +15,7 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
     public function index() {
-        return Inertia::render('Admin/Users/Index', [
-            'auth_id' => Auth::id(),
+        return Inertia::render('Admin/User/Index', [
             'users' => User::with(['roles', 'created_by_user'])->withCount('customers')->paginate()
         ]);
         /* $user = Auth::user();
@@ -62,7 +61,6 @@ class UserController extends Controller
     }
 
     public function destroy(User $user) {
-        $this->authorize('');
         $user->delete();
         return response('Xóa nhân viên thành công.');
     }

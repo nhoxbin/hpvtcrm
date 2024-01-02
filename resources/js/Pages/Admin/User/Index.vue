@@ -37,23 +37,23 @@
           </tr>
           </thead>
           <tbody class="bg-white divide-y">
-          <tr v-for="user in users.data" :key="user.id" class="text-gray-700">
-            <td class="px-4 py-3 text-sm">
-              {{ user.name }}
-            </td>
-            <td class="px-4 py-3 text-sm">
-              {{ user.username }}
-            </td>
-            <td><!-- {{ user.role.name + (auth_id == user.id ? '(Tôi)' : null) }} --></td>
-            <td>{{ user.customers_count }}</td>
-            <td>{{ user.created_by_user?.name }}</td>
-            <td>
-              <div class="btn-group">
-                <button class="btn btn-info" @click="isEditUser = true">Sửa</button>
-                <button class="btn btn-danger" @click="deleteUser(user.id)">Xóa</button>
-              </div>
-            </td>
-          </tr>
+            <tr v-for="user in users.data" :key="user.id" class="text-gray-700">
+              <td class="px-4 py-3 text-sm">
+                {{ user.name }}
+              </td>
+              <td class="px-4 py-3 text-sm">
+                {{ user.username }}
+              </td>
+              <td><!-- {{ user.role.name + (auth_id == user.id ? '(Tôi)' : null) }} --></td>
+              <td>{{ user.customers_count }}</td>
+              <td>{{ user.created_by_user?.name }}</td>
+              <td>
+                <div class="btn-group">
+                  <button class="btn btn-info" @click="isEditUser = true">Sửa</button>
+                  <button class="btn btn-danger" @click="deleteUser(user.id)">Xóa</button>
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -64,6 +64,7 @@
     </div>
 
     <EditUserForm :is-edit-user="isEditUser" @close-edit-user-form="onCloseEditUserForm"></EditUserForm>
+    <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @close-delete-user-form="onCloseDeleteUserForm"></DeleteUserForm>
     <!-- <CreateUserForm :is-create-user="isCreateUser"></CreateUserForm> -->
     
   </div>
@@ -74,9 +75,11 @@
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
 import EditUserForm from './Partials/EditUserForm.vue';
+import DeleteUserForm from './Partials/DeleteUserForm.vue';
 // import CreateUserForm from './Partials/CreateUserForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 
 const props = defineProps({
   auth: Object,
@@ -84,6 +87,8 @@ const props = defineProps({
 });
 
 const isEditUser = ref(false);
+const isDeleteUser = ref(false);
+const deleteUserId = ref(null);
 const isCreateUser = ref(false);
 const passwordInput = ref(null);
 
@@ -99,14 +104,16 @@ const confirmUserDeletion = () => {
   // nextTick(() => passwordInput.value.focus());
 };
 
-/* const deleteUser = () => {
-  form.delete(route('profile.destroy'), {
+const deleteUser = (user_id) => {
+  isDeleteUser.value = true;
+  deleteUserId.value = user_id;
+  /* form.delete(route('profile.destroy'), {
     preserveScroll: true,
     onSuccess: () => closeModal(),
     // onError: () => passwordInput.value.focus(),
     onFinish: () => form.reset(),
-  });
-}; */
+  }); */
+};
 
 /* const editingUser = (isEdit) => {
   isEditingUser.value = isEdit;
@@ -117,18 +124,9 @@ const onCloseEditUserForm = () => {
   isEditUser.value = false;
 };
 
-function deleteUser(id) {
-  if (confirm('Bạn có chắc muốn xóa nhân viên này chứ?')) {
-    axios({
-      url: route('admin.users.destroy', id),
-      method: 'delete',
-      success: function(resp) {
-        alert(resp);
-        location.reload();
-      }
-    })
-  }
-}
+const onCloseDeleteUserForm = () => {
+  isDeleteUser.value = false;
+};
 
 function deleteData(id) {
   if (confirm('Bạn có chắc muốn xóa data của nhân viên này chứ?')) {

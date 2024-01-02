@@ -17,6 +17,11 @@ Route::group([
     	'only' => ['index', 'store', 'edit', 'update', 'destroy']
     ]);
 
+	// Khách hàng
+    Route::resource('customers', 'CustomerController', [
+    	'only' => ['index', 'store', 'edit', 'update', 'destroy']
+    ]);
+
     Route::post('customers', 'MultipleCustomersController@store')->name('customers.store');
     Route::post('customers/export', 'MultipleCustomersController@export')->name('customers.export');
 
