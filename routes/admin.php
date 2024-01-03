@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Customer\ExportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
  
@@ -22,8 +23,8 @@ Route::group([
     	'only' => ['index', 'store', 'edit', 'update', 'destroy']
     ]);
 
-    Route::post('customers', 'MultipleCustomersController@store')->name('customers.store');
-    Route::post('customers/export', 'MultipleCustomersController@export')->name('customers.export');
+    // Route::post('customers', 'MultipleCustomersController@store')->name('customers.store');
+    Route::post('customers/export', ExportController::class)->name('customers.export');
 
     Route::group(['middleware' => 'admin'], function() {
         // delete multiple customer

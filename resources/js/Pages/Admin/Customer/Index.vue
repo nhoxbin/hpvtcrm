@@ -34,8 +34,8 @@
                 <td class="px-4 py-3 text-sm">{{ customer.available_data }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.admin_note }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.user.name }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.sales_state.name }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.sales_state?.name }}</td>
                 <!-- <td>
                   <div class="btn-group">
                     <button class="btn btn-info" @click="isEditUser = true">Sửa</button>
@@ -68,7 +68,8 @@ import UploadCustomerForm from './Partials/UploadCustomerForm.vue';
 
 const props = defineProps({
   auth: Object,
-  customers: Object
+  customers: Object,
+  users: Array,
 });
 
 const isUploadCustomer = ref(false);

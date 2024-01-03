@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\User;
+namespace App\Http\Requests\Admin\Customer;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
@@ -24,7 +24,7 @@ class StoreCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|in',
+            'user_id' => 'required',
             'excel' => 'required|file',
         ];
     }

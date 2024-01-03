@@ -22,9 +22,9 @@
           <div class="p-4 md:p-5">
             <form class="space-y-4" @submit.prevent="uploadFile">
               <div>
-                <select class="form-control" v-model="user_id" multiple size="10">
+                <select class="form-control" v-model="selected_users" multiple size="10">
                   <option value="all">Chia đều</option>
-                  <option v-for="user in users" :key="user.id" :value="user.id">Chia đều</option>
+                  <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
                 </select>
               </div>
               <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
@@ -45,11 +45,11 @@ import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({
-  users: Object,
+  users: Array,
   isUploadCustomer: Boolean
 });
 
-const user_id = ref(null);
+const selected_users = ref([]);
 const crmFile = ref(null);
 
 /* const deleteUser = () => {
@@ -74,8 +74,8 @@ const crmFileChange = (e) => {
 
 const uploadFile = () => {
   let formData = new FormData();
-  formData.append('user_id', user_id);
-  formData.append('excel', crmFile);
+  formData.append('user_id', selected_users.value);
+  formData.append('excel', crmFile.value);
 
   axios({
     url: route('admin.customers.store'),
