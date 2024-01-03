@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests\Admin\User;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
 use Spatie\Permission\Models\Role;
 
-class StoreUserRequest extends FormRequest
+class StoreCustomerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +24,8 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['exists:'.Role::class . ',name']
+            'user_id' => 'required|in',
+            'excel' => 'required|file',
         ];
     }
 }

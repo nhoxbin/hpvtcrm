@@ -50,6 +50,10 @@ class User extends Authenticatable
         return $this->hasOne(self::class, 'created_by_user_id');
     }
 
+    public function created_users() {
+        return $this->hasMany(self::class, 'created_by_user_id');
+    }
+
     public function customers() {
         return $this->hasMany(Customer::class);
     }

@@ -7,6 +7,7 @@
     </template>
 
     <div class="p-4 bg-white rounded-lg shadow-xs">
+      <SecondaryButton @click="isUploadCustomer = true">Upload</SecondaryButton>
       <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
         <div class="overflow-x-auto w-full">
           <table class="w-full whitespace-no-wrap">
@@ -51,6 +52,8 @@
         </div>
       </div>
     </div>
+
+    <UploadCustomerForm :users="users" :is-upload-customer="isUploadCustomer" @close-upload-customer-form="onCloseUploadCustomerForm"></UploadCustomerForm>
   </AuthenticatedLayout>
 </template>
 
@@ -61,15 +64,17 @@ import DeleteCustomerForm from './Partials/DeleteCustomerForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
+import UploadCustomerForm from './Partials/UploadCustomerForm.vue';
 
 const props = defineProps({
   auth: Object,
   customers: Object
 });
 
-const isEditUser = ref(false);
-const isDeleteUser = ref(false);
-const deleteUserId = ref(null);
+const isUploadCustomer = ref(false);
+const isEditCustomer = ref(false);
+const isDeleteCustomer = ref(false);
+const customerId = ref(null);
 const isCreateUser = ref(false);
 const passwordInput = ref(null);
 
@@ -87,7 +92,7 @@ const confirmUserDeletion = () => {
 
 const deleteUser = (user_id) => {
   isDeleteUser.value = true;
-  deleteUserId.value = user_id;
+  customerId.value = user_id;
   /* form.delete(route('profile.destroy'), {
     preserveScroll: true,
     onSuccess: () => closeModal(),
@@ -101,12 +106,16 @@ const deleteUser = (user_id) => {
   isAddingUser.value = !isEdit;
 }; */
 
-const onCloseEditUserForm = () => {
-  isEditUser.value = false;
+const onCloseUploadCustomerForm = () => {
+  isUploadCustomer.value = false;
 };
 
-const onCloseDeleteUserForm = () => {
-  isDeleteUser.value = false;
+const onCloseEditCustomerForm = () => {
+  isEditCustomer.value = false;
+};
+
+const onCloseDeleteCustomerForm = () => {
+  isDeleteCustomer.value = false;
 };
 
 function deleteData(id) {
