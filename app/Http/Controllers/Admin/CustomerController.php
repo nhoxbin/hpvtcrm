@@ -106,7 +106,7 @@ class CustomerController extends Controller
         
     }
 
-    public function destroy(Customer $customer) {
+    public function destroy(Request $request, Customer $customer) {
         // method post
         if (in_array('duplicate', $request->command)) {
             // xóa trùng data
@@ -129,10 +129,10 @@ class CustomerController extends Controller
         } else {
             // xóa từng trạng thái của sales
             $request->validate([
-                'sales_stage' => 'exists:sales_stages,id'
+                'sales_state' => 'exists:sales_states,id'
             ]);
             Customer::whereIn('sales_stage_id', $request->command)->delete();
         }
-        return redirect()->back()->withSuccess('Xóa dữ liệu thành công.');
+        return response()->success('Xóa dữ liệu thành công.');
     }
 }

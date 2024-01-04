@@ -64,7 +64,7 @@
       </div>
 
       <EditUserForm :is-edit-user="isEditUser" @close-edit-user-form="onCloseEditUserForm"></EditUserForm>
-      <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @close-delete-user-form="onCloseDeleteUserForm"></DeleteUserForm>
+      <!-- <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @close-delete-user-form="onCloseDeleteUserForm"></DeleteUserForm> -->
       <!-- <CreateUserForm :is-create-user="isCreateUser"></CreateUserForm> -->
       
     </div>
@@ -104,16 +104,31 @@ const confirmUserDeletion = () => {
   // nextTick(() => passwordInput.value.focus());
 };
 
-const deleteUser = (user_id) => {
-  isDeleteUser.value = true;
-  deleteUserId.value = user_id;
-  /* form.delete(route('profile.destroy'), {
-    preserveScroll: true,
-    onSuccess: () => closeModal(),
-    // onError: () => passwordInput.value.focus(),
-    onFinish: () => form.reset(),
-  }); */
-};
+const deleteUser = (user) => {
+  ElMessageBox.confirm(
+    'Bạn có chắc muốn xóa data của nhân viên này chứ?',
+    'Warning',
+    {
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+    }
+  ).then(() => {
+    axios.delete(route('admin.users.destroy', user)).then((resp) => {
+      ElMessage({
+        type: 'success',
+        message: 'Xóa thành công',
+      })
+    }).catch(function(err) {
+      console.log(err.responseText);
+    });
+  }).catch(() => {
+    /* ElMessage({
+      type: 'info',
+      message: 'Delete canceled',
+    }) */
+  })
+}
 
 /* const editingUser = (isEdit) => {
   isEditingUser.value = isEdit;

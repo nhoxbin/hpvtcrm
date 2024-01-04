@@ -6,8 +6,13 @@
       Customers
     </template>
 
-    <div class="p-4 bg-white rounded-lg shadow-xs">
+    <div class="p-4 bg-white rounded-lg shadow-xs mb-2">
       <SecondaryButton @click="isUploadCustomer = true">Upload</SecondaryButton>
+      <PrimaryButton @click="exportCustomer">Export</PrimaryButton>
+      <DangerButton @click="deleteCustomer">Delete</DangerButton>
+    </div>
+
+    <div class="p-4 bg-white rounded-lg shadow-xs">
       <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
         <div class="overflow-x-auto w-full">
           <table class="w-full whitespace-no-wrap">
@@ -19,10 +24,9 @@
                 <th class="px-4 py-3">Ngày kết thúc</th>
                 <th class="px-4 py-3">Gói có sẵn</th>
                 <th class="px-4 py-3">Người làm việc</th>
+                <th class="px-4 py-3">Trạng thái</th>
                 <th class="px-4 py-3">Sales Ghi chú</th>
                 <th class="px-4 py-3">Admin Ghi chú</th>
-                <th class="px-4 py-3">Người làm việc</th>
-                <th class="px-4 py-3">Trạng thái</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y">
@@ -32,10 +36,10 @@
                 <td class="px-4 py-3 text-sm">{{ customer.registered_at }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.expired_at }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.available_data }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.admin_note }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.sales_state?.name }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.admin_note }}</td>
                 <!-- <td>
                   <div class="btn-group">
                     <button class="btn btn-info" @click="isEditUser = true">Sửa</button>
@@ -60,11 +64,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
-import DeleteCustomerForm from './Partials/DeleteCustomerForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import UploadCustomerForm from './Partials/UploadCustomerForm.vue';
+import 'element-plus/es/components/message/style/css'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import DangerButton from '@/Components/DangerButton.vue';
+import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 
 const props = defineProps({
   auth: Object,
@@ -115,25 +122,14 @@ const onCloseEditCustomerForm = () => {
   isEditCustomer.value = false;
 };
 
-const onCloseDeleteCustomerForm = () => {
-  isDeleteCustomer.value = false;
-};
-
-function deleteData(id) {
-  if (confirm('Bạn có chắc muốn xóa data của nhân viên này chứ?')) {
-    axios({
-      url: route('admin.customers.destroy'),
-      method: 'post',
-      data: {
-        'command': ['user'],
-        'user_id': id
-      }
-    }).then((resp) => {
-      alert('Xóa thành công');
-      location.reload();
-    }).catch(function(err) {
-      console.log(err.responseText);
+const exportCustomer = () => {
+  axios.post(route('admin.customers.export')).then(function({data}) {
+    ElMessage({
+      message: data.msg,
+      type: 'success',
     });
-  }
-}
+  }).catch(function(err) {
+    console.log(err);
+  });
+};
 </script>

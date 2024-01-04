@@ -10,15 +10,16 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExportController extends Controller
 {
-    public function __invoke(Request $request) {
+    public function __invoke(Request $request)
+    {
         // Create new Spreadsheet object
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         // Set document properties
-        $spreadsheet->getProperties()->setCreator('tymcrm.com')
-                    ->setLastModifiedBy('TyM')
+        $spreadsheet->getProperties()->setCreator('hpvt.net')
+                    ->setLastModifiedBy('HPVT')
                     ->setTitle('data')
-                    ->setSubject('data TyMCRM')
+                    ->setSubject('data HPVT')
                     ->setDescription('Export data to Excel Work for me!');
         // add style to the header
         $styleArray = array(
@@ -42,34 +43,42 @@ class ExportController extends Controller
             'endColor'   => array('rgb' => 'f2f2f2'),
           ),
         );
-        $spreadsheet->getActiveSheet()->getStyle('A1:G1')->applyFromArray($styleArray);
+        $spreadsheet->getActiveSheet()->getStyle('A1:I1')->applyFromArray($styleArray);
         // auto fit column to content
         foreach(range('A', 'J') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
         }
         // set the names of header cells
-        $sheet->setCellValue('A1', 'Tên');
-        $sheet->setCellValue('B1', 'CMND');
-        $sheet->setCellValue('C1', 'Số tiền');
-        $sheet->setCellValue('D1', 'Assigned to');
-        $sheet->setCellValue('E1', 'Sales stage');
+        $sheet->setCellValue('A1', 'Số điện thoại');
+        $sheet->setCellValue('B1', 'Tên gói');
+        $sheet->setCellValue('C1', 'Ngày bắt đầu');
+        $sheet->setCellValue('D1', 'Ngày kết thúc');
+        $sheet->setCellValue('E1', 'Gói có sẵn');
+        $sheet->setCellValue('F1', 'Người làm việc');
+        $sheet->setCellValue('G1', 'Trạng thái');
+        $sheet->setCellValue('H1', 'Sales Ghi chú');
+        $sheet->setCellValue('I1', 'Admin Ghi chú');
 
         $authUser = $request->user();
-        if ($authUser->isAdmin) {
+        if ($authUser->hasRole('Super Admin')) {
             $customers = Customer::all();
-        } else {
+        }/*  else {
             $users = $authUser->created_users->pluck('id');
             $users->push($authUser->id);
             $customers = Customer::whereIn('user_id', $users)->get();
-        }
+        } */
         // Add data
         $x = 2;
         foreach($customers as $customer) {
-            $sheet->setCellValue('A'.$x, $customer->name);
-            $sheet->setCellValue('B'.$x, $customer->cmnd);
-            $sheet->setCellValue('C'.$x, $customer->loan_amount);
-            $sheet->setCellValue('D'.$x, $customer->user->name);
-            $sheet->setCellValue('E'.$x, $customer->sales_stage->name ?? null);
+            $sheet->setCellValue('A'.$x, $customer->phone);
+            $sheet->setCellValue('B'.$x, $customer->data);
+            $sheet->setCellValue('C'.$x, $customer->registered_at);
+            $sheet->setCellValue('D'.$x, $customer->expired_at);
+            $sheet->setCellValue('E'.$x, $customer->available_data);
+            $sheet->setCellValue('F'.$x, $customer->user?->name);
+            $sheet->setCellValue('G'.$x, $customer->sales_state?->name);
+            $sheet->setCellValue('H'.$x, $customer->sales_note);
+            $sheet->setCellValue('I'.$x, $customer->admin_note);
             $x++;
         }
         //Create file excel.xlsx
