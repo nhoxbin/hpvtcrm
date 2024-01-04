@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import ApplicationLogo from '@/Components/Admin/ApplicationLogo.vue';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Admin/Dropdown.vue';
 import DropdownLink from '@/Components/Admin/DropdownLink.vue';
 import NavLink from '@/Components/Admin/NavLink.vue';

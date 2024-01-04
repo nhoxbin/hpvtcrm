@@ -18,7 +18,7 @@ class CustomerController extends Controller
 {
     public function index() {
         return Inertia::render('Admin/Customer/Index', [
-            'users' => User::all(),
+            'users' => User::get(),
             'customers' => Customer::with(['user', 'sales_state'])->paginate()
         ]);
     }
@@ -96,9 +96,9 @@ class CustomerController extends Controller
                     }
                 }
             }
-            return response('Đã tải dữ liệu khách hàng lên hệ thống.', 200);
+            return response()->success('Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch(\Exception $e) {
-            return response('Lỗi rồi! '.$e->getMessage(), 200);
+            return response()->error('Lỗi rồi!', $e->getMessage());
         }
     }
 

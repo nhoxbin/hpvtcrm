@@ -29,7 +29,7 @@
   </template>
     
 <script setup>
-import DangerButton from '@/Components/Admin/DangerButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Admin/Modal.vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import { useForm } from '@inertiajs/vue3';

@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import Checkbox from '@/Components/Admin/Checkbox.vue';
+import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/Admin/GuestLayout.vue';
 import InputError from '@/Components/Admin/InputError.vue';
 import InputLabel from '@/Components/Admin/InputLabel.vue';
