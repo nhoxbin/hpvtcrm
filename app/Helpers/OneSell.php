@@ -40,4 +40,22 @@ class OneSell
             ->asJson(true)
             ->get();
     }
+
+    public function regis(string $provider, string $transactionId, int $productId, string $phoneNumber, string $regisMethod = 'otp')
+    {
+        if (!in_array($provider, $this->providers)) return null;
+
+        return Curl::to(config('one_sell.endpoint') . '/v1/package/regis')
+            ->withHeaders(['Api-Key' => config('one_sell.apiKey')])
+            ->withContentType('application/json')
+            ->withData([
+                "transactionId" => $transactionId,
+                "source" => config('one_sell.source'),
+                "productId" => $productId,
+                "phoneNumber" => $phoneNumber,
+                "regisMethod" => $regisMethod,
+            ])
+            ->asJson(true)
+            ->get();
+    }
 }

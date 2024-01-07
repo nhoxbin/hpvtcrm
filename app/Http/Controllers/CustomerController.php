@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Admin\Customer\UpdateCustomerRequest;
 use App\Models\Customer;
 use App\Models\SaleStage;
 use App\Models\User;
@@ -62,20 +63,16 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $request->validate([
-            'sales_stage' => 'exists:sales_stages,id'
-        ]);
-        
-        $customer->sales_stage_id = $request->sales_stage;
+        $customer->sales_state_id = $request->sales_stagte;
     	$customer->description = $request->description;
-    	if (Auth::user()->role) {
+    	if ($request->user()->hasRole('Super Admin')) {
 	    	$customer->sales_admin_noted = $request->sales_admin_noted;
     	}
     	$customer->save();
 
-    	return redirect()->back()->withSuccess('Lưu thành công.');
+    	return response()->success('Lưu thành công.');
     }
 
     /**

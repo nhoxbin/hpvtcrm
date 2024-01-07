@@ -172,6 +172,7 @@ return [
         /*
          * HPVTCRM Service Providers...
          */
+        App\Providers\ResponseServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
     ])->toArray(),
 
