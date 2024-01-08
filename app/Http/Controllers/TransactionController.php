@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Facades\OneSell;
-use App\Http\Requests\Admin\Customer\StoreTransactionRequest;
+use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -30,13 +30,23 @@ class TransactionController extends Controller
      */
     public function store(StoreTransactionRequest $request)
     {
-        // $request->validated();
-        $transaction = Transaction::create($request->validated());
-        $regis = OneSell::regis('mobifone', $transaction->id, $request->productId, $request->phoneNumber, $request->regisMethod);
-        if (!empty($regis) && $regis['result']) {
-            return response()->success($regis['message']);
+        $validated = $request->validated();
+        $customer = $request->user()->customers()->where('phone', $validated['phoneNumer'])->firstOrFail();
+        $transaction = $customer->transaction()->create(['product' => $validated['product']]);
+        $regis = OneSell::regis('mobifone', $request->productId, $transaction->id, $request->phoneNumber, $request->regisMethod);
+        dd($regis);
+        if (!empty($regis)) {
+            $msg = $regis['message'];
+            $transaction->message = $msg;
+            $transaction->orderId = $regis['orderId'];
+            $transaction->result = $regis['result'];
+            $transaction->save();
+
+            if ($regis['result']) {
+                return response()->success($msg);
+            }
         }
-        return response()->error($regis['message']);
+        return response()->error($msg ?? 'Không lấy được dữ liệu!');
     }
 
     /**

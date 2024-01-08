@@ -18,14 +18,19 @@ class SalesStateSeeder extends Seeder
 		DB::table('sales_states')->insert([
             [
                 'name' => 'Không nghe máy',
+                'code' => 'not_answer',
             ], [
                 'name' => 'Thuê bao',
+                'code' => 'cannot_contacted',
             ], [
                 'name' => 'Bận hẹn gọi lại',
+                'code' => 'busy',
             ], [
                 'name' => 'Đã đăng ký',
+                'code' => 'registered',
             ], [
                 'name' => 'Đã gọi',
+                'code' => 'called',
             ]
         ]);
     }

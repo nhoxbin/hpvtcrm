@@ -27,6 +27,7 @@ class UpdateCustomerRequest extends FormRequest
             'phoneNumber' => 'required|numeric',
             'productId' => 'required|numeric',
             'regisMethod' => 'required|in:otp,sms',
+            'product' => 'required|array',
         ];
     }
 }

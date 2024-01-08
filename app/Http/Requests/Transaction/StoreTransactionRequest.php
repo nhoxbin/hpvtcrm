@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\Customer;
+namespace App\Http\Requests\Transaction;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
@@ -24,8 +24,8 @@ class StoreTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phoneNumber' => 'required|numeric',
             'productId' => 'required|numeric',
+            'phoneNumber' => 'required|numeric',
             'regisMethod' => 'required|in:otp,sms',
         ];
     }

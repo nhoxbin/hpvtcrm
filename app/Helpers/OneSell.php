@@ -7,6 +7,7 @@ use Ixudra\Curl\Facades\Curl;
 class OneSell
 {
     private array $providers = ['mobifone', 'viettel', 'vinaphone'];
+    private array $regisMethods = ['otp', 'sms'];
 
     public function products(string $provider, int $category_id, string $search = null, int $page = 1, int $limit = 10)
     {
@@ -30,6 +31,7 @@ class OneSell
     public function categories(string $provider)
     {
         if (!in_array($provider, $this->providers)) return null;
+        
         return Curl::to(config('one_sell.endpoint') . '/v1/categories')
             ->withHeaders(['Api-Key' => config('one_sell.apiKey')])
             ->withContentType('application/json')
@@ -41,9 +43,9 @@ class OneSell
             ->get();
     }
 
-    public function regis(string $provider, string $transactionId, int $productId, string $phoneNumber, string $regisMethod = 'otp')
+    public function regis(string $provider, int $productId, string $transactionId, string $phoneNumber = '', string $regisMethod = 'otp')
     {
-        if (!in_array($provider, $this->providers)) return null;
+        if (!in_array($provider, $this->providers) || !in_array($regisMethod, $this->regisMethods) || empty($phoneNumber)) return null;
 
         return Curl::to(config('one_sell.endpoint') . '/v1/package/regis')
             ->withHeaders(['Api-Key' => config('one_sell.apiKey')])

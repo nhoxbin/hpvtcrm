@@ -17,6 +17,10 @@ class Customer extends Model
     	return $this->belongsTo(User::class);
     }
 
+    public function transaction() {
+    	return $this->belongsTo(Transaction::class);
+    }
+
     public function sales_state() {
     	return $this->belongsTo(SalesState::class);
     }
