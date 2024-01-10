@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Facades\OneSell;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
+use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -31,22 +32,24 @@ class TransactionController extends Controller
     public function store(StoreTransactionRequest $request)
     {
         $validated = $request->validated();
-        $customer = $request->user()->customers()->where('phone', $validated['phoneNumer'])->firstOrFail();
-        $transaction = $customer->transaction()->create(['product' => $validated['product']]);
-        $regis = OneSell::regis('mobifone', $request->productId, $transaction->id, $request->phoneNumber, $request->regisMethod);
-        dd($regis);
-        if (!empty($regis)) {
-            $msg = $regis['message'];
-            $transaction->message = $msg;
-            $transaction->orderId = $regis['orderId'];
-            $transaction->result = $regis['result'];
-            $transaction->save();
-
-            if ($regis['result']) {
-                return response()->success($msg);
-            }
+        if ($request->user()->hasRole('Super Admin')) {
+            $customers = $request->user()->customers();
+        } else {
+            $customers = Customer::all();
         }
-        return response()->error($msg ?? 'Không lấy được dữ liệu!');
+        $customer = $customers->where('phone', str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT))->orWhere('phone', $validated['phoneNumber'])->firstOrFail();
+        $transaction = $customer->transaction()->create(['product' => $validated['product']]);
+        $regis = OneSell::regis('mobifone', $request->product['id'], $transaction->id, $request->phoneNumber, $request->regisMethod);
+        if (!empty($regis)) {
+            $transaction->message = $regis['message'];
+            if ($regis['result']) {
+                $transaction->orderId = $regis['orderId'];
+                $transaction->result = $regis['result'];
+            }
+            $transaction->save();
+            return response()->success(__($regis['message']));
+        }
+        return response()->error('Không thể đăng ký gói!');
     }
 
     /**

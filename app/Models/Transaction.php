@@ -14,6 +14,8 @@ class Transaction extends Model
 
     public $incrementing = false;
 
+    protected $fillable = ['message', 'orderId', 'result', 'product'];
+
     protected $casts = [
         'product' => 'json',
     ];

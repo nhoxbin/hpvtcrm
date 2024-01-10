@@ -24,7 +24,7 @@ class StoreTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'productId' => 'required|numeric',
+            'product' => 'required|array',
             'phoneNumber' => 'required|numeric',
             'regisMethod' => 'required|in:otp,sms',
         ];

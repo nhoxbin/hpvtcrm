@@ -12,6 +12,7 @@ defineProps({
 
 const workingData = reactive([]);
 const sendingRegis = reactive([]);
+const regisMsg = reactive([]);
 const phoneNumber = ref([]);
 const regisMethod = ref([]);
 const regisMethods = reactive([
@@ -31,11 +32,12 @@ const regis = async (product, phone, methods) => {
         regisMethod: method.value,
         phoneNumber: phone.value
     }).then(({data}) => {
-        product.regisMsg = 'Nhập mã OTP để hoàn tất đăng ký';
+        regisMsg[product.id] = 'Nhập mã OTP để hoàn tất đăng ký';
     }).catch((err) => {
-        product.regisMsg = 'Mã OTP không đúng';
+        regisMsg[product.id] = 'Mã OTP không đúng';
         product.sendingRegis = false;
     });
+    // sendingRegis[product.id] = false;
 }
 </script>
 
@@ -160,7 +162,7 @@ const regis = async (product, phone, methods) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div v-if="sendingRegis[product.id]">{{ data.regisMsg }}</div> -->
+                                    <div v-if="sendingRegis[product.id]">{{ regisMsg[product.id] }}</div>
                                 </div>
                             </div>
                         </section>
