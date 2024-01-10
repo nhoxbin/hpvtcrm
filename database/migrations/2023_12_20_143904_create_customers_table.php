@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\SalesStateEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,13 +16,14 @@ return new class extends Migration
             $table->id();
             $table->string('phone', 12);
             $table->string('data', 10);
-            $table->date('registered_at');
-            $table->date('expired_at');
+            $table->dateTime('registered_at');
+            $table->dateTime('expired_at');
             $table->text('available_data')->nullable();
             $table->string('sales_note')->nullable();
             $table->string('admin_note')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
-            $table->foreignId('sales_state_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
+            // $table->foreignId('sales_state_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
+            $table->enum('sales_state', SalesStateEnum::names());
             $table->timestamps();
         });
     }

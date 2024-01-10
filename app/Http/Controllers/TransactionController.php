@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SalesStateEnum;
 use App\Helpers\Facades\OneSell;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Models\Customer;
@@ -38,7 +39,7 @@ class TransactionController extends Controller
             $customers = Customer::all();
         }
         $customer = $customers->where('phone', str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT))->orWhere('phone', $validated['phoneNumber'])->firstOrFail();
-        $transaction = $customer->transaction()->create(['product' => $validated['product']]);
+        $transaction = $customer->transactions()->create(['product' => $validated['product']]);
         $regis = OneSell::regis('mobifone', $request->product['id'], $transaction->id, $request->phoneNumber, $request->regisMethod);
         if (!empty($regis)) {
             $transaction->message = $regis['message'];
@@ -47,7 +48,7 @@ class TransactionController extends Controller
                 $transaction->result = $regis['result'];
             }
             $transaction->save();
-            return response()->success(__($regis['message']));
+            return response()->success(__($regis['message']), $transaction->toArray());
         }
         return response()->error('Không thể đăng ký gói!');
     }
@@ -73,7 +74,26 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        //
+        $confirmOtp = OneSell::confirmOtp('mobifone', 12346, $request->otp);
+        if (!empty($confirmOtp)) {
+            $transaction->result = $confirmOtp['result'];
+            $transaction->message = $confirmOtp['message'];
+            $transaction->save();
+
+            preg_match('/(\d+)(.+)/', $transaction->product['expiry'], $expiry);
+            $date_types = [
+                'N' => 'day',
+                'T' => 'month'
+            ];
+
+            $transaction->customer->sales_state = SalesStateEnum::Registered;
+            $transaction->customer->data = $transaction->product['title'];
+            $transaction->customer->registered_at = now();
+            $transaction->customer->expired_at = date('Y-m-d H:i:s', strtotime('+' . $expiry[1] . ' ' . $date_types[$expiry[2]]));
+            $transaction->customer->save();
+            return response()->success($confirmOtp['message']);
+        }
+        return response()->error('Không thể xác minh OTP!');
     }
 
     /**

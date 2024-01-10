@@ -37,7 +37,7 @@
                 <td class="px-4 py-3 text-sm">{{ customer.expired_at }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.available_data }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.sales_state?.name }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.sales_state }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.admin_note }}</td>
                 <!-- <td>

@@ -4,11 +4,11 @@ namespace App\Enums;
 
 enum SalesStateEnum: string
 {
-    case not_answer = 'Không nghe máy';
-    case cannot_contacted = 'Thuê bao';
-    case busy = 'Bận hẹn gọi lại';
-    case registered = 'Đã đăng ký';
-    case called = 'Đã gọi';
+    case NotAnswer = 'NotAnswer'; // 'Không nghe máy';
+    case CannotContacted = 'CannotContacted'; // 'Thuê bao';
+    case Busy = 'Busy'; // 'Bận hẹn gọi lại';
+    case Registered = 'Registered'; // 'Đã đăng ký';
+    case Called = 'Called'; // 'Đã gọi';
 
     public static function names(): array
     {

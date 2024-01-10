@@ -27,7 +27,7 @@ class Transaction extends Model
         });
     }
 
-    public function transaction() {
-    	return $this->hasOne(Customer::class);
+    public function customer() {
+    	return $this->belongsTo(Customer::class);
     }
 }

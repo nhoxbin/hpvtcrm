@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SalesStateEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +11,7 @@ class Customer extends Model
     use HasFactory;
 
     protected $casts = [
+        'sales_state' => SalesStateEnum::class,
         'available_data' => 'json',
     ];
 
@@ -17,11 +19,7 @@ class Customer extends Model
     	return $this->belongsTo(User::class);
     }
 
-    public function transaction() {
-    	return $this->belongsTo(Transaction::class);
-    }
-
-    public function sales_state() {
-    	return $this->belongsTo(SalesState::class);
+    public function transactions() {
+    	return $this->hasMany(Transaction::class);
     }
 }

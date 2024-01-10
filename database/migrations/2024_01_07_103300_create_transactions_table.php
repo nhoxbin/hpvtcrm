@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('message')->nullable();
             $table->unsignedDecimal('orderId')->nullable();
             $table->boolean('result')->default(false);
+            $table->string('message')->nullable();
             $table->text('product')->nullable();
             $table->foreignId('customer_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->timestamps();

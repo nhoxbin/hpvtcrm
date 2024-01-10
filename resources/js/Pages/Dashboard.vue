@@ -13,8 +13,12 @@ defineProps({
 const workingData = reactive([]);
 const sendingRegis = reactive([]);
 const regisMsg = reactive([]);
+const transaction = reactive([]);
+
 const phoneNumber = ref([]);
+const otp = ref([]);
 const regisMethod = ref([]);
+
 const regisMethods = reactive([
     {name: 'otp', checked: true, disable: false, show: true},
     {name: 'sms', checked: false, disable: false, show: true},
@@ -25,19 +29,26 @@ const onClickData = (product) => {
 }
 
 const regis = async (product, phone, methods) => {
-    // sendingRegis[product.id] = true;
+    sendingRegis[product.id] = true;
     let method = methods.find(i => i.checked && i.name == "regisMethod"+product.id);
     await axios.post(route('transactions.store'), {
         product: product,
         regisMethod: method.value,
         phoneNumber: phone.value
     }).then(({data}) => {
+        transaction[product.id] = data.data.id;
+        regisMsg[product.id] = 'Nhập mã OTP để hoàn tất đăng ký';
+    }).catch((err) => {
+        sendingRegis[product.id] = false;
+    });
+}
+
+const confirmOtp = async (transaction, otp) => {
+    await axios.put(route('transactions.update', transaction), {otp: otp.value}).then(({data}) => {
         regisMsg[product.id] = 'Nhập mã OTP để hoàn tất đăng ký';
     }).catch((err) => {
         regisMsg[product.id] = 'Mã OTP không đúng';
-        product.sendingRegis = false;
     });
-    // sendingRegis[product.id] = false;
 }
 </script>
 
@@ -132,12 +143,22 @@ const regis = async (product, phone, methods) => {
                                             class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
                                             placeholder="Nhập OTP"
                                             aria-label="Nhập OTP"
-                                            v-if="sendingRegis[product.id]" />
+                                            ref="otp"
+                                            v-else />
                                         <button
                                             class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                                             data-te-ripple-init
                                             type="button"
+                                            v-if="!sendingRegis[product.id]"
                                             @click="regis(product, phoneNumber[index], regisMethod)">
+                                            <svg class="h-8 w-8 text-red-500"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <line x1="22" y1="2" x2="11" y2="13" />  <polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                                        </button>
+                                        <button
+                                            class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
+                                            data-te-ripple-init
+                                            type="button"
+                                            v-else
+                                            @click="confirmOtp(transaction[product.id], otp[index])">
                                             <svg class="h-8 w-8 text-red-500"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <line x1="22" y1="2" x2="11" y2="13" />  <polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
                                         </button>
                                     </div>

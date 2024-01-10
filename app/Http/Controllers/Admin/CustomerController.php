@@ -19,7 +19,7 @@ class CustomerController extends Controller
     public function index() {
         return Inertia::render('Admin/Customer/Index', [
             'users' => User::get(),
-            'customers' => Customer::with(['user', 'sales_state'])->paginate()
+            'customers' => Customer::with(['user'])->paginate()
         ]);
     }
 

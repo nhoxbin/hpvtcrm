@@ -4,7 +4,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Admin/Dropdown.vue';
 import DropdownLink from '@/Components/Admin/DropdownLink.vue';
 import NavLink from '@/Components/Admin/NavLink.vue';
-import ResponsiveNavLink from '@/Components/Admin/ResponsiveNavLink.vue';
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);

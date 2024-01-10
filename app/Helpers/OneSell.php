@@ -62,7 +62,7 @@ class OneSell
             ->post();
     }
 
-    public function confirmOtp(string $provider, int $otp, int $orderId)
+    public function confirmOtp(string $provider, int $orderId, int $otp)
     {
         if (!in_array($provider, $this->providers) || empty($otp) || empty($orderId)) return null;
         
