@@ -74,7 +74,7 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        $confirmOtp = OneSell::confirmOtp('mobifone', 12346, $request->otp);
+        $confirmOtp = OneSell::confirmOtp('mobifone', $transaction->orderId, $request->otp);
         if (!empty($confirmOtp)) {
             $transaction->result = $confirmOtp['result'];
             $transaction->message = $confirmOtp['message'];
@@ -86,11 +86,13 @@ class TransactionController extends Controller
                 'T' => 'month'
             ];
 
-            $transaction->customer->sales_state = SalesStateEnum::Registered;
-            $transaction->customer->data = $transaction->product['title'];
-            $transaction->customer->registered_at = now();
-            $transaction->customer->expired_at = date('Y-m-d H:i:s', strtotime('+' . $expiry[1] . ' ' . $date_types[$expiry[2]]));
-            $transaction->customer->save();
+            if ($confirmOtp['result']) {
+                $transaction->customer->sales_state = SalesStateEnum::Registered;
+                $transaction->customer->data = $transaction->product['title'];
+                $transaction->customer->registered_at = now();
+                $transaction->customer->expired_at = date('Y-m-d H:i:s', strtotime('+' . $expiry[1] . ' ' . $date_types[$expiry[2]]));
+                $transaction->customer->save();
+            }
             return response()->success($confirmOtp['message']);
         }
         return response()->error('Không thể xác minh OTP!');
