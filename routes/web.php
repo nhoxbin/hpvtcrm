@@ -9,8 +9,13 @@ use Inertia\Inertia;
 
 Route::get('artisan/{password}/{command}', function($password, $command) {
     if ($password === '74ujk6Z2wO') {
-        $exitCode = \Artisan::call($command, request()->all());
-        echo $exitCode;
+        $exitCode = Artisan::call($command, request()->all());
+        $artisanOutput = Artisan::output();
+
+        if (in_array("Error", str_split($artisanOutput, 5))) {
+            throw new Exception($artisanOutput);
+        }
+        echo $exitCode == 0 ? 'Success' : 'Error';
     }
 });
 

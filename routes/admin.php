@@ -28,7 +28,7 @@ Route::group([
 
     Route::group(['middleware' => 'admin'], function() {
         // delete multiple customer
-        Route::post('customers/delete', 'MultipleCustomersController@destroy')->name('customers.destroy');
+        // Route::post('customers/delete', 'MultipleCustomersController@destroy')->name('customers.destroy');
 
         // customer
         Route::resource('customer', 'CustomerController', [
