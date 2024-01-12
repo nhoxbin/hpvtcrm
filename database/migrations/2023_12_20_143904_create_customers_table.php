@@ -15,15 +15,14 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('phone', 12);
-            $table->string('data', 10);
+            $table->string('data', 100);
             $table->dateTime('registered_at');
             $table->dateTime('expired_at');
             $table->text('available_data')->nullable();
             $table->string('sales_note')->nullable();
             $table->string('admin_note')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
-            // $table->foreignId('sales_state_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
-            $table->enum('sales_state', SalesStateEnum::names());
+            $table->enum('sales_state', SalesStateEnum::names())->nullable();
             $table->timestamps();
         });
     }

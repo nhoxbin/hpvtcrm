@@ -30,4 +30,8 @@ class Transaction extends Model
     public function customer() {
     	return $this->belongsTo(Customer::class);
     }
+
+    public function created_by() {
+    	return $this->belongsTo(User::class, 'created_by_user_id');
+    }
 }

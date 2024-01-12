@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum SalesStateEnum: string
+use App\Base\Enum\Interfaces\UnitEnumInterface;
+
+enum SalesStateEnum: string implements UnitEnumInterface
 {
     case NotAnswer = 'NotAnswer'; // 'Không nghe máy';
     case CannotContacted = 'CannotContacted'; // 'Thuê bao';

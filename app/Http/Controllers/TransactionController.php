@@ -78,6 +78,7 @@ class TransactionController extends Controller
         if (!empty($confirmOtp)) {
             $transaction->result = $confirmOtp['result'];
             $transaction->message = $confirmOtp['message'];
+            $transaction->created_by_user_id = $request->user()->id;
             $transaction->save();
 
             preg_match('/(\d+)(.+)/', $transaction->product['expiry'], $expiry);

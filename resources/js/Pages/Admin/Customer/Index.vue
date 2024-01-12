@@ -19,7 +19,7 @@
             <thead>
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase bg-gray-50 border-b">
                 <th class="px-4 py-3">Số điện thoại</th>
-                <th class="px-4 py-3">Tên gói</th>
+                <th class="px-4 py-3">Gói hiện tại</th>
                 <th class="px-4 py-3">Ngày bắt đầu</th>
                 <th class="px-4 py-3">Ngày kết thúc</th>
                 <th class="px-4 py-3">Gói có sẵn</th>
@@ -37,7 +37,7 @@
                 <td class="px-4 py-3 text-sm">{{ customer.expired_at }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.available_data }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.sales_state }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.state }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.admin_note }}</td>
                 <!-- <td>

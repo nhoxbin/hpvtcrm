@@ -98,7 +98,7 @@ class CustomerController extends Controller
             }
             return response()->success('Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch(\Exception $e) {
-            return response()->error('Lỗi rồi!', $e->getMessage());
+            return response()->error('Lỗi rồi!', 422, $e->getTrace());
         }
     }
 

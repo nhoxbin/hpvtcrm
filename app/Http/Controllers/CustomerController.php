@@ -23,8 +23,7 @@ class CustomerController extends Controller
         } elseif ($user->isManager) {
             $users = $user->created_users;
         }
-        $sales_stages = SaleStage::all();
-    	return view('customer.index', compact('users', 'sales_stages'));
+    	return view('customer.index', compact('users'));
     }
 
     /**
@@ -48,8 +47,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $sales_stages = SaleStage::all();
-    	return view('customer.show', compact('customer', 'sales_stages'));
+    	return view('customer.show', compact('customer'));
     }
 
     /**
@@ -65,7 +63,7 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $customer->sales_state_id = $request->sales_stagte;
+        $customer->sales_state_id = $request->sales_state;
     	$customer->description = $request->description;
     	if ($request->user()->hasRole('Super Admin')) {
 	    	$customer->sales_admin_noted = $request->sales_admin_noted;

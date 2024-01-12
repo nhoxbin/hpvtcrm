@@ -4,18 +4,24 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('artisan/{password}/{command}', function($password, $command) {
     if ($password === '74ujk6Z2wO') {
-        $exitCode = Artisan::call($command, request()->all());
-        $artisanOutput = Artisan::output();
-
-        if (in_array("Error", str_split($artisanOutput, 5))) {
-            throw new Exception($artisanOutput);
+        try {
+            $exitCode = Artisan::call($command, request()->all());
+            $artisanOutput = Artisan::output();
+    
+            if (in_array("Error", str_split($artisanOutput, 5))) {
+                Log::error($artisanOutput);
+            }
+            echo $exitCode == 0 ? 'Success' : 'Error';
+        } catch (\Exception $e) {
+            Log::error($e);
         }
-        echo $exitCode == 0 ? 'Success' : 'Error';
     }
 });
 

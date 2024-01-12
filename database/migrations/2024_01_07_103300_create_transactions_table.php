@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('message')->nullable();
             $table->text('product')->nullable();
             $table->foreignId('customer_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
+            $table->foreignId('created_by_user_id')->nullable()->constrained('users')->cascadeOnUpdate()->nullOnDelete();
             $table->timestamps();
         });
     }

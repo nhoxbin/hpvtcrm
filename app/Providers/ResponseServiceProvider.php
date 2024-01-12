@@ -25,6 +25,7 @@ class ResponseServiceProvider extends ServiceProvider
         });
 
         Response::macro('error', function (string $message, int $errorCode = 500, array $data = []) {
+            // Response::json([], 500);
             return Response::make(['msg' => $message, 'data' => $data])->setStatusCode($errorCode);
         });
     }

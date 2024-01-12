@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
@@ -13,15 +14,18 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Nhoxbin',
-            'username' => 'nhoxbin',
-        ])->assignRole('Super Admin');
+        DB::table('users')->delete();
 
-        User::factory()
-            ->count(3)
-            ->create()->each(function ($user) {
-                $user->assignRole('Super Admin');
-            });
+        $users = [
+            ['name' => 'Nhoxbin', 'username' => 'nhoxbin',],
+            ['name' => 'Tiến Tý', 'username' => 'tymcrm',],
+            ['name' => 'Hùng', 'username' => 'hpvt',],
+        ];
+        foreach ($users as $user) {
+            User::factory()->create([
+                'name' => $user['name'],
+                'username' => $user['username'],
+            ])->assignRole('Super Admin');
+        }
     }
 }
