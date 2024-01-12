@@ -2,10 +2,13 @@
 
 namespace App\Enums;
 
-use App\Base\Enum\Interfaces\UnitEnumInterface;
+use App\Base\Enums\Interfaces\EnumToArrayInterface;
+use App\Base\Enums\Traits\EnumToArrayTrait;
 
-enum SalesStateEnum: string implements UnitEnumInterface
+enum SalesStateEnum: string implements EnumToArrayInterface
 {
+    use EnumToArrayTrait;
+
     case NotAnswer = 'NotAnswer'; // 'Không nghe máy';
     case CannotContacted = 'CannotContacted'; // 'Thuê bao';
     case Busy = 'Busy'; // 'Bận hẹn gọi lại';
