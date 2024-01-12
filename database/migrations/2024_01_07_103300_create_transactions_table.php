@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->unsignedDecimal('orderId')->nullable();
+            $table->string('orderId')->nullable();
             $table->boolean('result')->default(false);
             $table->string('message')->nullable();
             $table->text('product')->nullable();

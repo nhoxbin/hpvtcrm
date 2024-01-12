@@ -9,7 +9,7 @@
     <div class="p-4 bg-white rounded-lg shadow-xs mb-2">
       <SecondaryButton @click="isUploadCustomer = true">Upload</SecondaryButton>
       <PrimaryButton @click="exportCustomer">Export</PrimaryButton>
-      <DangerButton @click="deleteCustomer">Delete</DangerButton>
+      <DangerButton @click="isDeleteCustomer = true">Delete</DangerButton>
     </div>
 
     <div class="p-4 bg-white rounded-lg shadow-xs">
@@ -47,6 +47,9 @@
                   </div>
                 </td> -->
               </tr>
+              <tr v-if="!customers.data.length">
+                <td class="px-4 py-3 text-sm text-center" colspan="9">Không có dữ liệu</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -58,13 +61,14 @@
     </div>
 
     <UploadCustomerForm :users="users" :is-upload-customer="isUploadCustomer" @close-upload-customer-form="onCloseUploadCustomerForm"></UploadCustomerForm>
+    <DeleteCustomerForm :users="users" :is-upload-customer="isUploadCustomer" @close-upload-customer-form="onCloseUploadCustomerForm"></DeleteCustomerForm>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import UploadCustomerForm from './Partials/UploadCustomerForm.vue';
@@ -122,12 +126,17 @@ const onCloseEditCustomerForm = () => {
   isEditCustomer.value = false;
 };
 
+const onCloseDeleteCustomerForm = () => {
+  isDeleteCustomer.value = false;
+};
+
 const exportCustomer = () => {
   axios.post(route('admin.customers.export')).then(function({data}) {
     ElMessage({
       message: data.msg,
       type: 'success',
     });
+    router.reload({ only: ['customers'] })
   }).catch(function(err) {
     console.log(err);
   });

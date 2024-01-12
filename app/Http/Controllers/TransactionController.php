@@ -8,6 +8,7 @@ use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -46,6 +47,7 @@ class TransactionController extends Controller
             if ($regis['result']) {
                 $transaction->orderId = $regis['orderId'];
                 $transaction->result = $regis['result'];
+                $transaction->created_by_user_id = Auth::id();
             }
             $transaction->save();
             return response()->success(__($regis['message']), $transaction->toArray());
@@ -78,20 +80,19 @@ class TransactionController extends Controller
         if (!empty($confirmOtp)) {
             $transaction->result = $confirmOtp['result'];
             $transaction->message = $confirmOtp['message'];
-            $transaction->created_by_user_id = $request->user()->id;
             $transaction->save();
 
             preg_match('/(\d+)(.+)/', $transaction->product['expiry'], $expiry);
             $date_types = [
-                'N' => 'day',
-                'T' => 'month'
+                'N' => 'Day',
+                'T' => 'Month'
             ];
 
             if ($confirmOtp['result']) {
                 $transaction->customer->sales_state = SalesStateEnum::Registered;
                 $transaction->customer->data = $transaction->product['title'];
                 $transaction->customer->registered_at = now();
-                $transaction->customer->expired_at = date('Y-m-d H:i:s', strtotime('+' . $expiry[1] . ' ' . $date_types[$expiry[2]]));
+                $transaction->customer->expired_at = now()->{'add' . $date_types[$expiry[2]]}($expiry[1]);
                 $transaction->customer->save();
             }
             return response()->success($confirmOtp['message']);
