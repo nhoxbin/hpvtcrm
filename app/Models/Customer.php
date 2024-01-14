@@ -21,7 +21,7 @@ class Customer extends Model
     ];
 
     protected function state() : Attribute {
-        return Attribute::get(fn (?string $value) => !empty($value) ? __('sales_state.' . SalesStateEnum::tryFrom($value)->value) : null);
+        return Attribute::get(fn () => !empty($this->attributes['sales_state']) && SalesStateEnum::tryFrom($this->attributes['sales_state']) ? __('sales_state.' . $this->attributes['sales_state']) : null);
     }
 
     public function user() {

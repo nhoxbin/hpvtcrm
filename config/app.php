@@ -174,6 +174,7 @@ return [
          */
         App\Providers\ResponseServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
+        App\Providers\DatabaseServiceProvider::class,
     ])->toArray(),
 
     /*

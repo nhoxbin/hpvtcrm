@@ -8,7 +8,7 @@ Route::group([
 	'as' => 'admin.',
 	'prefix' => 'admin',
 	'namespace' => 'Admin',
-	'middleware' => ['auth']
+	'middleware' => ['auth', 'role:Super Admin|Admin']
 ], function() {
     Route::get('dashboard', 'DashboardController@index')->name('dashboard');
     Route::get('about', 'AboutController@index')->name('about');

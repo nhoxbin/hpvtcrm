@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
@@ -88,7 +89,7 @@ class TransactionController extends Controller
                 'T' => 'Month'
             ];
 
-            if ($confirmOtp['result']) {
+            if (isset($confirmOtp['result']) && $confirmOtp['result']) {
                 $transaction->customer->sales_state = SalesStateEnum::Registered;
                 $transaction->customer->data = $transaction->product['title'];
                 $transaction->customer->registered_at = now();

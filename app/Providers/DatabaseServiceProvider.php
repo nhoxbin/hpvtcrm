@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
@@ -28,7 +29,7 @@ class DatabaseServiceProvider extends ServiceProvider
     public function boot()
     {
         // log db queries
-        if (config('app.debug'))
+        /* if (config('app.debug'))
         {
             $logFile = storage_path('logs/db/laravel.log');
             $custom_log = new Logger('log');
@@ -48,7 +49,7 @@ class DatabaseServiceProvider extends ServiceProvider
                     "time" => $query->time,
                 ]);
             });
-        }
+        } */
 
         // notify when the query took too long DB::whenQueryingForLongerThan(miliseconds, callback)
         /* DB::whenQueryingForLongerThan(500, function (Connection $connection, QueryExecuted $event) {

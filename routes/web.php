@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\OneSellController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
@@ -26,12 +28,13 @@ Route::get('artisan/{password}/{command}', function($password, $command) {
 });
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    /* return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-    ]);
+    ]); */
+    return redirect()->route('dashboard');
 });
 
 Route::middleware('auth')->group(function () {
@@ -41,6 +44,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::apiResource('transactions', TransactionController::class);
+    Route::get('1sell', OneSellController::class)->name('1sell.index');
+    Route::get('products', ProductController::class)->name('products.index');
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');

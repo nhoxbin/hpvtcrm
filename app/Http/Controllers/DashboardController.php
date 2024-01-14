@@ -17,13 +17,11 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // $categories = OneSell::categories('mobifone');
-        $products = OneSell::products('mobifone', 51407);
         if (Auth::user()->hasRole('Super Admin')) {
             $customers = Customer::paginate();
         } else {
             $customers = Auth::user()->customers()->paginate();
         }
-        return Inertia::render('Dashboard', compact('products', 'customers'));
+        return Inertia::render('Dashboard', compact('customers'));
     }
 }
