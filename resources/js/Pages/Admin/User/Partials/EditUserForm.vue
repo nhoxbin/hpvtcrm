@@ -90,6 +90,7 @@ import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({
+  roles: Object,
   isEditUser: Boolean
 });
 

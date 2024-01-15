@@ -62,9 +62,9 @@
         </div>
       </div>
 
-      <CreateUserForm :is-create-user="isCreateUser" @closeCreateUserForm="onCloseCreateUserForm(state)"></CreateUserForm>
-      <EditUserForm :is-edit-user="isEditUser" :user="currentUser" @close-edit-user-form="onCloseEditUserForm"></EditUserForm>
-      <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @close-delete-user-form="onCloseDeleteUserForm"></DeleteUserForm>
+      <CreateUserForm :is-create-user="isCreateUser" :roles="roles" @closeCreateUserForm="onCloseCreateUserForm(state)"></CreateUserForm>
+      <EditUserForm :is-edit-user="isEditUser" :roles="roles" :user="currentUser" @closeCreateUserForm="onCloseEditUserForm(state)"></EditUserForm>
+      <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @closeDeleteUserForm="onCloseDeleteUserForm(state)"></DeleteUserForm>
     </div>
   </AuthenticatedLayout>
 </template>
@@ -78,10 +78,13 @@ import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
+import 'element-plus/es/components/message/style/css';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps({
-  auth: Object,
-  users: Object
+  sessionMsg: String,
+  roles: Object,
+  users: Object,
 });
 
 const currentUser = ref(null);
@@ -102,6 +105,13 @@ const confirmUserDeletion = () => {
 
   // nextTick(() => passwordInput.value.focus());
 };
+
+if (props.sessionMsg) {
+  ElMessage({
+    message: props.sessionMsg,
+    type: 'success',
+  });
+}
 
 const deleteUser = (user) => {
   ElMessageBox.confirm(
@@ -138,16 +148,15 @@ const onCloseCreateUserForm = (state) => {
   isCreateUser.value = state;
 };
 
-const onCloseEditUserForm = () => {
-  isEditUser.value = false;
+const onCloseEditUserForm = (state) => {
+  isEditUser.value = state;
 };
 
-const onCloseDeleteUserForm = () => {
-  isDeleteUser.value = false;
+const onCloseDeleteUserForm = (state) => {
+  isDeleteUser.value = state;
 };
 
 const editUser = (user) => {
-  console.log('hihi');
   currentUser.value = user;
   isEditUser.value = true;
 };
@@ -162,7 +171,10 @@ function deleteData(id) {
         'user_id': id
       }
     }).then((resp) => {
-      alert('Xóa thành công');
+      ElMessage({
+        message: 'Xóa thành công',
+        type: 'success',
+      });
       location.reload();
     }).catch(function(err) {
       console.log(err.responseText);

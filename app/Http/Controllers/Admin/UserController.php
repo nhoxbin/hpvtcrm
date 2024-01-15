@@ -16,7 +16,9 @@ class UserController extends Controller
 {
     public function index() {
         return Inertia::render('Admin/User/Index', [
-            'users' => User::with(['roles', 'created_by_user'])->withCount('customers')->paginate()
+            'users' => User::with(['roles', 'created_by_user'])->withCount('customers')->paginate(),
+            'roles' => Role::all()->pluck('name'),
+            'sessionMsg' => session('msg'),
         ]);
         /* $user = Auth::user();
         if ($user->isAdmin) {
@@ -28,14 +30,9 @@ class UserController extends Controller
     }
 
     public function store(StoreUserRequest $request) {
-        $user = User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'created_by_user_id' => Auth::id(),
-        ]);
-        $user->assignRole($request->role);
-        return response('Thêm mới nhân viên thành công.');
+        $user = User::create($request->safe()->except(['role']) + ['created_by_user_id' => Auth::id()]);
+        $user->assignRole($request->safe()->only(['role']));
+        return redirect()->route('admin.users.index')->with('msg', __('Thêm mới nhân viên thành công.'));
     }
 
     public function edit(User $user) {
