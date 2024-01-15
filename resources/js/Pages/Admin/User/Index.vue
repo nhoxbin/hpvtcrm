@@ -3,7 +3,7 @@
 
   <AuthenticatedLayout>
     <template #header>
-      Users
+      Thành viên
     </template>
 
     <div class="p-4 bg-white rounded-lg shadow-xs">
@@ -15,7 +15,7 @@
           </svg>
         </div> -->
 
-        <SecondaryButton>Thêm thành viên</SecondaryButton>
+        <SecondaryButton @click="isCreateUser = true">Thêm thành viên</SecondaryButton>
       </div>
 
       <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
@@ -44,7 +44,7 @@
                 <td class="px-4 py-3 text-sm">{{ user.created_by_user?.name }}</td>
                 <td class="px-4 py-3 text-sm">
                   <div class="inline-flex rounded-md shadow-sm" role="group">
-                    <button @click="isEditUser = true" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                    <button @click="editUser(user)" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
                       <svg class="h-3 w-3 text-red-500"  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />  <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />  <line x1="16" y1="5" x2="19" y2="8" /></svg>
                     </button>
                     <button @click="deleteUser(user.id)" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
@@ -62,10 +62,9 @@
         </div>
       </div>
 
-      <EditUserForm :is-edit-user="isEditUser" @close-edit-user-form="onCloseEditUserForm"></EditUserForm>
-      <!-- <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @close-delete-user-form="onCloseDeleteUserForm"></DeleteUserForm> -->
-      <!-- <CreateUserForm :is-create-user="isCreateUser"></CreateUserForm> -->
-      
+      <CreateUserForm :is-create-user="isCreateUser" @closeCreateUserForm="onCloseCreateUserForm(state)"></CreateUserForm>
+      <EditUserForm :is-edit-user="isEditUser" :user="currentUser" @close-edit-user-form="onCloseEditUserForm"></EditUserForm>
+      <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @close-delete-user-form="onCloseDeleteUserForm"></DeleteUserForm>
     </div>
   </AuthenticatedLayout>
 </template>
@@ -73,9 +72,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
+import CreateUserForm from './Partials/CreateUserForm.vue';
 import EditUserForm from './Partials/EditUserForm.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
-// import CreateUserForm from './Partials/CreateUserForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
@@ -85,6 +84,7 @@ const props = defineProps({
   users: Object
 });
 
+const currentUser = ref(null);
 const isEditUser = ref(false);
 const isDeleteUser = ref(false);
 const deleteUserId = ref(null);
@@ -124,7 +124,7 @@ const deleteUser = (user) => {
   }).catch(() => {
     /* ElMessage({
       type: 'info',
-      message: 'Delete canceled',
+      message: 'Delete cancelled',
     }) */
   })
 }
@@ -134,12 +134,22 @@ const deleteUser = (user) => {
   isAddingUser.value = !isEdit;
 }; */
 
+const onCloseCreateUserForm = (state) => {
+  isCreateUser.value = state;
+};
+
 const onCloseEditUserForm = () => {
   isEditUser.value = false;
 };
 
 const onCloseDeleteUserForm = () => {
   isDeleteUser.value = false;
+};
+
+const editUser = (user) => {
+  console.log('hihi');
+  currentUser.value = user;
+  isEditUser.value = true;
 };
 
 function deleteData(id) {
