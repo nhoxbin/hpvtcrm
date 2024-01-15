@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('expiry', 10);
             $table->string('product_id', 25);
             $table->string('price', 25);
-            $table->unsignedDecimal('priceNumber');
+            $table->unsignedDecimal('priceNumber', 12);
             $table->string('provider', 10);
             $table->string('title', 10);
             $table->timestamps();

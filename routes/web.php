@@ -44,7 +44,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::apiResource('transactions', TransactionController::class);
-    Route::get('1sell', OneSellController::class)->name('1sell.index');
     Route::get('products', ProductController::class)->name('products.index');
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
