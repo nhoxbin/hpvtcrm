@@ -28,6 +28,7 @@ class SyncProducts extends Command
     public function handle()
     {
         // $categories = OneSell::categories('mobifone');
+        Product::truncate();
         $insert = [];
         $page = 1;
         do {
@@ -47,7 +48,7 @@ class SyncProducts extends Command
                 ];
             }
             $page++;
-        } while ($page > $pageCount);
+        } while ($page <= $pageCount);
         Product::insert($insert);
     }
 }
