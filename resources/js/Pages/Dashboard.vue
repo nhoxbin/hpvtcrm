@@ -18,7 +18,7 @@ const one_sell = reactive({
     page: 1,
     limit: 10
 });
-const products = ref({});
+const products = reactive({});
 
 function getProducts() {
     axios.get(route('products.index', {
@@ -26,7 +26,7 @@ function getProducts() {
         page: one_sell.page,
         limit: one_sell.limit
     })).then((({data}) => {
-        products.value = data;
+        products = data;
     }));
 }
 getProducts();
