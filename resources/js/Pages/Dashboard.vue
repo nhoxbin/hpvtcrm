@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 
@@ -18,18 +18,17 @@ const one_sell = reactive({
     page: 1,
     limit: 10
 });
-const products = reactive({});
+const products = ref({});
 
-function getProducts() {
-    axios.get(route('products.index', {
-        search: one_sell.search,
-        page: one_sell.page,
-        limit: one_sell.limit
-    })).then((({data}) => {
-        products = data;
+onMounted(() => {
+    getProducts();
+});
+
+function getProducts(url = route('products.index', one_sell)) {
+    axios.get(url).then((({data}) => {
+        products.value = data;
     }));
 }
-getProducts();
 
 const workingData = reactive([]);
 
@@ -63,7 +62,7 @@ const regis = async (index) => {
         workingData[index]['transaction_id'] = data.data.id;
         workingData[index]['regisMsg'] = 'Nhập mã OTP để hoàn tất đăng ký';
     }).catch(({response}) => {
-        workingData[index]['regisMsg'] = response.data.message;
+        workingData[index]['regisMsg'] = response.data.msg;
     });
     workingData[index]['processing']['regis'] = false;
 }
@@ -81,7 +80,7 @@ const confirmOtp = async (index) => {
         router.reload({only: ['customers']});
     }).catch(({response}) => {
         workingData[index]['processing']['otp'] = false;
-        workingData[index]['regisMsg'] = response.data.message;
+        workingData[index]['regisMsg'] = response.data.msg;
     });
 }
 </script>
@@ -93,26 +92,6 @@ const confirmOtp = async (index) => {
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
         </template>
-
-        <!-- <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">You're logged in!</div>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">{{ products }}</div>
-            </div>
-        </div>
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">{{ products }}</div>
-            </div>
-        </div> -->
-        <!-- <div class="p-6 text-gray-900">{{ products }}</div> -->
 
         <div class="py-12">
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
@@ -193,7 +172,14 @@ const confirmOtp = async (index) => {
                                 </div>
                             </div>
                             <div class="px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase bg-gray-50 border-t sm:grid-cols-9">
-                                <pagination :links="products.links" />
+                                <div v-if="products.links && products.links.length > 3">
+                                    <div class="-mb-1 flex flex-wrap">
+                                        <template v-for="(link, key) in products.links">
+                                            <div v-if="link.url === null" :key="key" class="mr-1 mb-1 rounded border px-2 py-1 text-sm leading-4 text-gray-400" v-html="link.label" />
+                                            <button v-else :key="key + 1" class="mr-1 mb-1 rounded border px-2 py-1 text-sm leading-4 hover:bg-white focus:border-indigo-500 focus:text-indigo-500" :class="{ 'text-white bg-purple-600 hover:bg-purple-600': link.active }" @click.prevent="getProducts(link.url)" v-html="link.label"></button>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
                         </section>
                     <!-- </div> -->

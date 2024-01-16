@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\SalesStateEnum;
 use App\Models\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Customer\StoreCustomerRequest;
@@ -9,6 +10,7 @@ use App\Models\User;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -18,7 +20,7 @@ class CustomerController extends Controller
 {
     public function index() {
         return Inertia::render('Admin/Customer/Index', [
-            'users' => User::get(),
+            'users' => User::whereDoesntHave('roles', fn ($role) => $role->where('name', 'Super Admin'))->get(),
             'customers' => Customer::with(['user'])->paginate()
         ]);
     }
@@ -98,7 +100,8 @@ class CustomerController extends Controller
             }
             return response()->success('Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch(\Exception $e) {
-            return response()->error('Lỗi rồi!', 422, $e->getTrace());
+            Log::error($e);
+            return response()->error('Lỗi rồi!', 422);
         }
     }
 
@@ -129,9 +132,9 @@ class CustomerController extends Controller
         } else {
             // xóa từng trạng thái của sales
             $request->validate([
-                'sales_state' => 'exists:sales_states,id'
+                'sales_state' => 'required|in:'.implode(',', SalesStateEnum::values())
             ]);
-            Customer::whereIn('sales_stage_id', $request->command)->delete();
+            Customer::whereIn('sales_state', $request->command)->delete();
         }
         return response()->success('Xóa dữ liệu thành công.');
     }

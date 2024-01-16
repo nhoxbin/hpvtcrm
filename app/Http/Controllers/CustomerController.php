@@ -8,6 +8,7 @@ use App\Models\SaleStage;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class CustomerController extends Controller
 {
@@ -16,14 +17,12 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        $users = [];
-        if ($user->isAdmin) {
-            $users = User::all();
-        } elseif ($user->isManager) {
-            $users = $user->created_users;
+        if (Auth::user()->hasRole('Super Admin')) {
+            $customers = Customer::paginate();
+        } else {
+            $customers = Auth::user()->customers()->paginate();
         }
-    	return view('customer.index', compact('users'));
+        return Inertia::render('Customer/Index', compact('customers'));
     }
 
     /**

@@ -18,7 +18,7 @@
     <aside v-show="$page.props.showingMobileMenu" class="fixed inset-y-0 z-20 flex-shrink-0 w-64 mt-16 overflow-y-auto bg-white md:hidden">
       <div class="py-4 text-gray-500">
         <Link class="ml-6 text-lg font-bold text-gray-800" :href="route('dashboard')">
-        Windmill
+          HPVTCRM
       </Link>
         <ul class="mt-6">
           <li class="relative px-6 py-3">
@@ -43,11 +43,11 @@
                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
               </template>
-              Users
+              Thành viên
             </ResponsiveNavLink>
           </li>
 
-          <li class="relative px-6 py-3">
+          <!-- <li class="relative px-6 py-3">
             <ResponsiveNavLink :href="route('about')" :active="route().current('about')">
               <template #icon>
                 <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round"
@@ -58,7 +58,7 @@
               </template>
               About us
             </ResponsiveNavLink>
-          </li>
+          </li> -->
 
         <li class="relative px-6 py-3">
           <button @click="showingTwoLevelMenu = !showingTwoLevelMenu"

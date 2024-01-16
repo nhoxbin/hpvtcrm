@@ -60,8 +60,8 @@
       </div>
     </div>
 
-    <UploadCustomerForm :users="users" :is-upload-customer="isUploadCustomer" @close-upload-customer-form="onCloseUploadCustomerForm"></UploadCustomerForm>
-    <DeleteCustomerForm :users="users" :is-upload-customer="isUploadCustomer" @close-upload-customer-form="onCloseUploadCustomerForm"></DeleteCustomerForm>
+    <UploadCustomerForm :users="users" :is-upload-customer="isUploadCustomer" @closeUploadCustomerForm="onCloseUploadCustomerForm"></UploadCustomerForm>
+    <DeleteCustomerForm :users="users" :is-upload-customer="isUploadCustomer" @closeDeleteCustomerForm="onCloseUploadCustomerForm"></DeleteCustomerForm>
   </AuthenticatedLayout>
 </template>
 

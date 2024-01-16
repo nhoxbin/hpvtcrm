@@ -28,7 +28,7 @@
                       d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
               </svg>
             </template>
-            Users
+            Thành viên
           </NavLink>
         </li>
 
@@ -41,11 +41,11 @@
                       d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
               </svg>
             </template>
-            Customers
+            Khách hàng
           </NavLink>
         </li>
 
-        <li class="relative px-6 py-3">
+        <!-- <li class="relative px-6 py-3">
           <NavLink :href="route('admin.about')" :active="route().current('admin.about')">
             <template #icon>
               <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round"
@@ -81,7 +81,7 @@
                 <a class="w-full" href="#">Child menu</a>
               </li>
             </ul>
-        </li>
+        </li> -->
       </ul>
     </div>
   </aside>

@@ -45,15 +45,17 @@ class TransactionController extends Controller
         $regis = OneSell::regis('mobifone', $request->product['id'], $transaction->id, $request->phoneNumber, $request->regisMethod);
         if (!empty($regis)) {
             $transaction->message = $regis['message'];
-            if ($regis['result']) {
+            if (isset($regis['result']) && $regis['result']) {
                 $transaction->orderId = $regis['orderId'];
                 $transaction->result = $regis['result'];
                 $transaction->created_by_user_id = Auth::id();
+                $transaction->save();
+                return response()->success(__($regis['message']), $transaction->toArray());
             }
             $transaction->save();
-            return response()->success(__($regis['message']), $transaction->toArray());
+            return response()->error(__($regis['message']), 422);
         }
-        return response()->error('Không thể đăng ký gói!');
+        return response()->error('Không thể đăng ký gói!', 422);
     }
 
     /**
