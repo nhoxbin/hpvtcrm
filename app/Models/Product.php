@@ -9,6 +9,8 @@ class Product extends Model
 {
     use HasFactory;
 
+    public $incrementing = false;
+
     protected $casts = [
         'product' => 'json',
     ];
