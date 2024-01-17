@@ -10,13 +10,11 @@ use Inertia\Inertia;
 class ProductController extends Controller
 {
     public function __invoke(Request $request) {
-        /* $validated = $request->validate([
+        $validated = $request->validate([
             'search' => 'nullable|string',
-            'page' => 'nullable|integer',
-            'limit' => 'nullable|integer',
-        ]); */
+        ]);
         // $categories = OneSell::categories('mobifone');
-        $products = Product::paginate(12);
+        $products = Product::where('title', 'like', '%' . $validated['search'] . '%')->paginate(12);
         // return Inertia::render('Product/Index', compact('products'));
         return response($products);
     }
