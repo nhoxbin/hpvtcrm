@@ -18,9 +18,9 @@ class DashboardController extends Controller
     public function index()
     {
         if (Auth::user()->hasRole('Super Admin')) {
-            $customers = Customer::paginate();
+            $customers = Customer::with('user')->paginate();
         } else {
-            $customers = Auth::user()->customers()->paginate();
+            $customers = Auth::user()->customers()->with('user')->paginate();
         }
         return Inertia::render('Dashboard', compact('customers'));
     }
