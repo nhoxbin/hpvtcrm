@@ -37,6 +37,7 @@ import Modal from '@/Components/Admin/Modal.vue';
 import { ref } from 'vue';
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
   users: Array,
@@ -66,6 +67,7 @@ const uploadFile = () => {
       message: data.msg,
       type: 'success',
     });
+    router.reload({ only: ['customers'] });
     closeModal();
   }).catch(function({response}) {
     ElMessage({

@@ -34,6 +34,7 @@ class TransactionController extends Controller
      */
     public function store(StoreTransactionRequest $request)
     {
+        $msg = 'Không thể đăng ký gói!';
         $validated = $request->validated();
         if ($request->user()->hasRole('Super Admin')) {
             $customers = $request->user()->customers();
@@ -57,9 +58,9 @@ class TransactionController extends Controller
                 return response()->success(__($regis['message']), $transaction->toArray());
             }
             $transaction->save();
-            return response()->error(__($regis['message']), 422);
+            $msg = __($regis['message']);
         }
-        return response()->error('Không thể đăng ký gói!', 422);
+        return response()->error($msg, 422);
     }
 
     /**

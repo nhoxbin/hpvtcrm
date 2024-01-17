@@ -10,6 +10,7 @@ use App\Models\User;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -39,6 +40,7 @@ class CustomerController extends Controller
             $users = User::whereIn('id', $user_id)->get();
         }
 
+        DB::beginTransaction();
         try {
             $excel = $request->file('excel');
             $inputFileType = $excel->getClientOriginalExtension();
@@ -113,8 +115,10 @@ class CustomerController extends Controller
                     }
                 }
             }
+            DB::commit();
             return response()->success('Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch(\Exception $e) {
+            DB::rollBack();
             Log::error($e);
             return response()->error('Lỗi rồi!', 422);
         }

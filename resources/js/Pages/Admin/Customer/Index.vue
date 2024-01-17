@@ -68,7 +68,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
-import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import UploadCustomerForm from './Partials/UploadCustomerForm.vue';
@@ -114,7 +113,6 @@ const exportCustomer = () => {
       message: data.msg,
       type: 'success',
     });
-    router.reload({ only: ['customers'] })
   }).catch(function(err) {
     console.log(err);
   });
