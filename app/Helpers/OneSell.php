@@ -9,7 +9,7 @@ class OneSell
     private array $providers = ['mobifone', 'viettel', 'vinaphone'];
     private array $regisMethods = ['otp', 'sms'];
 
-    public function products(string $provider, int $category_id, string $search = null, int $page = 1, int $limit = 10)
+    public function products(string $provider, int $category_id = null, string $search = null, int $page = 1, int $limit = 10)
     {
         if (!in_array($provider, $this->providers)) return null;
 

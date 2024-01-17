@@ -32,23 +32,23 @@ class SyncProducts extends Command
         $insert = [];
         $page = 1;
         do {
-            $products = OneSell::products('mobifone', 51407, null, $page, 10);
-            $pageCount = $products['pagination']['pageCount'];
+            $products = OneSell::products(provider: 'mobifone', page: $page);
             foreach ($products['data'] as $product) {
                 $insert[] = [
+                    'id' => $product['id'],
                     'description' => $product['description'],
                     'expiry' => $product['expiry'],
-                    'product_id' => $product['id'],
                     'price' => $product['price'],
                     'priceNumber' => $product['priceNumber'],
                     'provider' => $product['provider'],
                     'title' => $product['title'],
+                    'product' => $product,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
             }
             $page++;
-        } while ($page <= $pageCount);
+        } while ($page <= $products['pagination']['pageCount']);
         Product::insert($insert);
     }
 }
