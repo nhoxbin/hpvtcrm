@@ -34,18 +34,10 @@ class SyncProducts extends Command
         do {
             $products = OneSell::products(provider: 'mobifone', page: $page);
             foreach ($products['data'] as $product) {
-                $insert[] = [
-                    'id' => $product['id'],
-                    'description' => $product['description'],
-                    'expiry' => $product['expiry'],
-                    'price' => $product['price'],
-                    'priceNumber' => $product['priceNumber'],
-                    'provider' => $product['provider'],
-                    'title' => $product['title'],
-                    'product' => $product,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                $product['product'] = json_encode($product);
+                $product['created_at'] = now();
+                $product['updated_at'] = now();
+                $insert[] = $product;
             }
             $page++;
         } while ($page <= $products['pagination']['pageCount']);
