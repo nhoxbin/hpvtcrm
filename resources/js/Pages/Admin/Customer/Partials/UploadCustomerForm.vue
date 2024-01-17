@@ -33,11 +33,7 @@
 </template>
 
 <script setup>
-import InputError from '@/Components/Admin/InputError.vue';
-import InputLabel from '@/Components/Admin/InputLabel.vue';
 import Modal from '@/Components/Admin/Modal.vue';
-import TextInput from '@/Components/Admin/TextInput.vue';
-import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
@@ -50,14 +46,6 @@ const props = defineProps({
 const selected_users = ref([]);
 const crmFile = ref(null);
 
-/* const deleteUser = () => {
-  form.delete(route('profile.destroy'), {
-    preserveScroll: true,
-    onSuccess: () => closeModal(),
-    // onError: () => passwordInput.value.focus(),
-    onFinish: () => form.reset(),
-  });
-}; */
 const emit = defineEmits(['closeUploadCustomerForm']);
 
 const closeModal = () => {
@@ -79,8 +67,11 @@ const uploadFile = () => {
       type: 'success',
     });
     closeModal();
-  }).catch(function(resp) {
-    alert(resp.responseText);
+  }).catch(function({response}) {
+    ElMessage({
+      message: response.data.message,
+      type: 'error',
+    });
   });
 }
 </script>

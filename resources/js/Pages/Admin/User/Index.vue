@@ -79,7 +79,7 @@ import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import 'element-plus/es/components/message/style/css';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 const props = defineProps({
   sessionMsg: String,

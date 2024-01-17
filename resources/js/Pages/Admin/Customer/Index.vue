@@ -73,7 +73,7 @@ import { ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import UploadCustomerForm from './Partials/UploadCustomerForm.vue';
 import 'element-plus/es/components/message/style/css'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 
@@ -90,33 +90,11 @@ const customerId = ref(null);
 const isCreateUser = ref(false);
 const passwordInput = ref(null);
 
-/* const form = useForm({
-  'name': '',
-  'username': '',
-  'password': '',
-}); */
-
 const confirmUserDeletion = () => {
   isEditingUser.value = true;
 
   // nextTick(() => passwordInput.value.focus());
 };
-
-const deleteUser = (user_id) => {
-  isDeleteUser.value = true;
-  customerId.value = user_id;
-  /* form.delete(route('profile.destroy'), {
-    preserveScroll: true,
-    onSuccess: () => closeModal(),
-    // onError: () => passwordInput.value.focus(),
-    onFinish: () => form.reset(),
-  }); */
-};
-
-/* const editingUser = (isEdit) => {
-  isEditingUser.value = isEdit;
-  isAddingUser.value = !isEdit;
-}; */
 
 const onCloseUploadCustomerForm = () => {
   isUploadCustomer.value = false;

@@ -59,16 +59,22 @@ class CustomerController extends Controller
                 $customer->phone = $row[0];
                 $customer->data = $row[1];
 
-                $registered_at = $row[2];
-                $expired_at = $row[3];
-                if (is_int($row[2])) {
-                    $registered_at = Date::excelToDateTimeObject($row[2]);
+                // registered_at
+                $registered_at = DateTime::createFromFormat('d/m/Y', $row[2]);
+                if (!$registered_at) {
+                    if (is_numeric($row[2])) {
+                        $registered_at = Date::excelToDateTimeObject($row[2]);
+                    }
                 }
-                if (is_int($row[3])) {
-                    $expired_at = Date::excelToDateTimeObject($row[3]);
+                // expired_at
+                $expired_at = DateTime::createFromFormat('d/m/Y', $row[3]);
+                if (!$expired_at) {
+                    if (is_numeric($row[3])) {
+                        $expired_at = Date::excelToDateTimeObject($row[3]);
+                    }
                 }
-                $customer->registered_at = $registered_at;
-                $customer->expired_at = $expired_at;
+                $customer->registered_at = $registered_at->format('Y-m-d H:i:s');
+                $customer->expired_at = $expired_at->format('Y-m-d H:i:s');
                 $available_data = [];
                 for ($i=4; $i < 11; $i++) { 
                     if (!empty($row[$i])) {
