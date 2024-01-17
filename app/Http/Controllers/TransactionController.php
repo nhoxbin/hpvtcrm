@@ -40,6 +40,10 @@ class TransactionController extends Controller
         } else {
             $customers = Customer::all();
         }
+        /* $transaction = $customers->orWhere([
+            'phone' => $validated['phoneNumber'],
+            'phone' => str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT)
+        ])->firstOrCreate(['phone' => str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT)])->transactions()->create(['product' => $validated['product']]); */
         $customer = $customers->where('phone', str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT))->orWhere('phone', $validated['phoneNumber'])->firstOrFail();
         $transaction = $customer->transactions()->create(['product' => $validated['product']]);
         $regis = OneSell::regis('mobifone', $request->product['id'], $transaction->id, $request->phoneNumber, $request->regisMethod);

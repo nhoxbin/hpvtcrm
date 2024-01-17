@@ -15,9 +15,9 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('phone', 12);
-            $table->string('data', 100);
-            $table->dateTime('registered_at');
-            $table->dateTime('expired_at');
+            $table->string('data', 100)->nullable();
+            $table->dateTime('registered_at')->nullable();
+            $table->dateTime('expired_at')->nullable();
             $table->text('available_data')->nullable();
             $table->string('sales_note')->nullable();
             $table->string('admin_note')->nullable();
