@@ -215,10 +215,10 @@ const confirmOtp = async (index) => {
                         <section class="max-w-4xl sm:px-2 lg:px-3">
                             <div class="grid grid-cols-1 md:grid-cols-2">
                                 <!-- <div class="relative items-center block max-w-sm p-6 bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-gray-700"></div> -->
-                                <div :class="{'pointer-events-none': workingData[index]['processing']['regis'] || workingData[index]['processing']['otp']}" class="relative items-center block max-w-sm p-2 bg-white border border-gray-100 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 m-2"
-                                    v-for="(product, index) in workingData" :key="product.product_id">
+                                <div :class="{'pointer-events-none': data['processing']['regis'] || data['processing']['otp']}" class="relative items-center block max-w-sm p-2 bg-white border border-gray-100 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 m-2"
+                                    v-for="(data, index) in workingData" :key="data.product.id">
                                     <div class="flex items-center justify-between rounded-t dark:border-gray-600">
-                                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Gói cước {{ workingData[index].product.title }}</h5>
+                                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Gói cước {{ data.product.title }}</h5>
                                         <button type="button" @click="workingData.splice(index, 1)" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
                                             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
@@ -226,29 +226,29 @@ const confirmOtp = async (index) => {
                                             <span class="sr-only">Close data</span>
                                         </button>
                                     </div>
-                                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ workingData[index].product.price }}</p>
+                                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ data.product.price }}</p>
                                     <p class="mb-3 font-normal text-gray-700 dark:text-gray-400"
-                                        v-if="workingData[index]['transaction_id'].length">Số điện thoại: {{ workingData[index]['phoneNumber'] }}</p>
+                                        v-if="data['transaction_id'].length">Số điện thoại: {{ data['phoneNumber'] }}</p>
                                     <div class="relative mb-4 flex flex-wrap items-stretch">
                                         <input
                                             type="text"
                                             class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
                                             placeholder="Số thuê bao"
                                             aria-label="Số thuê bao"
-                                            v-model="workingData[index]['phoneNumber']"
-                                            v-if="!workingData[index]['transaction_id'].length" />
+                                            v-model="data['phoneNumber']"
+                                            v-if="!data['transaction_id'].length" />
                                         <input
                                             type="text"
                                             class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
                                             placeholder="Nhập OTP"
                                             aria-label="Nhập OTP"
-                                            v-model="workingData[index]['otp']"
+                                            v-model="data['otp']"
                                             v-else />
                                         <button
                                             class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                                             data-te-ripple-init
                                             type="button"
-                                            v-if="!workingData[index]['transaction_id'].length"
+                                            v-if="!data['transaction_id'].length"
                                             @click="regis(index)">
                                             <svg class="h-8 w-8 text-red-500"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <line x1="22" y1="2" x2="11" y2="13" />  <polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
                                         </button>
@@ -261,7 +261,7 @@ const confirmOtp = async (index) => {
                                             <svg class="h-8 w-8 text-red-500"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <line x1="22" y1="2" x2="11" y2="13" />  <polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
                                         </button>
                                     </div>
-                                    <div v-if="!workingData[index]['transaction_id'].length">
+                                    <div v-if="!data['transaction_id'].length">
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm font-bold text-gray-900 dark:text-white">Hình thức mua</span>
                                         </div>
@@ -271,17 +271,17 @@ const confirmOtp = async (index) => {
                                                 <input
                                                     class="relative float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:border-neutral-600 dark:checked:border-primary dark:checked:after:border-primary dark:checked:after:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:border-primary dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
                                                     type="radio"
-                                                    v-model="workingData[index]['regisMethod']"
-                                                    :name="'regisMethod'+method.name+workingData[index].product.product_id"
+                                                    v-model="data['regisMethod']"
+                                                    :name="'regisMethod-' + data.regisMethod + '-' + index + '-' + data.product.id"
                                                     :value="method.name"
                                                     :checked="method.checked"
                                                     :disabled="method.disable" />
-                                                <label class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer" :for="'regisMethod'+method.name+product.product_id">{{ method.name }}</label>
+                                                <label class="mt-px inline-block pl-[0.15rem] hover:cursor-pointer" :for="'regisMethod-' + data.regisMethod + '-' + index + '-' + data.product.id">{{ method.name }}</label>
                                             </div>
                                         </div>
                                     </div>
-                                    <div v-if="workingData[index]['regisMsg'].length">{{ workingData[index]['regisMsg'] }}</div>
-                                    <div v-if="workingData[index]['processing']['regis'] || workingData[index]['processing']['otp']" role="status" class="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2">
+                                    <div v-if="data['regisMsg'].length">{{ data['regisMsg'] }}</div>
+                                    <div v-if="data['processing']['regis'] || data['processing']['otp']" role="status" class="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2">
                                         <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/></svg>
                                         <span class="sr-only">Loading...</span>
                                     </div>
