@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Facades\OneSell;
+use App\Enums\SalesStateEnum;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +22,8 @@ class DashboardController extends Controller
         } else {
             $customers = Auth::user()->customers()->with('user')->paginate();
         }
-        return Inertia::render('Dashboard', compact('customers'));
+        $sales_states = SalesStateEnum::trans();
+        $sessionMsg = session('msg');
+        return Inertia::render('Dashboard', compact('customers', 'sales_states', 'sessionMsg'));
     }
 }

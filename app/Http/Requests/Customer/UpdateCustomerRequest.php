@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Admin\Customer;
+namespace App\Http\Requests\Customer;
 
+use App\Enums\SalesStateEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
 use Spatie\Permission\Models\Role;
@@ -24,10 +25,8 @@ class UpdateCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phoneNumber' => 'required|numeric',
-            'productId' => 'required|numeric',
-            'regisMethod' => 'required|in:otp,sms',
-            'product' => 'required|array',
+            'sales_state' => ['nullable', 'string', 'in:' . implode(',', SalesStateEnum::names())],
+            'description' => 'nullable|string',
         ];
     }
 }

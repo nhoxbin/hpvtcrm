@@ -61,11 +61,10 @@
           <pagination :links="users.links" />
         </div>
       </div>
-
-      <CreateUserForm :is-create-user="isCreateUser" :roles="roles" @closeCreateUserForm="onCloseCreateUserForm(state)"></CreateUserForm>
-      <EditUserForm :is-edit-user="isEditUser" :roles="roles" :user="currentUser" @closeCreateUserForm="onCloseEditUserForm(state)"></EditUserForm>
-      <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @closeDeleteUserForm="onCloseDeleteUserForm(state)"></DeleteUserForm>
     </div>
+    <CreateUserForm :is-create-user="isCreateUser" :roles="roles" @closeCreateUserForm="onCloseCreateUserForm(state)"></CreateUserForm>
+    <EditUserForm :is-edit-user="isEditUser" :roles="roles" :user="currentUser" @closeCreateUserForm="onCloseEditUserForm(state)"></EditUserForm>
+    <DeleteUserForm :is-delete-user="isDeleteUser" :user="deleteUserId" @closeDeleteUserForm="onCloseDeleteUserForm(state)"></DeleteUserForm>
   </AuthenticatedLayout>
 </template>
 

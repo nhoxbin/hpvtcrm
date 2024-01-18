@@ -1,96 +1,3 @@
-<script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Pagination from '@/Components/Admin/Pagination.vue';
-import { Head, router } from '@inertiajs/vue3';
-import { onMounted, reactive, ref } from 'vue';
-import 'element-plus/es/components/message/style/css'
-import { ElMessage } from 'element-plus'
-import { debounce } from 'lodash';
-
-defineProps({
-    customers: {
-        type: Object,
-        required: true,
-    },
-});
-
-const one_sell = reactive({
-    search: '',
-    page: 1,
-    limit: 10
-});
-const products = ref({});
-
-const onSearching = debounce((e) => {
-    one_sell.search = e.target.value;
-    getProducts();
-}, 500)
-
-onMounted(() => {
-    getProducts();
-});
-
-function getProducts(url = route('products.index', one_sell)) {
-    axios.get(url).then((({data}) => {
-        products.value = data;
-    }));
-}
-
-const workingData = reactive([]);
-
-const regisMethods = reactive([
-    {name: 'otp', checked: true, disable: false, show: true},
-    {name: 'sms', checked: false, disable: true, show: false},
-]);
-
-const onClickData = async (product) => {
-    workingData.push({
-        product: product,
-        phoneNumber: '',
-        otp: '',
-        regisMsg: '',
-        transaction_id: '',
-        regisMethod: 'otp',
-        processing: {
-            regis: false,
-            otp: false,
-        },
-    });
-}
-
-const regis = async (index) => {
-    workingData[index]['processing']['regis'] = true;
-    await axios.post(route('transactions.store'), {
-        product: workingData[index]['product'],
-        regisMethod: workingData[index]['regisMethod'],
-        phoneNumber: workingData[index]['phoneNumber'],
-    }).then(({data}) => {
-        workingData[index]['transaction_id'] = data.data.id;
-        workingData[index]['regisMsg'] = 'Nhập mã OTP để hoàn tất đăng ký';
-    }).catch(({response}) => {
-        workingData[index]['regisMsg'] = response.data.msg;
-    });
-    workingData[index]['processing']['regis'] = false;
-}
-
-const confirmOtp = async (index) => {
-    workingData[index]['processing']['otp'] = true;
-    await axios.put(route('transactions.update', {transaction: workingData[index]['transaction_id']}),
-        {otp: workingData[index]['otp']}
-    ).then(({data}) => {
-        ElMessage({
-            message: data.msg,
-            type: 'success',
-        });
-        workingData.splice(index, 1);
-        router.reload({only: ['customers']});
-    }).catch(({response}) => {
-        workingData[index]['regisMsg'] = response.data.msg;
-        workingData[index]['processing']['otp'] = false;
-    });
-}
-</script>
-
 <template>
     <Head title="Dashboard" />
 
@@ -116,6 +23,7 @@ const confirmOtp = async (index) => {
                                         <th class="px-4 py-3">Trạng thái</th>
                                         <th class="px-4 py-3">Sales Ghi chú</th>
                                         <th class="px-4 py-3">Admin Ghi chú</th>
+                                        <th class="px-4 py-3">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y">
@@ -129,12 +37,16 @@ const confirmOtp = async (index) => {
                                         <td class="px-4 py-3 text-sm">{{ customer.state }}</td>
                                         <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
                                         <td class="px-4 py-3 text-sm">{{ customer.admin_note }}</td>
-                                        <!-- <td>
-                                        <div class="btn-group">
-                                            <button class="btn btn-info" @click="isEditUser = true">Sửa</button>
-                                            <button class="btn btn-danger" @click="deleteUser(customer.id)">Xóa</button>
-                                        </div>
-                                        </td> -->
+                                        <td class="px-4 py-3 text-sm">
+                                            <button @click="editCustomer(customer)" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                                                <svg class="h-3 w-3 text-red-500"  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />  <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />  <line x1="16" y1="5" x2="19" y2="8" /></svg>
+                                            </button>
+                                            <!-- <div class="inline-flex rounded-md shadow-sm" role="group">
+                                                <button @click="deleteUser(user.id)" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                                                    <svg class="h-3 w-3 text-red-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <line x1="4" y1="7" x2="20" y2="7" />  <line x1="10" y1="11" x2="10" y2="17" />  <line x1="14" y1="11" x2="14" y2="17" />  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                                </button>
+                                            </div> -->
+                                        </td>
                                     </tr>
                                     <tr v-if="!customers.data.length">
                                         <td class="px-4 py-3 text-sm text-center" colspan="9">Không có dữ liệu</td>
@@ -292,5 +204,124 @@ const confirmOtp = async (index) => {
                 </div>
             </section>
         </div>
+
+        <EditCustomerForm :customer="currentCustomer" :sales_states="sales_states" :isEditCustomer="isEditCustomer" @closeEditCustomerForm="onCloseEditCustomerForm(state)" />
     </AuthenticatedLayout>
 </template>
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Pagination from '@/Components/Admin/Pagination.vue';
+import EditCustomerForm from './Customer/Partials/EditCustomerForm.vue';
+import { Head, router } from '@inertiajs/vue3';
+import { onMounted, reactive, ref } from 'vue';
+import 'element-plus/es/components/message/style/css'
+import { ElMessage } from 'element-plus'
+import { debounce } from 'lodash';
+
+const props = defineProps({
+    sessionMsg: String,
+    sales_states: {
+        type: Object,
+        required: true,
+    },
+    customers: {
+        type: Object,
+        required: true,
+    },
+});
+
+if (props.sessionMsg) {
+  ElMessage({
+    message: props.sessionMsg,
+    type: 'success',
+  });
+}
+
+const one_sell = reactive({
+    search: '',
+    page: 1,
+    limit: 10
+});
+const products = ref({});
+
+const onSearching = debounce((e) => {
+    one_sell.search = e.target.value;
+    getProducts();
+}, 500)
+
+onMounted(() => {
+    getProducts();
+});
+
+function getProducts(url = route('products.index', one_sell)) {
+    axios.get(url).then((({data}) => {
+        products.value = data;
+    }));
+}
+
+const workingData = reactive([]);
+
+const regisMethods = reactive([
+    {name: 'otp', checked: true, disable: false, show: true},
+    {name: 'sms', checked: false, disable: true, show: false},
+]);
+
+const onClickData = async (product) => {
+    workingData.push({
+        product: product,
+        phoneNumber: '',
+        otp: '',
+        regisMsg: '',
+        transaction_id: '',
+        regisMethod: 'otp',
+        processing: {
+            regis: false,
+            otp: false,
+        },
+    });
+}
+
+const regis = async (index) => {
+    workingData[index]['processing']['regis'] = true;
+    await axios.post(route('transactions.store'), {
+        product: workingData[index]['product'],
+        regisMethod: workingData[index]['regisMethod'],
+        phoneNumber: workingData[index]['phoneNumber'],
+    }).then(({data}) => {
+        workingData[index]['transaction_id'] = data.data.id;
+        workingData[index]['regisMsg'] = 'Nhập mã OTP để hoàn tất đăng ký';
+    }).catch(({response}) => {
+        workingData[index]['regisMsg'] = response.data.msg;
+    });
+    workingData[index]['processing']['regis'] = false;
+}
+
+const confirmOtp = async (index) => {
+    workingData[index]['processing']['otp'] = true;
+    await axios.put(route('transactions.update', {transaction: workingData[index]['transaction_id']}),
+        {otp: workingData[index]['otp']}
+    ).then(({data}) => {
+        ElMessage({
+            message: data.msg,
+            type: 'success',
+        });
+        workingData.splice(index, 1);
+        router.reload({only: ['customers']});
+    }).catch(({response}) => {
+        workingData[index]['regisMsg'] = response.data.msg;
+        workingData[index]['processing']['otp'] = false;
+    });
+}
+
+const currentCustomer = ref({});
+const isEditCustomer = ref(false);
+const editCustomer = (customer) => {
+    currentCustomer.value = customer;
+    isEditCustomer.value = true;
+}
+const onCloseEditCustomerForm = (state) => {
+    currentCustomer.value = null;
+    isEditCustomer.value = state;
+}
+
+</script>

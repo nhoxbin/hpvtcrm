@@ -24,4 +24,14 @@ enum SalesStateEnum: string implements EnumToArrayInterface
     {
         return array_column(self::cases(), 'value');
     }
+
+    public static function trans(): array
+    {
+        $arr = self::cases();
+        $newArr = [];
+        foreach ($arr as $e) {
+            $newArr[$e->name] = __('sales_state.' . $e->value);
+        }
+        return $newArr;
+    }
 }

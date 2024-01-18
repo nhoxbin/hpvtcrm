@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Admin\Customer\UpdateCustomerRequest;
+use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Models\Customer;
 use App\Models\SaleStage;
 use App\Models\User;
@@ -62,14 +62,11 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $customer->sales_state_id = $request->sales_state;
-    	$customer->description = $request->description;
-    	if ($request->user()->hasRole('Super Admin')) {
-	    	$customer->sales_admin_noted = $request->sales_admin_noted;
-    	}
+        $customer->sales_state = $request->sales_state;
+    	$customer->sales_note = $request->sales_note;
     	$customer->save();
 
-    	return response()->success('Lưu thành công.');
+        return redirect()->route('dashboard')->with('msg', 'Lưu thành công.');
     }
 
     /**
