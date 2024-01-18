@@ -85,8 +85,8 @@ const confirmOtp = async (index) => {
         workingData.splice(index, 1);
         router.reload({only: ['customers']});
     }).catch(({response}) => {
-        workingData[index]['processing']['otp'] = false;
         workingData[index]['regisMsg'] = response.data.msg;
+        workingData[index]['processing']['otp'] = false;
     });
 }
 </script>
