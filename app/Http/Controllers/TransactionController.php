@@ -37,16 +37,17 @@ class TransactionController extends Controller
         $msg = 'Không thể đăng ký gói!';
         $validated = $request->validated();
         if ($request->user()->hasRole('Super Admin')) {
-            $customers = $request->user()->customers();
+            $customers = new Customer();
         } else {
-            $customers = Customer::all();
+            $customers = $request->user()->customers();
         }
-        /* $transaction = $customers->orWhere([
+        $customer = $customers->orWhere([
             'phone' => $validated['phoneNumber'],
             'phone' => str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT)
-        ])->firstOrCreate(['phone' => str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT)])->transactions()->create(['product' => $validated['product']]); */
-        $customer = $customers->where('phone', str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT))->orWhere('phone', $validated['phoneNumber'])->firstOrFail();
-        $transaction = $customer->transactions()->create(['product' => $validated['product']]);
+        ])->firstOrCreate([
+            'phone' => str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT),
+        ], ['user_id' => Auth::id()]);
+        $transaction = $customer->transactions()->create(['customer_id' => $customer->id, 'product' => $validated['product']]);;
         $regis = OneSell::regis('mobifone', $request->product['id'], $transaction->id, $request->phoneNumber, $request->regisMethod);
         if (!empty($regis)) {
             $transaction->message = $regis['message'];

@@ -29,7 +29,7 @@ class DatabaseServiceProvider extends ServiceProvider
     public function boot()
     {
         // log db queries
-        /* if (config('app.debug'))
+        if (config('app.debug'))
         {
             $logFile = storage_path('logs/db/laravel.log');
             $custom_log = new Logger('log');
@@ -49,7 +49,7 @@ class DatabaseServiceProvider extends ServiceProvider
                     "time" => $query->time,
                 ]);
             });
-        } */
+        }
 
         // notify when the query took too long DB::whenQueryingForLongerThan(miliseconds, callback)
         /* DB::whenQueryingForLongerThan(500, function (Connection $connection, QueryExecuted $event) {

@@ -58,6 +58,14 @@ class Handler extends ExceptionHandler
         $response['trace'] = $e->getTraceAsString();
         Log::error($response);
 
+        if ($this->shouldReturnJson($request, $e)) {
+            if (config('app.debug')) {
+                return response()->error($e->getMessage());
+            } else {
+                return response()->error('Có lỗi xảy ra!');
+            }
+        }
+
         return match (true) {
             $e instanceof HttpResponseException => $e->getResponse(),
             $e instanceof AuthenticationException => $this->unauthenticated($request, $e),
