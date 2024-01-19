@@ -8,7 +8,6 @@ use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
@@ -42,19 +41,18 @@ class TransactionController extends Controller
             $customers = $request->user()->customers();
         }
         $customer = $customers->orWhere([
-            'phone' => $validated['phoneNumber'],
-            'phone' => str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT)
+            ['phone', $validated['phoneNumber']],
+            ['phone', str_pad($validated['phoneNumber'], 10, '0', STR_PAD_LEFT)]
         ])->firstOrCreate([
-            'phone' => str_pad($validated['phoneNumber'], 10, "0", STR_PAD_LEFT),
-        ], ['user_id' => Auth::id()]);
-        $transaction = $customer->transactions()->create(['customer_id' => $customer->id, 'product' => $validated['product']]);;
+            'phone' => $validated['phoneNumber'],
+        ], ['user_id' => $request->user()->id]);
+        $transaction = $customer->transactions()->create(['product' => $validated['product'], 'created_by_user_id' => $request->user()->id]);
         $regis = OneSell::regis('mobifone', $request->product['id'], $transaction->id, $request->phoneNumber, $request->regisMethod);
         if (!empty($regis)) {
             $transaction->message = $regis['message'];
             if (isset($regis['result']) && $regis['result']) {
                 $transaction->orderId = $regis['orderId'];
                 $transaction->result = $regis['result'];
-                $transaction->created_by_user_id = Auth::id();
                 $transaction->save();
                 return response()->success(__($regis['message']), $transaction->toArray());
             }
@@ -85,11 +83,10 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
+        $status = 'error';
         $confirmOtp = OneSell::confirmOtp('mobifone', $transaction->orderId, $request->otp);
         if (!empty($confirmOtp)) {
-            $transaction->result = $confirmOtp['result'];
             $transaction->message = $confirmOtp['message'];
-            $transaction->save();
 
             preg_match('/(\d+)(.+)/', $transaction->product['expiry'], $expiry);
             $date_types = [
@@ -97,16 +94,23 @@ class TransactionController extends Controller
                 'T' => 'Month'
             ];
 
-            if (isset($confirmOtp['result']) && $confirmOtp['result']) {
-                $transaction->customer->sales_state = SalesStateEnum::Registered;
-                $transaction->customer->data = $transaction->product['title'];
-                $transaction->customer->registered_at = now();
-                $transaction->customer->expired_at = now()->{'add' . $date_types[$expiry[2]]}($expiry[1]);
-                $transaction->customer->save();
+            if (isset($confirmOtp['result'])) {
+                $transaction->result = $confirmOtp['result'];
+                if ($confirmOtp['result']) {
+                    $transaction->customer->sales_state = SalesStateEnum::Registered;
+                    $transaction->customer->data = $transaction->product['title'];
+                    $transaction->customer->registered_at = now();
+                    $transaction->customer->expired_at = now()->{'add' . $date_types[$expiry[2]]}($expiry[1]);
+                    $transaction->customer->save();
+                    // return response()->success($confirmOtp['message']);
+                    $status = 'success';
+                } else {
+                    // return response()->error($confirmOtp['message']);
+                }
             }
-            return response()->success($confirmOtp['message']);
+            $transaction->save();
         }
-        return response()->error('Không thể xác minh OTP!');
+        return response()->{$status}(isset($confirmOtp['message']) ? $confirmOtp['message'] : 'Không thể xác minh OTP!', 422);
     }
 
     /**

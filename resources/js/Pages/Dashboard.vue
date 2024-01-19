@@ -205,7 +205,7 @@
             </section>
         </div>
 
-        <EditCustomerForm :customer="currentCustomer" :sales_states="sales_states" :isEditCustomer="isEditCustomer" @closeEditCustomerForm="onCloseEditCustomerForm(state)" />
+        <EditCustomerForm v-if="isEditCustomer" :customer="currentCustomer" :sales_states="sales_states" :isEditCustomer="isEditCustomer" @closeEditCustomerForm="onCloseEditCustomerForm(state)" />
     </AuthenticatedLayout>
 </template>
 <script setup>
@@ -320,7 +320,6 @@ const editCustomer = (customer) => {
     isEditCustomer.value = true;
 }
 const onCloseEditCustomerForm = (state) => {
-    currentCustomer.value = null;
     isEditCustomer.value = state;
 }
 

@@ -20,13 +20,6 @@ class UserController extends Controller
             'roles' => Role::all()->pluck('name'),
             'sessionMsg' => session('msg'),
         ]);
-        /* $user = Auth::user();
-        if ($user->isAdmin) {
-            $users = User::all();
-        } elseif ($user->isManager) {
-            $users = $user->created_users;
-        }
-        return view('admin.user', compact('users')); */
     }
 
     public function store(StoreUserRequest $request) {
@@ -36,12 +29,6 @@ class UserController extends Controller
     }
 
     public function edit(User $user) {
-        /* return Inertia::render('Tweets/Show')
-            ->with([
-                'user' => $user,
-                // 'tweet' => $tweet,
-            ])
-            ->baseRoute('users.index', $user); */
         return response($user);
     }
 

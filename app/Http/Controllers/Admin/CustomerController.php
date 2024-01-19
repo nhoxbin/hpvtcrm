@@ -58,7 +58,7 @@ class CustomerController extends Controller
                 if ($key == 0) continue;
                 
                 $customer = new Customer;
-                $customer->phone = $row[0];
+                $customer->phone = str_pad($row[0], 10, '0', STR_PAD_LEFT);
                 $customer->data = $row[1];
 
                 // registered_at

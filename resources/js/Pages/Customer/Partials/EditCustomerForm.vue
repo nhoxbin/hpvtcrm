@@ -27,7 +27,7 @@
             </div>
             <div class="mb-5">
               <label for="sales_note" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ghi chú</label>
-              <textarea type="text" id="sales_note" v-model="customer.sales_note" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <textarea type="text" id="sales_note" v-model="form.sales_note" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
               </textarea>
               <InputError :message="form.errors.sales_note" class="mt-2" />
             </div>
@@ -42,22 +42,20 @@
 <script setup>
 import InputError from '@/Components/Admin/InputError.vue';
 import Modal from '@/Components/Admin/Modal.vue';
-import { router, useForm } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-  customer: Object,
+  customer: {
+    required: true,
+    type: Object,
+  },
   sales_states: Object,
   isEditCustomer: Boolean,
 });
 
 const form = useForm({
-  sales_state: '',
-  sales_note: '',
-});
-
-onMounted(() => {
-  form.sales_note = props.customer.sales_note;
+  sales_state: props.customer.sales_state || '',
+  sales_note: props.customer.sales_note,
 });
 
 const emit = defineEmits(['closeEditCustomerForm']);
@@ -66,8 +64,6 @@ const closeModal = () => {
   emit('closeEditCustomerForm', false);
 
   form.reset();
-
-  // router.reload
 };
 
 const submit = (customer) => {
