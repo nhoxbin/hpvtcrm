@@ -41,6 +41,7 @@ import Modal from '@/Components/Admin/Modal.vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
 import { reactive } from 'vue';
+import InputError from '@/Components/Admin/InputError.vue';
 
 const props = defineProps({
   isDeleteCustomer: Boolean,

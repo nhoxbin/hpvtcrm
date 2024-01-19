@@ -129,28 +129,33 @@ class CustomerController extends Controller
     }
 
     public function destroy(Request $request, Customer $customer) {
-        // method post
-        if (in_array('duplicate', $request->command)) {
-            // xóa trùng data
-            $customers = Customer::selectRaw('MIN(id) as id, cmnd')
-                ->groupBy('cmnd')
-                ->havingRaw('COUNT(*) > 1')
-                ->get();
-            foreach ($customers as $customer) {
-                Customer::where([
-                    ['cmnd', $customer->cmnd],
-                    ['id', '<>', $customer->id]
-                ])->delete();
-            }
-        } elseif (in_array('all', $request->command)) {
-            // xóa hết
-            Customer::truncate();
-        } else {
-            // xóa từng trạng thái của sales
-            $request->validate([
-                'sales_state' => 'required|in:'.implode(',', SalesStateEnum::values())
-            ]);
-            Customer::whereIn('sales_state', $request->command)->delete();
+        if ($customer) {
+            $customer->delete();
+            return response()->success('Xóa dữ liệu thành công.');
+        }
+
+        switch ($request->command) {
+            case 'duplicate':
+                $customers = Customer::selectRaw('MIN(id) as id, cmnd')
+                    ->groupBy('cmnd')
+                    ->havingRaw('COUNT(*) > 1')
+                    ->get();
+                foreach ($customers as $customer) {
+                    Customer::where([
+                        ['cmnd', $customer->cmnd],
+                        ['id', '<>', $customer->id]
+                    ])->delete();
+                }
+                break;
+            case 'all':
+                Customer::truncate();
+                break;
+            case 'sales_state':
+                $request->validate([
+                    'sales_state' => 'required|in:'.implode(',', SalesStateEnum::values())
+                ]);
+                Customer::whereIn('sales_state', $request->command)->delete();
+                break;
         }
         return response()->success('Xóa dữ liệu thành công.');
     }

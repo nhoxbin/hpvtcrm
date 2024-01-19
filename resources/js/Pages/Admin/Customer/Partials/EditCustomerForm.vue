@@ -55,6 +55,7 @@
   
 <script setup>
 import InputError from '@/Components/Admin/InputError.vue';
+import InputError from '@/Components/Admin/InputError.vue';
 import Modal from '@/Components/Admin/Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 

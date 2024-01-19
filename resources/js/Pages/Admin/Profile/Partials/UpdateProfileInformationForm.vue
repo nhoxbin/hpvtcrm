@@ -1,27 +1,3 @@
-<script setup>
-import InputError from '@/Components/Admin/InputError.vue';
-import InputLabel from '@/Components/Admin/InputLabel.vue';
-import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
-import TextInput from '@/Components/Admin/TextInput.vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
-
-defineProps({
-    mustVerifyEmail: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
-});
-
-const user = usePage().props.auth.user;
-
-const form = useForm({
-    name: user.name,
-    email: user.email,
-});
-</script>
-
 <template>
     <section>
         <header>
@@ -100,3 +76,26 @@ const form = useForm({
         </form>
     </section>
 </template>
+<script setup>
+import InputError from '@/Components/Admin/InputError.vue';
+import InputLabel from '@/Components/Admin/InputLabel.vue';
+import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
+import TextInput from '@/Components/Admin/TextInput.vue';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+
+defineProps({
+    mustVerifyEmail: {
+        type: Boolean,
+    },
+    status: {
+        type: String,
+    },
+});
+
+const user = usePage().props.auth.user;
+
+const form = useForm({
+    name: user.name,
+    email: user.email,
+});
+</script>

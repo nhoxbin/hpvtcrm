@@ -90,7 +90,7 @@ import 'element-plus/es/components/message-box/style/css';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 
 const props = defineProps({
   auth: Object,
@@ -125,11 +125,12 @@ const del = (customer) => {
       type: 'warning',
     }
   ).then(() => {
-    axios.delete(route('admin.customers.destroy', {})).then(({data}) => {
+    axios.delete(route('admin.customers.destroy', customer)).then(({data}) => {
       ElMessage({
         type: 'success',
         message: 'Xóa thành công',
-      })
+      });
+      router.reload({only: ['customers']});
     }).catch(function(err) {
       console.log(err.responseText);
     });
