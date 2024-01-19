@@ -145,9 +145,6 @@ class CustomerController extends Controller
         } elseif (in_array('all', $request->command)) {
             // xóa hết
             Customer::truncate();
-        } elseif (in_array('user', $request->command)) {
-            // xóa theo từng user_id
-            Customer::where('user_id', $request->user_id)->delete();
         } else {
             // xóa từng trạng thái của sales
             $request->validate([

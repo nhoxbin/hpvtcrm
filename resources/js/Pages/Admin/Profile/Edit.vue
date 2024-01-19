@@ -12,11 +12,11 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Profile" />
+    <Head title="Hồ sơ" />
 
     <AuthenticatedLayout>
         <template #header>
-            Profile
+          Hồ sơ
         </template>
 
         <div class="sm:px-6 md:px-0 lg:px-0 space-y-6">

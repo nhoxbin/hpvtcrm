@@ -20,7 +20,7 @@
             <div class="mb-5">
               <label for="roles" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Trạng thái</label>
               <select id="roles" v-model="form.sales_state" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option value="" selected>Chọn trạng thái</option>
+                <option value="">Chọn trạng thái</option>
                 <option v-for="(state, name) in sales_states" :key="name" :value="name">{{ state }}</option>
               </select>
               <InputError :message="form.errors.sales_state" class="mt-2" />
@@ -38,7 +38,6 @@
     </Modal>
   </div>
 </template>
-  
 <script setup>
 import InputError from '@/Components/Admin/InputError.vue';
 import Modal from '@/Components/Admin/Modal.vue';

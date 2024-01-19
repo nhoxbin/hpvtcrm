@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\StoreUserRequest;
+use App\Http\Requests\Admin\User\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,14 +33,11 @@ class UserController extends Controller
         return response($user);
     }
 
-    public function update(Request $request, User $user) {
-        $user->name = $request->name;
-        $user->username = $request->username;
-        if (!empty($request->password)) {
-            $user->password = bcrypt($request->password);
-        }
-        $user->role_id = $request->user()->isAdmin ? $request->role : Role::where('name', 'sales')->pluck('id')[0];
-        $user->save();
+    public function update(UpdateUserRequest $request, User $user) {
+        $request->user()->fill($request->validated());
+        $request->user()->save();
+
+        $user->syncRoles($request->role);
 
         return redirect()->back()->withSuccess('Cập nhật nhân viên thành công.');
     }

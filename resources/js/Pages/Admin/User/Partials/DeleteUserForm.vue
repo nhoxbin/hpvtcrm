@@ -36,8 +36,8 @@ import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({
-  isDeleteUser: Boolean,
   user: Number,
+  isDeleteUser: Boolean,
 });
 
 const form = useForm({
@@ -52,10 +52,10 @@ const deleteUser = () => {
     onFinish: () => form.reset(),
   });
 };
-const emit = defineEmits(['closeDeleteUserForm']);
+const emit = defineEmits(['closeForm']);
 
 const closeModal = () => {
-  emit('closeDeleteUserForm', false);
+  emit('closeForm', 'isDeleteUser');
 
   form.reset();
 };

@@ -47,10 +47,10 @@ const props = defineProps({
 const selected_users = ref([]);
 const crmFile = ref(null);
 
-const emit = defineEmits(['closeUploadCustomerForm']);
+const emit = defineEmits(['closeForm']);
 
 const closeModal = () => {
-  emit('closeUploadCustomerForm', false);
+  emit('closeForm', 'isUploadCustomer');
 };
 
 const crmFileChange = (e) => {
