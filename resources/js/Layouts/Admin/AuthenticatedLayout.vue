@@ -18,6 +18,7 @@
         </main>
       </div>
     </div>
+    <ElMessage v-if="flash.msg" :message="flash.msg" :type="flash.status" />
   </div>
 </template>
 
@@ -25,4 +26,12 @@
 import Navigation from './Navigation.vue';
 import TopMenu from "./TopMenu.vue";
 import NavigationMobile from './NavigationMobile.vue';
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import 'element-plus/es/components/message/style/css'
+import { ElMessage } from 'element-plus';
+
+const page = usePage();
+
+const flash = computed(() => page.props.flash);
 </script>

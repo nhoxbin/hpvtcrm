@@ -9,7 +9,6 @@ use App\Http\Requests\Admin\Customer\StoreCustomerRequest;
 use App\Models\User;
 use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -19,15 +18,18 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class CustomerController extends Controller
 {
-    public function index() {
+    public function index(Request $request) {
         return Inertia::render('Admin/Customer/Index', [
-            'users' => User::whereDoesntHave('roles', fn ($role) => $role->where('name', 'Super Admin'))->get(),
-            'customers' => Customer::with(['user'])->paginate()
+            'users' => User::whereRelation('roles', 'name', '!=', 'Super Admin')->get(),
+            'customers' => Customer::query()->with(['user'])
+                ->when($request->search, function($query, $search) {
+                    $query->where('phone', 'like', '%'.$search.'%');
+                })->paginate()->withQueryString(),
         ]);
     }
 
     public function store(StoreCustomerRequest $request) {
-        if (preg_match('/all/', $request->user_id)) {
+        if (in_array('all', $request->user_id)) {
             // chia đều tất cả user
             if ($request->user()->hasRole('Super Admin')) {
                 $users = User::all();
@@ -36,8 +38,7 @@ class CustomerController extends Controller
             }
         } else {
             // chọn nhiều user
-            $user_id = explode(',', $request->user_id);
-            $users = User::whereIn('id', $user_id)->get();
+            $users = User::whereIn('id', $request->user_id)->get();
         }
 
         DB::beginTransaction();
@@ -116,11 +117,11 @@ class CustomerController extends Controller
                 }
             }
             DB::commit();
-            return response()->success('Đã tải dữ liệu khách hàng lên hệ thống.');
+            return redirect()->route('admin.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch(\Exception $e) {
             DB::rollBack();
             Log::error($e);
-            return response()->error('Lỗi rồi!', 422);
+            return redirect()->route('admin.customers.index')->withError('Lỗi rồi!');
         }
     }
 
@@ -128,27 +129,21 @@ class CustomerController extends Controller
         
     }
 
-    public function destroy(Request $request, Customer $customer) {
-        if ($customer) {
+    public function destroy(Request $request, ?Customer $customer) {
+        if ($customer->exists) {
             $customer->delete();
             return response()->success('Xóa dữ liệu thành công.');
         }
 
         switch ($request->command) {
-            case 'duplicate':
-                $customers = Customer::selectRaw('MIN(id) as id, cmnd')
-                    ->groupBy('cmnd')
-                    ->havingRaw('COUNT(*) > 1')
-                    ->get();
-                foreach ($customers as $customer) {
-                    Customer::where([
-                        ['cmnd', $customer->cmnd],
-                        ['id', '<>', $customer->id]
-                    ])->delete();
-                }
-                break;
             case 'all':
                 Customer::truncate();
+                break;
+            case 'duplicate':
+                $customers = Customer::selectRaw('MAX(id) as id, phone')->groupBy('phone')->havingRaw('COUNT(*) > 1')->pluck('phone', 'id');
+                $ids = $customers->keys();
+                $phones = $customers->values();
+                Customer::whereIn('phone', $phones)->whereNotIn('id', $ids)->delete();
                 break;
             case 'sales_state':
                 $request->validate([
@@ -157,6 +152,6 @@ class CustomerController extends Controller
                 Customer::whereIn('sales_state', $request->command)->delete();
                 break;
         }
-        return response()->success('Xóa dữ liệu thành công.');
+        return redirect()->route('admin.customers.index')->with('msg', 'Xóa dữ liệu thành công.');
     }
 }

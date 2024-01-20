@@ -9,6 +9,22 @@
         <div class="py-12">
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="p-4 bg-white rounded-lg shadow-xs">
+                    <div class="relative mb-4 flex flex-wrap items-stretch">
+                        <input
+                            type="text"
+                            class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                            placeholder="Tìm kiếm"
+                            aria-label="Tìm kiếm"
+                            :value="search.customers"
+                            @input="onSearching($event, 'customers')" />
+                        <button
+                            class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
+                            data-te-ripple-init
+                            type="button"
+                            @click="getProducts()">
+                            <svg class="h-8 w-8 text-red-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <circle cx="10" cy="10" r="7" />  <line x1="21" y1="21" x2="15" y2="15" /></svg>
+                        </button>
+                    </div>
                     <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
                         <div class="overflow-x-auto w-full">
                             <table class="w-full whitespace-no-wrap">
@@ -48,7 +64,7 @@
                                             </div> -->
                                         </td>
                                     </tr>
-                                    <tr v-if="!customers.data.length">
+                                    <tr v-if="!customers.total">
                                         <td class="px-4 py-3 text-sm text-center" colspan="9">Không có dữ liệu</td>
                                     </tr>
                                 </tbody>
@@ -70,11 +86,10 @@
                             <div class="relative mb-4 flex flex-wrap items-stretch">
                                 <input
                                     type="text"
-                                    class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-black font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                                    class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
                                     placeholder="Tìm kiếm"
                                     aria-label="Tìm kiếm"
-                                    :value="one_sell.search"
-                                    @input="onSearching($event)" />
+                                    @input="onSearching($event, 'products')" />
                                 <button
                                     class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                                     data-te-ripple-init
@@ -205,7 +220,7 @@
             </section>
         </div>
 
-        <EditCustomerForm v-if="isEditCustomer" :customer="currentCustomer" :sales_states="sales_states" :isEditCustomer="isEditCustomer" @closeEditCustomerForm="onCloseEditCustomerForm(state)" />
+        <EditCustomerForm v-if="actions.isEditCustomer" :customer="currentCustomer" :sales_states="sales_states" :isEditCustomer="actions.isEditCustomer" @closeForm="onCloseForm" />
     </AuthenticatedLayout>
 </template>
 <script setup>
@@ -213,13 +228,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
 import EditCustomerForm from './Customer/Partials/EditCustomerForm.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { onMounted, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
-import { debounce } from 'lodash';
+import { debounce, startCase, toLower } from 'lodash';
 
 const props = defineProps({
-    sessionMsg: String,
+    search: String,
     sales_states: {
         type: Object,
         required: true,
@@ -230,33 +245,33 @@ const props = defineProps({
     },
 });
 
-if (props.sessionMsg) {
-  ElMessage({
-    message: props.sessionMsg,
-    type: 'success',
-  });
-}
-
-const one_sell = reactive({
-    search: '',
-    page: 1,
-    limit: 10
-});
 const products = ref({});
 
-const onSearching = debounce((e) => {
-    one_sell.search = e.target.value;
-    getProducts();
-}, 500)
-
-onMounted(() => {
-    getProducts();
+const search = reactive({
+    customers: props.search || '',
 });
 
-function getProducts(url = route('products.index', one_sell)) {
-    axios.get(url).then((({data}) => {
+const onSearching = debounce((e, method) => {
+    search[method] = e.target.value;
+    eval('get' + startCase(toLower(method)) + '(null, e.target.value)');
+}, 500)
+
+getProducts();
+
+function getProducts(url = null, search = '') {
+    axios.get(url || route('products.index', {search: search})).then((({data}) => {
         products.value = data;
     }));
+}
+
+// call from eval
+function getCustomers(url = null, search = '') {
+    router.reload({
+        preserveState: true,
+        preserveScroll: true,
+        only: ['customers'],
+        data: {search}
+    });
 }
 
 const workingData = reactive([]);
@@ -314,13 +329,14 @@ const confirmOtp = async (index) => {
 }
 
 const currentCustomer = ref({});
-const isEditCustomer = ref(false);
+const actions = reactive({
+    isEditCustomer: false,
+});
 const editCustomer = (customer) => {
     currentCustomer.value = customer;
-    isEditCustomer.value = true;
+    actions.isEditCustomer = true;
 }
-const onCloseEditCustomerForm = (state) => {
-    isEditCustomer.value = state;
+const onCloseForm = (prop) => {
+    actions[prop] = false;
 }
-
 </script>

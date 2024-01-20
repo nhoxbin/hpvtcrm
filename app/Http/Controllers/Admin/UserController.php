@@ -19,7 +19,6 @@ class UserController extends Controller
         return Inertia::render('Admin/User/Index', [
             'users' => User::with(['roles', 'created_by_user'])->withCount('customers')->paginate(),
             'roles' => Role::all()->pluck('name'),
-            'sessionMsg' => session('msg'),
         ]);
     }
 

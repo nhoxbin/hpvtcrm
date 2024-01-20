@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Modal :show="isDeleteCustomer" @close="closeModal">
+    <Modal :show="isDeleteCustomer" @close="closeModal" maxWidth="xl">
       <div class="p-6">
         <h2 class="text-lg font-medium text-gray-900">
           Xóa dữ liệu khách hàng
@@ -12,13 +12,13 @@
               <label for="roles" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Lệnh</label>
               <select id="roles" v-model="form.command" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option value="">Chọn lệnh</option>
-                <option v-for="(command, vi) in commands" :key="command" :value="command">{{ vi }}</option>
+                <option v-for="(vi, command) in commands" :key="command" :value="command">{{ vi }}</option>
               </select>
               <InputError :message="form.errors.command" class="mt-2" />
             </div>
             <!-- <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo tài khoản</button> -->
             <div class="mt-6 flex justify-end">
-              <SecondaryButton @click="closeModal"> Cancel </SecondaryButton>
+              <SecondaryButton @click="closeModal"> Hủy </SecondaryButton>
     
               <DangerButton
                 class="ms-3"
@@ -26,7 +26,7 @@
                 :disabled="form.processing"
                 @click="del"
               >
-                Delete Data
+                Xóa
               </DangerButton>
             </div>
           </form>
@@ -39,7 +39,7 @@
 import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Admin/Modal.vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 import InputError from '@/Components/Admin/InputError.vue';
 
@@ -71,4 +71,3 @@ const closeModal = () => {
   form.reset();
 };
 </script>
-  

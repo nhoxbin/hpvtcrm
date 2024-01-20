@@ -16,15 +16,16 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5">
-          <input class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" type="file" @change="crmFileChange" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-          <form class="space-y-4" @submit.prevent="uploadFile">
-            <div>
-              <select class="form-control" v-model="selected_users" multiple size="10">
-                <option value="all">Chia đều</option>
-                <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-              </select>
-            </div>
-            <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
+          <form class="space-y-4" @submit.prevent="submit">
+            <input type="file" @input="form.excel = $event.target.files[0]" class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+            <progress v-if="form.progress" :value="form.progress.percentage" max="100">
+              {{ form.progress.percentage }}%
+            </progress>
+            <select class="form-control" v-model="form.user_id" multiple size="10">
+              <option value="all">Chia đều</option>
+              <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+            </select>
+            <button type="submit" :disabled="form.processing" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tải lên</button>
           </form>
         </div>
       </div>
@@ -34,47 +35,32 @@
 
 <script setup>
 import Modal from '@/Components/Admin/Modal.vue';
-import { ref } from 'vue';
-import 'element-plus/es/components/message/style/css'
-import { ElMessage } from 'element-plus'
-import { router } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
   users: Array,
   isUploadCustomer: Boolean
 });
 
-const selected_users = ref([]);
-const crmFile = ref(null);
-
 const emit = defineEmits(['closeForm']);
 
 const closeModal = () => {
   emit('closeForm', 'isUploadCustomer');
+
+  form.reset();
+
+  router.reload({only: ['customers']});
 };
 
-const crmFileChange = (e) => {
-  crmFile.value = e.target.files[0];
-}
+const form = useForm({
+  excel: null,
+  user_id: ['all'],
+});
 
-const uploadFile = () => {
-  let formData = new FormData();
-  formData.append('user_id', selected_users.value);
-  formData.append('excel', crmFile.value);
-
-  axios.post(route('admin.customers.store'), formData).then(function({data}) {
-    ElMessage({
-      message: data.msg,
-      type: 'success',
-    });
-    router.reload({ only: ['customers'] });
-    closeModal();
-  }).catch(function({response}) {
-    ElMessage({
-      message: response.data.message,
-      type: 'error',
-    });
+const submit = () => {
+  form.post(route('admin.customers.store'), {
+    preserveScroll: true,
+    onSuccess: () => closeModal(),
   });
 }
 </script>
-  

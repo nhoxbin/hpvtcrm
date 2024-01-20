@@ -15,15 +15,16 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    /* public function index()
     {
         if (Auth::user()->hasRole('Super Admin')) {
             $customers = Customer::paginate();
         } else {
             $customers = Auth::user()->customers()->paginate();
         }
-        return Inertia::render('Customer/Index', compact('customers'));
-    }
+        $sessionMsg = session('msg');
+        return Inertia::render('Customer/Index', compact('customers', 'sessionMsg'));
+    } */
 
     /**
      * Show the form for creating a new resource.
@@ -66,7 +67,7 @@ class CustomerController extends Controller
     	$customer->sales_note = $request->sales_note;
     	$customer->save();
 
-        return redirect()->route('dashboard')->with('msg', 'Lưu thành công.');
+        return back()->with('msg', 'Lưu thành công.');
     }
 
     /**

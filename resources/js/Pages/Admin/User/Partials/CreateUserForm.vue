@@ -56,7 +56,7 @@
 <script setup>
 import InputError from '@/Components/Admin/InputError.vue';
 import Modal from '@/Components/Admin/Modal.vue';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
   roles: Object,
@@ -83,6 +83,5 @@ const submit = () => {
   form.post(route('admin.users.store'), {
     onSuccess: () => closeModal(),
   });
-  // router.reload({only: ['users']});
 };
 </script>

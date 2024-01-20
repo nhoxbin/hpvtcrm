@@ -19,9 +19,10 @@ Route::group([
     ]);
 
 	// Khách hàng
-    Route::resource('customers', 'CustomerController', [
-    	'only' => ['index', 'store', 'edit', 'update', 'destroy']
+    Route::apiResource('customers', 'CustomerController', [
+        'except' => ['destroy']
     ]);
+    Route::delete('customers/{customer?}', 'CustomerController@destroy')->name('customers.destroy');
 
     // Route::post('customers', 'MultipleCustomersController@store')->name('customers.store');
     Route::post('customers/export', ExportController::class)->name('customers.export');
@@ -31,8 +32,8 @@ Route::group([
         // Route::post('customers/delete', 'MultipleCustomersController@destroy')->name('customers.destroy');
 
         // customer
-        Route::resource('customer', 'CustomerController', [
+        /* Route::resource('customer', 'CustomerController', [
         	'only' => ['destroy']
-        ]);
+        ]); */
     });
 });

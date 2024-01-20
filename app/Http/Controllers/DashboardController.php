@@ -15,15 +15,19 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
         if (Auth::user()->hasRole('Super Admin')) {
-            $customers = Customer::with('user')->paginate();
+            $customers = new Customer;
         } else {
-            $customers = Auth::user()->customers()->with('user')->paginate();
+            $customers = Auth::user()->customers();
         }
+        $customers = $customers->query()->when($request->search, function($query, $search) {
+            $query->where('phone', 'like', '%' . $search . '%');
+        })->with('user')->paginate()->withQueryString();
         $sales_states = SalesStateEnum::trans();
         $sessionMsg = session('msg');
-        return Inertia::render('Dashboard', compact('customers', 'sales_states', 'sessionMsg'));
+        $search = $request->search;
+        return Inertia::render('Dashboard', compact('customers', 'sales_states', 'sessionMsg', 'search'));
     }
 }

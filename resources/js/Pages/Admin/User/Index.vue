@@ -81,14 +81,12 @@ import 'element-plus/es/components/message-box/style/css';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
 const props = defineProps({
-  sessionMsg: String,
   roles: Object,
   users: Object,
 });
 
 const currentUser = ref(null);
 const deleteUserId = ref(null);
-const passwordInput = ref(null);
 
 const actions = reactive({
   isCreateUser: false,
@@ -100,24 +98,9 @@ const onCloseForm = (prop) => {
   actions[prop] = false;
 };
 
-/* const form = useForm({
-  'name': '',
-  'username': '',
-  'password': '',
-}); */
-
 const confirmUserDeletion = () => {
   isEditingUser.value = true;
-
-  // nextTick(() => passwordInput.value.focus());
 };
-
-if (props.sessionMsg) {
-  ElMessage({
-    message: props.sessionMsg,
-    type: 'success',
-  });
-}
 
 const del = (user) => {
   ElMessageBox.confirm(
