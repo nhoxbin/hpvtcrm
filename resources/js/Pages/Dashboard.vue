@@ -229,7 +229,7 @@ import Pagination from '@/Components/Admin/Pagination.vue';
 import EditCustomerForm from './Customer/Partials/EditCustomerForm.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
-import 'element-plus/es/components/message/style/css'
+import 'element-plus/es/components/message/style/css';
 import { ElMessage } from 'element-plus'
 import { debounce, startCase, toLower } from 'lodash';
 

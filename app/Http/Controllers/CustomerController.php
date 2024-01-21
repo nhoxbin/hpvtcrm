@@ -22,41 +22,8 @@ class CustomerController extends Controller
         } else {
             $customers = Auth::user()->customers()->paginate();
         }
-        $sessionMsg = session('msg');
-        return Inertia::render('Customer/Index', compact('customers', 'sessionMsg'));
+        return Inertia::render('Customer/Index', compact('customers'));
     } */
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Customer $customer)
-    {
-    	return view('customer.show', compact('customer'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Customer $customer)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -67,14 +34,6 @@ class CustomerController extends Controller
     	$customer->sales_note = $request->sales_note;
     	$customer->save();
 
-        return back()->with('msg', 'Lưu thành công.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Customer $customer)
-    {
-        //
+        return redirect()->route('customers.index')->with('msg', 'Lưu thành công.');
     }
 }

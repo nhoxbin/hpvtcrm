@@ -11,6 +11,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -137,7 +138,9 @@ class CustomerController extends Controller
 
         switch ($request->command) {
             case 'all':
+                Schema::disableForeignKeyConstraints();
                 Customer::truncate();
+                Schema::enableForeignKeyConstraints();
                 break;
             case 'duplicate':
                 $customers = Customer::selectRaw('MAX(id) as id, phone')->groupBy('phone')->havingRaw('COUNT(*) > 1')->pluck('phone', 'id');
@@ -145,12 +148,12 @@ class CustomerController extends Controller
                 $phones = $customers->values();
                 Customer::whereIn('phone', $phones)->whereNotIn('id', $ids)->delete();
                 break;
-            case 'sales_state':
+            /* case 'sales_state':
                 $request->validate([
                     'sales_state' => 'required|in:'.implode(',', SalesStateEnum::values())
                 ]);
                 Customer::whereIn('sales_state', $request->command)->delete();
-                break;
+                break; */
         }
         return redirect()->route('admin.customers.index')->with('msg', 'Xóa dữ liệu thành công.');
     }

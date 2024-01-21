@@ -132,7 +132,7 @@ const del = (customer) => {
       });
       router.reload({only: ['customers']});
     }).catch(function(err) {
-      console.log(err.responseText);
+      // console.log(err.responseText);
     });
   }).catch(() => {
     /* ElMessage({
@@ -149,7 +149,7 @@ const exportCustomer = () => {
       type: 'success',
     });
   }).catch(function(err) {
-    console.log(err);
+    // console.log(err);
   });
 };
 </script>

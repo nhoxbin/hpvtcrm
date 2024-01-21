@@ -63,7 +63,6 @@
     </div>
     <CreateUserForm :is-create-user="actions.isCreateUser" :roles="roles" @closeForm="onCloseForm"></CreateUserForm>
     <EditUserForm v-if="actions.isEditUser" :isEditUser="actions.isEditUser" :roles="roles" :user="currentUser" @closeForm="onCloseForm"></EditUserForm>
-    <DeleteUserForm :is-delete-user="actions.isDeleteUser" :user="deleteUserId" @closeForm="onCloseForm"></DeleteUserForm>
   </AuthenticatedLayout>
 </template>
 
@@ -72,7 +71,6 @@ import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
 import CreateUserForm from './Partials/CreateUserForm.vue';
 import EditUserForm from './Partials/EditUserForm.vue';
-import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
@@ -86,7 +84,6 @@ const props = defineProps({
 });
 
 const currentUser = ref(null);
-const deleteUserId = ref(null);
 
 const actions = reactive({
   isCreateUser: false,
@@ -96,10 +93,6 @@ const actions = reactive({
 
 const onCloseForm = (prop) => {
   actions[prop] = false;
-};
-
-const confirmUserDeletion = () => {
-  isEditingUser.value = true;
 };
 
 const del = (user) => {

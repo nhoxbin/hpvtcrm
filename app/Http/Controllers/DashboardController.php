@@ -26,8 +26,7 @@ class DashboardController extends Controller
             $query->where('phone', 'like', '%' . $search . '%');
         })->with('user')->paginate()->withQueryString();
         $sales_states = SalesStateEnum::trans();
-        $sessionMsg = session('msg');
         $search = $request->search;
-        return Inertia::render('Dashboard', compact('customers', 'sales_states', 'sessionMsg', 'search'));
+        return Inertia::render('Dashboard', compact('customers', 'sales_states', 'search'));
     }
 }
