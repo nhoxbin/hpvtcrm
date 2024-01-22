@@ -39,7 +39,7 @@
 import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Admin/Modal.vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 import InputError from '@/Components/Admin/InputError.vue';
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Facades\OneSell;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,7 +13,9 @@ class ProductController extends Controller
             'search' => 'nullable|string',
         ]);
         // $categories = OneSell::categories('mobifone');
-        $products = Product::where('title', 'like', '%' . $validated['search'] . '%')->paginate(12);
+        $products = Product::query()->when($validated['search'], function($query, $search) {
+            $query->where('title', 'like', '%' . $search . '%');
+        })->paginate(15)->withQueryString();
         // return Inertia::render('Product/Index', compact('products'));
         return response($products);
     }

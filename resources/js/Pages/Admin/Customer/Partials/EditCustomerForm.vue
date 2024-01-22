@@ -52,7 +52,6 @@
     </Modal>
   </div>
 </template>
-  
 <script setup>
 import InputError from '@/Components/Admin/InputError.vue';
 import Modal from '@/Components/Admin/Modal.vue';
