@@ -9,7 +9,7 @@
     <div class="p-4 bg-white rounded-lg shadow-xs">
       <div class="mb-4 w-full">
         <SecondaryButton @click="actions.isUploadCustomer = true">Upload</SecondaryButton>
-        <PrimaryButton @click="exportCustomer">Export</PrimaryButton>
+        <a :href="route('admin.customers.export')" class="rounded-lg border border-transparent bg-purple-600 px-4 py-2 text-center text-sm font-medium leading-5 text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:ring active:bg-purple-600">Export</a>
         <DangerButton @click="actions.isDeleteCustomer = true">Delete</DangerButton>
       </div>
 
@@ -91,6 +91,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 import { Head, router } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
   auth: Object,
@@ -141,15 +142,4 @@ const del = (customer) => {
     }) */
   })
 }
-
-const exportCustomer = () => {
-  axios.post(route('admin.customers.export')).then(function({data}) {
-    ElMessage({
-      message: data.msg,
-      type: 'success',
-    });
-  }).catch(function(err) {
-    // console.log(err);
-  });
-};
 </script>

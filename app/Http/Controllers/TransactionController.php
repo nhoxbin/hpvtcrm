@@ -35,7 +35,7 @@ class TransactionController extends Controller
     {
         $msg = 'Không thể đăng ký gói!';
         $validated = $request->validated();
-        if ($request->user()->hasRole('Super Admin')) {
+        if ($request->user()->is_admin) {
             $customers = new Customer();
         } else {
             $customers = $request->user()->customers();

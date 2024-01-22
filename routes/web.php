@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::apiResource('transactions', TransactionController::class);
-    Route::apiResource('customers', CustomerController::class);
+    Route::apiResource('customers', CustomerController::class)->only(['update']);
     Route::get('products', ProductController::class)->name('products.index');
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');

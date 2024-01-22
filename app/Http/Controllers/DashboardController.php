@@ -17,7 +17,7 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::user()->hasRole('Super Admin')) {
+        if (Auth::user()->is_admin) {
             $customers = new Customer;
         } else {
             $customers = Auth::user()->customers();

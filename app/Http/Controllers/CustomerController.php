@@ -17,7 +17,7 @@ class CustomerController extends Controller
      */
     /* public function index()
     {
-        if (Auth::user()->hasRole('Super Admin')) {
+        if (Auth::user()->is_admin) {
             $customers = Customer::paginate();
         } else {
             $customers = Auth::user()->customers()->paginate();

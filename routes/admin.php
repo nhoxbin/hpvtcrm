@@ -14,18 +14,18 @@ Route::group([
     Route::get('about', 'AboutController@index')->name('about');
 
 	// Nhân viên
-    Route::resource('users', 'UserController', [
+    Route::apiResource('users', 'UserController', [
     	'only' => ['index', 'store', 'edit', 'update', 'destroy']
     ]);
 
 	// Khách hàng
+    Route::get('customers/export', ExportController::class)->name('customers.export');
     Route::apiResource('customers', 'CustomerController', [
-        'except' => ['destroy']
+        'except' => ['destroy', 'show']
     ]);
     Route::delete('customers/{customer?}', 'CustomerController@destroy')->name('customers.destroy');
 
     // Route::post('customers', 'MultipleCustomersController@store')->name('customers.store');
-    Route::post('customers/export', ExportController::class)->name('customers.export');
 
     Route::group(['middleware' => 'admin'], function() {
         // delete multiple customer

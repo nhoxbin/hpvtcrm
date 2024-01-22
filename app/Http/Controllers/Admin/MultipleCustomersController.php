@@ -59,7 +59,7 @@ class MultipleCustomersController extends Controller
         $sheet->setCellValue('E1', 'Sales stage');
 
         $authUser = $request->user();
-        if ($authUser->isAdmin) {
+        if ($authUser->is_admin) {
             $customers = Customer::all();
         } else {
             $users = $authUser->created_users->pluck('id');
@@ -96,7 +96,7 @@ class MultipleCustomersController extends Controller
             $users = User::whereIn('id', $user_id)->get();
         } else {
             // chia đều tất cả user
-            if ($request->user()->isAdmin) {
+            if ($request->user()->is_admin) {
                 $users = User::all();
             } else {
                 $users = $request->user()->created_users;

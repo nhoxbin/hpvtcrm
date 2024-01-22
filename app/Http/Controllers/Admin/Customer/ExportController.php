@@ -45,8 +45,8 @@ class ExportController extends Controller
         );
         $spreadsheet->getActiveSheet()->getStyle('A1:I1')->applyFromArray($styleArray);
         // auto fit column to content
-        foreach(range('A', 'J') as $columnID) {
-            $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+        foreach(range('A', 'I') as $columnID) {
+          $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
         }
         // set the names of header cells
         $sheet->setCellValue('A1', 'Số điện thoại');
@@ -60,8 +60,8 @@ class ExportController extends Controller
         $sheet->setCellValue('I1', 'Admin Ghi chú');
 
         $authUser = $request->user();
-        if ($authUser->hasRole('Super Admin')) {
-            $customers = Customer::all();
+        if ($authUser->is_admin) {
+            $customers = Customer::with('user')->get();
         }/*  else {
             $users = $authUser->created_users->pluck('id');
             $users->push($authUser->id);
@@ -74,16 +74,16 @@ class ExportController extends Controller
             $sheet->setCellValue('B'.$x, $customer->data);
             $sheet->setCellValue('C'.$x, $customer->registered_at);
             $sheet->setCellValue('D'.$x, $customer->expired_at);
-            $sheet->setCellValue('E'.$x, $customer->available_data);
+            $sheet->setCellValue('E'.$x, $customer->available_data ? implode(',', $customer->available_data) : null);
             $sheet->setCellValue('F'.$x, $customer->user?->name);
-            $sheet->setCellValue('G'.$x, $customer->sales_state?->name);
+            $sheet->setCellValue('G'.$x, $customer->state);
             $sheet->setCellValue('H'.$x, $customer->sales_note);
             $sheet->setCellValue('I'.$x, $customer->admin_note);
             $x++;
         }
         //Create file excel.xlsx
         $writer = new Xlsx($spreadsheet);
-        $file = 'data-'.date('d-m-Y', time()).'.xlsx';
+        $file = 'storage/data-'.date('d-m-Y', time()).'.xlsx';
         $writer->save($file);
         return response()->download($file)->deleteFileAfterSend();
     }

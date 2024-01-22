@@ -32,7 +32,7 @@ class CustomerController extends Controller
     public function store(StoreCustomerRequest $request) {
         if (in_array('all', $request->user_id)) {
             // chia đều tất cả user
-            if ($request->user()->hasRole('Super Admin')) {
+            if ($request->user()->is_admin) {
                 $users = User::all();
             } else {
                 $users = $request->user()->created_users;
