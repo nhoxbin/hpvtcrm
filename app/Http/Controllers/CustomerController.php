@@ -34,6 +34,6 @@ class CustomerController extends Controller
     	$customer->sales_note = $request->sales_note;
     	$customer->save();
 
-        return redirect()->route('customers.index')->with('msg', 'Lưu thành công.');
+        return redirect()->route('dashboard')->with('msg', 'Lưu thành công.');
     }
 }
