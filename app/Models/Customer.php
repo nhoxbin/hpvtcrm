@@ -11,7 +11,7 @@ class Customer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'phone'];
+    protected $fillable = ['user_id', 'phone', 'sales_state', 'sales_note'];
 
     protected $casts = [
         'sales_state' => SalesStateEnum::class,
