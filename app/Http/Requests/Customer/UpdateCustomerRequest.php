@@ -26,7 +26,7 @@ class UpdateCustomerRequest extends FormRequest
     {
         return [
             'sales_state' => ['nullable', 'string', 'in:' . implode(',', SalesStateEnum::names())],
-            'description' => 'nullable|string',
+            'sales_note' => 'nullable|string',
         ];
     }
 }

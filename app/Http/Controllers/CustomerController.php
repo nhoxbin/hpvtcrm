@@ -30,8 +30,7 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $customer->sales_state = $request->sales_state;
-    	$customer->sales_note = $request->sales_note;
+        $customer->fill($request->validated());
     	$customer->save();
 
         return redirect()->route('dashboard')->with('msg', 'Lưu thành công.');
