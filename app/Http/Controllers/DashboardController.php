@@ -17,12 +17,9 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::user()->is_admin) {
-            $customers = new Customer;
-        } else {
-            $customers = Auth::user()->customers();
-        }
-        $customers = $customers->query()->when($request->search, function($query, $search) {
+        $customers = Customer::query()->when(!Auth::user()->is_admin, function($query, $search) {
+            $query->where('user_id', Auth::id());
+        })->when($request->search, function($query, $search) {
             $query->where('phone', 'like', '%' . $search . '%');
         })->with('user')->paginate()->withQueryString();
         $sales_states = SalesStateEnum::trans();

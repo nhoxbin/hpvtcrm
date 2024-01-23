@@ -71,7 +71,7 @@ import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
 import CreateUserForm from './Partials/CreateUserForm.vue';
 import EditUserForm from './Partials/EditUserForm.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import 'element-plus/es/components/message/style/css';
@@ -109,7 +109,8 @@ const del = (user) => {
       ElMessage({
         type: 'success',
         message: 'Xóa thành công',
-      })
+      });
+      router.reload({only: ['users']});
     }).catch(function(err) {
       console.log(err.responseText);
     });
