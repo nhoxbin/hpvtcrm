@@ -13,7 +13,7 @@ class ProductController extends Controller
             'search' => 'nullable|string',
         ]);
         // $categories = OneSell::categories('mobifone');
-        $products = Product::query()->when($validated['search'], function($query, $search) {
+        $products = Product::query()->when($request->search, function($query, $search) {
             $query->where('title', 'like', '%' . $search . '%');
         })->paginate(15)->withQueryString();
         // return Inertia::render('Product/Index', compact('products'));

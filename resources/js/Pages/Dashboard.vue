@@ -253,25 +253,29 @@ const search = reactive({
 
 const onSearching = debounce((e, method) => {
     search[method] = e.target.value;
-    eval('get' + startCase(toLower(method)) + '(null, e.target.value)');
+    eval('get' + startCase(toLower(method)) + '(e.target.value)');
 }, 500)
 
 getProducts();
 
-function getProducts(url = null, search = '') {
+function getProducts(search = '', url = null) {
     axios.get(url || route('products.index', {search: search})).then((({data}) => {
         products.value = data;
     }));
 }
 
 // call from eval
-function getCustomers(url = null, search = '') {
+function getCustomers(search = '') {
     router.reload({
         preserveState: true,
         preserveScroll: true,
         only: ['customers'],
         data: {search}
     });
+}
+
+if (search.customers) {
+    getCustomers(search.customers);
 }
 
 const workingData = reactive([]);

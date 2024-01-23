@@ -17,7 +17,7 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::query()->when(!Auth::user()->is_admin, function($query, $search) {
+        $customers = Customer::query()->when(!Auth::user()->is_admin, function($query) {
             $query->where('user_id', Auth::id());
         })->when($request->search, function($query, $search) {
             $query->where('phone', 'like', '%' . $search . '%');
