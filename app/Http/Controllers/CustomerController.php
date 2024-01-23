@@ -33,6 +33,6 @@ class CustomerController extends Controller
         $customer->fill($request->validated());
     	$customer->save();
 
-        return redirect()->route('dashboard')->with('msg', 'Lưu thành công.');
+        return back()->with('msg', 'Lưu thành công.');
     }
 }
