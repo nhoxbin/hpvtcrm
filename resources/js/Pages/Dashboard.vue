@@ -21,7 +21,7 @@
                             class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                             data-te-ripple-init
                             type="button"
-                            @click="getProducts()">
+                            @click="onSearching($event, 'customers')">
                             <svg class="h-8 w-8 text-red-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <circle cx="10" cy="10" r="7" />  <line x1="21" y1="21" x2="15" y2="15" /></svg>
                         </button>
                     </div>
@@ -94,7 +94,7 @@
                                     class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
                                     data-te-ripple-init
                                     type="button"
-                                    @click="getProducts()">
+                                    @click="onSearching($event, 'products')">
                                     <svg class="h-8 w-8 text-red-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <circle cx="10" cy="10" r="7" />  <line x1="21" y1="21" x2="15" y2="15" /></svg>
                                 </button>
                             </div>
@@ -227,14 +227,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
 import EditCustomerForm from './Customer/Partials/EditCustomerForm.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import 'element-plus/es/components/message/style/css';
 import { ElMessage } from 'element-plus'
 import { debounce, startCase, toLower } from 'lodash';
 
 const props = defineProps({
-    search: String,
     sales_states: {
         type: Object,
         required: true,
@@ -245,38 +244,44 @@ const props = defineProps({
     },
 });
 
+const page = usePage();
+
 const products = ref({});
 
 const search = reactive({
-    customers: props.search || '',
+    customers: page.props.query.search?.customers || '',
+    products: page.props.query.search?.products || '',
 });
 
 const onSearching = debounce((e, method) => {
-    search[method] = e.target.value;
-    eval('get' + startCase(toLower(method)) + '(e.target.value)');
+    searchFuncs['get' + startCase(toLower(method))](e.target.value);
 }, 500)
 
-getProducts();
+const searchFuncs = {
+    getProducts: (searchText = null, url = null) => {
+        axios.get(url || route('products.index', {
+            search: {
+                products: searchText
+            }
+        })).then((({data}) => {
+            products.value = data;
+        }));
+    },
+    getCustomers: (searchText = null) => {
+        router.reload({
+            preserveState: true,
+            preserveScroll: true,
+            only: ['customers'],
+            data: {
+                search: {
+                    customers: searchText
+                }
+            }
+        });
+    }
+};
 
-function getProducts(search = '', url = null) {
-    axios.get(url || route('products.index', {search: search})).then((({data}) => {
-        products.value = data;
-    }));
-}
-
-// call from eval
-function getCustomers(search = '') {
-    router.reload({
-        preserveState: true,
-        preserveScroll: true,
-        only: ['customers'],
-        data: {search}
-    });
-}
-
-if (search.customers) {
-    getCustomers(search.customers);
-}
+searchFuncs['getProducts']();
 
 const workingData = reactive([]);
 
