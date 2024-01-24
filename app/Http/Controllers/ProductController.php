@@ -14,8 +14,8 @@ class ProductController extends Controller
             'search' => 'nullable|array',
         ]);
         // $categories = OneSell::categories('mobifone');
-        $products = Product::query()->when($validated['search']['products'], function($query, $search) {
-            $query->where('title', 'like', '%' . $search . '%');
+        $products = Product::query()->when($request->search, function($query, $search) {
+            $query->where('title', 'like', '%' . $search['products'] . '%');
         })->paginate(15)->withQueryString();
         // return Inertia::render('Product/Index', compact('products'));
         return response($products);

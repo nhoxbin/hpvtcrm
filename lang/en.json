@@ -1,4 +1,5 @@
 {
-    "transactionId.already.exists": "Giao dịch này đã có.",
-    "order.create.success": "Tạo đơn hàng thành công."
+    "transactionId.already.exists": "Transaction already exists",
+    "order.create.success": "Order created successful",
+    "product.not.found": "Product not found"
 }
