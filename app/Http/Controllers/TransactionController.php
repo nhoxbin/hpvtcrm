@@ -13,22 +13,6 @@ use Illuminate\Support\Facades\Log;
 class TransactionController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreTransactionRequest $request)
@@ -63,22 +47,6 @@ class TransactionController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Transaction $transaction)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Transaction $transaction)
@@ -102,22 +70,11 @@ class TransactionController extends Controller
                     $transaction->customer->registered_at = now();
                     $transaction->customer->expired_at = now()->{'add' . $date_types[$expiry[2]]}($expiry[1]);
                     $transaction->customer->save();
-                    // return response()->success($confirmOtp['message']);
                     $status = 'success';
-                } else {
-                    // return response()->error($confirmOtp['message']);
                 }
             }
             $transaction->save();
         }
-        return response()->{$status}(isset($confirmOtp['message']) ? $confirmOtp['message'] : 'Không thể xác minh OTP!', 422);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Transaction $transaction)
-    {
-        //
+        return response()->{$status}($status == 'error' ? 'Không thể xác minh OTP!' : $confirmOtp['message'], 422);
     }
 }
