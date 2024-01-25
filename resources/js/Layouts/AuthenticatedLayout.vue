@@ -149,21 +149,6 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
-import 'element-plus/es/components/message/style/css'
-// import { ElMessage } from 'element-plus';
-// import { computed } from 'vue';
-// import { usePage } from '@inertiajs/vue3';
-// 
-// const page = usePage();
 
 const showingNavigationDropdown = ref(false);
-
-// const flash = computed(() => page.props.flash);
-
-/* if (flash.msg) {
-    ElMessage({
-        message: flash.msg,
-        status: flash.status,
-    });
-} */
 </script>
