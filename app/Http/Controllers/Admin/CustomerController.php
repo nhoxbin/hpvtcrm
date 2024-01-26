@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\SalesStateEnum;
 use App\Models\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Customer\StoreCustomerRequest;
@@ -12,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -55,13 +53,14 @@ class CustomerController extends Controller
 
             $spreadsheet = $reader->load($inputFileName);
             $worksheet = $spreadsheet->getSheet(0)->toArray();
+            $customers = [];
+
             foreach ($worksheet as $key => $row) {
                 if (empty($row[0])) break;
                 if ($key == 0) continue;
                 
-                $customer = new Customer;
-                $customer->phone = str_pad($row[0], 10, '0', STR_PAD_LEFT);
-                $customer->data = $row[1];
+                $phone = str_pad($row[0], 10, '0', STR_PAD_LEFT);
+                $data = $row[1];
 
                 // registered_at
                 $registered_at = DateTime::createFromFormat('d/m/Y', $row[2]);
@@ -77,21 +76,30 @@ class CustomerController extends Controller
                         $expired_at = Date::excelToDateTimeObject($row[3]);
                     }
                 }
-                $customer->registered_at = $registered_at->format('Y-m-d H:i:s');
-                $customer->expired_at = $expired_at->format('Y-m-d H:i:s');
+                $registered_at = $registered_at->format('Y-m-d H:i:s');
+                $expired_at = $expired_at->format('Y-m-d H:i:s');
                 $available_data = [];
                 for ($i=4; $i < 11; $i++) { 
-                    if (!empty($row[$i])) {
-                        $available_data[] = $row[$i];
-                    }
+                    if (empty($row[$i])) break;
+                    $available_data[] = $row[$i];
                 }
-                $customer->available_data = $available_data;
+                $available_data = $available_data;
                 // đoạn code phân cho 1 người
                 if (is_numeric($request->user_id) && $request->user_id > 0) {
-                    $customer->user_id = $request->user_id;
+                    $user_id = $request->user_id;
                 }
-                $customer->save();
+                $customers[] = [
+                    'phone' => $phone,
+                    'data' => $data,
+                    'registered_at' => $registered_at,
+                    'expired_at' => $expired_at,
+                    'available_data' => json_encode($available_data),
+                    'user_id' => $user_id ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
+            Customer::insert($customers);
 
             // đoạn code phân cho sales
             if (isset($users) && $users->count() > 0) {

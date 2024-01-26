@@ -8,7 +8,6 @@ use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
