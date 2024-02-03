@@ -47,7 +47,10 @@
                     <button @click="edit(user)" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
                       <svg class="h-3 w-3 text-red-500"  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />  <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />  <line x1="16" y1="5" x2="19" y2="8" /></svg>
                     </button>
-                    <button @click="del(user.id)" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                    <button @click="del(user.id, 'user')" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+                      <svg class="h-3 w-3 text-red-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <line x1="4" y1="7" x2="20" y2="7" />  <line x1="10" y1="11" x2="10" y2="17" />  <line x1="14" y1="11" x2="14" y2="17" />  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                    </button>
+                    <button @click="del(user.id, 'customers')" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
                       <svg class="h-3 w-3 text-red-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <line x1="4" y1="7" x2="20" y2="7" />  <line x1="10" y1="11" x2="10" y2="17" />  <line x1="14" y1="11" x2="14" y2="17" />  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                     </button>
                   </div>
@@ -71,7 +74,7 @@ import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
 import CreateUserForm from './Partials/CreateUserForm.vue';
 import EditUserForm from './Partials/EditUserForm.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
 import 'element-plus/es/components/message/style/css';
@@ -95,9 +98,10 @@ const onCloseForm = (prop) => {
   actions[prop] = false;
 };
 
-const del = (user) => {
+const del = (user, command) => {
+  let notice = 'Bạn có chắc muốn xóa' + (command == 'customers' ? ' khách hàng của' : '') + ' nhân viên này chứ?';
   ElMessageBox.confirm(
-    'Bạn có chắc muốn xóa nhân viên này chứ?',
+    notice,
     'Warning',
     {
       confirmButtonText: 'OK',
@@ -105,11 +109,12 @@ const del = (user) => {
       type: 'warning',
     }
   ).then(() => {
-    axios.delete(route('admin.users.destroy', user)).then((resp) => {
+    axios.delete(route('admin.users.destroy', {user, command})).then(({data}) => {
       ElMessage({
         type: 'success',
-        message: 'Xóa thành công',
-      })
+        message: data.msg,
+      });
+      router.reload({only: ['users']});
     }).catch(function(err) {
       console.log(err.responseText);
     });

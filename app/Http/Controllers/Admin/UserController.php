@@ -38,11 +38,18 @@ class UserController extends Controller
 
         $user->syncRoles($request->role);
 
-        return redirect()->back()->withSuccess('Cập nhật nhân viên thành công.');
+        return back()->withSuccess('Cập nhật nhân viên thành công.');
     }
 
-    public function destroy(User $user) {
-        $user->delete();
-        return response('Xóa nhân viên thành công.');
+    public function destroy(Request $request, User $user) {
+        $validated = $request->validate([
+            'command' => 'required|in:user,customers',
+        ]);
+        if ($validated['command'] == 'user') {
+            $user->delete();
+        } else {
+            $user->customers()->delete();
+        }
+        return response()->success('Xóa thành công.');
     }
 }

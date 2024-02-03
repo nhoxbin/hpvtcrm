@@ -8,26 +8,9 @@ use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -35,7 +18,7 @@ class TransactionController extends Controller
     {
         $msg = 'Không thể đăng ký gói!';
         $validated = $request->validated();
-        if ($request->user()->hasRole('Super Admin')) {
+        if ($request->user()->is_admin) {
             $customers = new Customer();
         } else {
             $customers = $request->user()->customers();
@@ -60,22 +43,6 @@ class TransactionController extends Controller
             $msg = __($regis['message']);
         }
         return response()->error($msg, 422);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Transaction $transaction)
-    {
-        //
     }
 
     /**

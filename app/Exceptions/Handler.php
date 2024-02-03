@@ -34,7 +34,7 @@ class Handler extends ExceptionHandler
         });
     }
 
-    public function render($request, Throwable $e)
+    /* public function render($request, Throwable $e)
     {
         $e = $this->mapException($e);
 
@@ -72,5 +72,5 @@ class Handler extends ExceptionHandler
             $e instanceof ValidationException => $this->convertValidationExceptionToResponse($e, $request),
             default => $this->renderExceptionResponse($request, $e),
         };
-    }
+    } */
 }

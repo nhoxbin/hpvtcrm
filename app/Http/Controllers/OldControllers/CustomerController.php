@@ -17,7 +17,7 @@ class CustomerController extends Controller
     {
         $user = Auth::user();
         $users = [];
-        if ($user->isAdmin) {
+        if ($user->is_admin) {
             $users = User::all();
         } elseif ($user->isManager) {
             $users = $user->created_users;

@@ -43,8 +43,8 @@ Route::middleware('auth')->group(function () {
     Route::get('about', fn () => Inertia::render('About'))->name('about');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
-    Route::apiResource('transactions', TransactionController::class);
-    Route::apiResource('customers', CustomerController::class);
+    Route::apiResource('transactions', TransactionController::class)->only(['store', 'update']);
+    Route::apiResource('customers', CustomerController::class)->only(['update']);
     Route::get('products', ProductController::class)->name('products.index');
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');

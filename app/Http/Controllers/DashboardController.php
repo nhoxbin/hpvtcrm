@@ -17,16 +17,15 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::user()->hasRole('Super Admin')) {
-            $customers = new Customer;
-        } else {
-            $customers = Auth::user()->customers();
-        }
-        $customers = $customers->query()->when($request->search, function($query, $search) {
-            $query->where('phone', 'like', '%' . $search . '%');
-        })->with('user')->paginate()->withQueryString();
+        $validated = $request->validate([
+            'search' => 'nullable|array',
+        ]);
+        $customers = Customer::query()->when(!Auth::user()->is_admin, function($query) {
+            $query->where('user_id', Auth::id());
+        })->when($request->search, function($query, $search) {
+            $query->where('phone', 'like', '%' . $search['customers'] . '%');
+        })->with(['user'])->paginate()->withQueryString();
         $sales_states = SalesStateEnum::trans();
-        $search = $request->search;
-        return Inertia::render('Dashboard', compact('customers', 'sales_states', 'search'));
+        return Inertia::render('Dashboard', compact('customers', 'sales_states'));
     }
 }
