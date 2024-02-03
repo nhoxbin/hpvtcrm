@@ -83,7 +83,6 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        $status = 'error';
         $confirmOtp = OneSell::confirmOtp('mobifone', $transaction->orderId, $request->otp);
         if (!empty($confirmOtp)) {
             $transaction->message = $confirmOtp['message'];
@@ -102,15 +101,12 @@ class TransactionController extends Controller
                     $transaction->customer->registered_at = now();
                     $transaction->customer->expired_at = now()->{'add' . $date_types[$expiry[2]]}($expiry[1]);
                     $transaction->customer->save();
-                    // return response()->success($confirmOtp['message']);
-                    $status = 'success';
-                } else {
-                    // return response()->error($confirmOtp['message']);
+                    return response()->success($confirmOtp['message']);
                 }
             }
             $transaction->save();
         }
-        return response()->{$status}(isset($confirmOtp['message']) ? $confirmOtp['message'] : 'Không thể xác minh OTP!', 422);
+        return response()->error($confirmOtp['message'] ?? 'Không thể xác minh OTP!', 422);
     }
 
     /**
