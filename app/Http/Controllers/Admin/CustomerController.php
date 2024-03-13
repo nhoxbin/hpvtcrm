@@ -63,25 +63,23 @@ class CustomerController extends Controller
                 $data = $row[1];
 
                 // registered_at
-                if (preg_match(' ', trim($row[2]))) {
-                    $registered_at = DateTime::createFromFormat('d/m/Y H:i:s', $row[2]);
+                if (is_numeric($row[2])) {
+                    $registered_at = Date::excelToDateTimeObject($row[2]);
                 } else {
-                    $registered_at = DateTime::createFromFormat('d/m/Y', $row[2]);
-                }
-                if (!$registered_at) {
-                    if (is_numeric($row[2])) {
-                        $registered_at = Date::excelToDateTimeObject($row[2]);
+                    if (preg_match('/(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/', trim($row[2]))) {
+                        $registered_at = DateTime::createFromFormat('d/m/Y H:i:s', $row[2]);
+                    } else {
+                        $registered_at = DateTime::createFromFormat('d/m/Y', $row[2]);
                     }
                 }
                 // expired_at
-                if (preg_match(' ', trim($row[3]))) {
-                    $expired_at = DateTime::createFromFormat('d/m/Y H:i:s', $row[3]);
+                if (is_numeric($row[3])) {
+                    $expired_at = Date::excelToDateTimeObject($row[3]);
                 } else {
-                    $expired_at = DateTime::createFromFormat('d/m/Y', $row[3]);
-                }
-                if (!$expired_at) {
-                    if (is_numeric($row[3])) {
-                        $expired_at = Date::excelToDateTimeObject($row[3]);
+                    if (preg_match('/(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/', trim($row[3]))) {
+                        $expired_at = DateTime::createFromFormat('d/m/Y H:i:s', $row[3]);
+                    } else {
+                        $expired_at = DateTime::createFromFormat('d/m/Y', $row[3]);
                     }
                 }
                 $registered_at = $registered_at->format('Y-m-d H:i:s');
