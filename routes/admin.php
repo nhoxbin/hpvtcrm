@@ -36,4 +36,15 @@ Route::group([
         	'only' => ['destroy']
         ]); */
     });
+
+    // DigiShop
+    Route::group(['middleware' => 'can:view,DigiShop'], function() {
+        // delete multiple customer
+        // Route::post('customers/delete', 'MultipleCustomersController@destroy')->name('customers.destroy');
+
+        // customer
+        Route::resource('digishop', 'DigiShopController', [
+        	'only' => ['index']
+        ]);
+    });
 });

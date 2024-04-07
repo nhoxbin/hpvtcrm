@@ -17,11 +17,14 @@
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink v-if="$page.props.auth.user.is_admin" :href="route('admin.dashboard')">
+                                <NavLink v-if="$page.props.auth.user.is_admin" :href="route('admin.dashboard')" :active="route().current('admin')">
                                     Admin
                                 </NavLink>
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
+                                </NavLink>
+                                <NavLink v-if="$page.props.auth.user.is_admin && $page.props.auth.user.permissions.some(r => r.name == 'Read DigiShop')" :href="route('digishop.index')" :active="route().current('digishop')">
+                                    DigiShop
                                 </NavLink>
                             </div>
                         </div>

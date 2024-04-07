@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasRoles;
+    use HasRoles, HasPermissions;
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -47,14 +48,14 @@ class User extends Authenticatable
     ];
 
     protected $appends = [
-        'is_admin'
+        'is_admin',
     ];
+
+    protected function getDefaultGuardName(): string { return 'web'; }
 
     protected function isAdmin() : Attribute {
         return Attribute::get(fn () => $this->hasAnyRole(['Super Admin', 'Admin']));
     }
-    
-    protected function getDefaultGuardName(): string { return 'web'; }
 
     public function created_by_user() {
         return $this->hasOne(self::class, 'created_by_user_id');
