@@ -51,6 +51,10 @@ class User extends Authenticatable
         'is_admin',
     ];
 
+    protected $with = [
+        'permissions',
+    ];
+
     protected function getDefaultGuardName(): string { return 'web'; }
 
     protected function isAdmin() : Attribute {

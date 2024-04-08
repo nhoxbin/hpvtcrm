@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Facades\VNPTDigiShop;
 use App\Models\DigiShop;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,9 @@ class DigiShopController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate(['phone_number' => 'required|string|numeric']);
+        $digishop = DigiShop::latest();
+        VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
     }
 
     /**
