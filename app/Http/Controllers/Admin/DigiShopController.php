@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\Facades\VNPTDigiShop;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DigiShop\StoreUserRequest;
-use App\Models\DigiShop;
+use App\Models\DigiShopAccount;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DigiShopController extends Controller
 {
@@ -23,7 +24,7 @@ class DigiShopController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/DigiShop/Login');
     }
 
     /**
@@ -38,9 +39,7 @@ class DigiShopController extends Controller
             if ($data['errorCode'] == 0) {
                 $item = $data['item'];
                 if (!empty($item) && $item['access_token']) {
-                    $username = $item['username'];
-                    $access_token = $item['access_token'];
-                    DigiShop::updateOrCreate(['username' => $username], ['access_token' => $access_token]);
+                    DigiShopAccount::updateOrCreate(['username' => $item['username']], ['access_token' => $item['access_token']]);
                 }
             }
         }

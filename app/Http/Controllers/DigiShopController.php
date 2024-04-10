@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Facades\VNPTDigiShop;
-use App\Models\DigiShop;
+use App\Models\DigiShopAccount;
+use App\Models\DigiShopCustomer;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DigiShopController extends Controller
 {
@@ -13,7 +15,7 @@ class DigiShopController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('DigiShop/Index');
     }
 
     /**
@@ -30,8 +32,13 @@ class DigiShopController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate(['phone_number' => 'required|string|numeric']);
-        $digishop = DigiShop::latest();
-        VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
+        $digishop = DigiShopAccount::latest();
+        $info = VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
+        DigiShopCustomer::create([
+            'tkc' => $info,
+            'first_product_name' => $info,
+            'packages' => $info,
+        ]);
     }
 
     /**

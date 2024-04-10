@@ -1,15 +1,20 @@
 <?php
 
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TransactionController;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\{
+    CustomerController,
+    DigiShopController,
+    ProductController,
+    UserController,
+    ProfileController,
+    TransactionController,
+};
+use Illuminate\Support\Facades\{
+    Artisan,
+    Log,
+    Route,
+};
 
 Route::get('artisan/{password}/{command}', function($password, $command) {
     if ($password === '74ujk6Z2wO') {
@@ -50,6 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store']);
 });
 
 require __DIR__.'/auth.php';
