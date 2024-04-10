@@ -29,7 +29,7 @@ class DigiShopAccountPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('Create DigiShop');
+        return $user->hasPermissionTo('Write DigiShop');
     }
 
     /**

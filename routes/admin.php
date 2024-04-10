@@ -40,7 +40,7 @@ Route::group([
     // DigiShop
     Route::group(['middleware' => 'can:create,App\Models\DigiShopAccount'], function() {
         Route::resource('digishop', 'DigiShopController', [
-        	'only' => ['create']
+        	'only' => ['create', 'store']
         ]);
     });
 });

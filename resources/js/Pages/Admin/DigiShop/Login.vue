@@ -6,7 +6,7 @@
       Admin Login DigiShop
     </template>
 
-    <form @submit.prevent="form.patch(route('admin.digishop.update'))" class="mt-6 space-y-6">
+    <form @submit.prevent="form.post(route('admin.digishop.store'))" class="mt-6 space-y-6">
         <div>
           <InputLabel for="username" value="Username" />
 
@@ -32,7 +32,7 @@
             class="mt-1 block w-full"
             v-model="form.password"
             required
-            autocomplete="username"
+            autocomplete="password"
           />
 
           <InputError class="mt-2" :message="form.errors.password" />
@@ -56,33 +56,21 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
-// import Pagination from '@/Components/Admin/Pagination.vue';
-// import { reactive, ref } from 'vue';
-// import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
-// import EditCustomerForm from './Partials/EditCustomerForm.vue';
-// import UploadCustomerForm from './Partials/UploadCustomerForm.vue';
-// import DeleteCustomerForm from './Partials/DeleteCustomerForm.vue';
 import 'element-plus/es/components/message/style/css';
 import 'element-plus/es/components/message-box/style/css';
 // import { ElMessage, ElMessageBox } from 'element-plus';
 // import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
-// import { Head, router } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 // import { Link } from '@inertiajs/vue3';
 
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 
-const props = defineProps({
-  auth: Object,
-  customers: Object,
-  users: Array,
-});
-
 const form = useForm({
-  name: '',
-  email: '',
+  username: '',
+  password: '',
 });
 </script>
