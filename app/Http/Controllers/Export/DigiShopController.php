@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Export;
 use App\Http\Controllers\Controller;
 use App\Models\DigiShopCustomer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -58,28 +59,23 @@ class DigiShopController extends Controller
         $sheet->setCellValue('D1', 'Gói cước sử dụng');
         $sheet->setCellValue('E1', 'Ngày hết hạn');
 
-        $authUser = $request->user();
-        if ($authUser->is_admin) {
-            $customers = DigiShopCustomer::with('user')->get();
-        }/*  else {
-            $users = $authUser->created_users->pluck('id');
-            $users->push($authUser->id);
-            $customers = Customer::whereIn('user_id', $users)->get();
-        } */
-        // Add data
-        $x = 2;
-        foreach($customers as $customer) {
-            $sheet->setCellValue('A'.$x, $customer->phone);
-            $sheet->setCellValue('B'.$x, $customer->data);
-            $sheet->setCellValue('C'.$x, $customer->registered_at);
-            $sheet->setCellValue('D'.$x, $customer->expired_at);
-            $sheet->setCellValue('E'.$x, $customer->available_data ? implode(',', $customer->available_data) : null);
-            $x++;
+        if (Auth::user()->hasPermissionTo('Read DigiShop')) {
+            $customers = DigiShopCustomer::all();
+            // Add data
+            $x = 2;
+            foreach($customers as $customer) {
+                $sheet->setCellValue('A'.$x, $customer->number_phone);
+                $sheet->setCellValue('B'.$x, $customer->tkc);
+                $sheet->setCellValue('C'.$x, $customer->first_product_name);
+                $sheet->setCellValue('D'.$x, $customer->packages['service_name']);
+                $sheet->setCellValue('E'.$x, $customer->packages['expired_at']);
+                $x++;
+            }
+            //Create file excel.xlsx
+            $writer = new Xlsx($spreadsheet);
+            $file = 'storage/data-digishop-'.date('d-m-Y', time()).'.xlsx';
+            $writer->save($file);
+            return response()->download($file)->deleteFileAfterSend();
         }
-        //Create file excel.xlsx
-        $writer = new Xlsx($spreadsheet);
-        $file = 'storage/data-digishop-'.date('d-m-Y', time()).'.xlsx';
-        $writer->save($file);
-        return response()->download($file)->deleteFileAfterSend();
     }
 }

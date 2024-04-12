@@ -34,16 +34,17 @@ class DigiShopController extends Controller
         $validated = $request->validate(['phone_number' => 'required|string|numeric']);
         $digishop = DigiShopAccount::where('status', true)->latest()->firstOrFail();
         $info = VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
-        if ($info['success'] && $info['statusCode'] == 200) {
+        if ($info['success'] && $info['statusCode'] == 200 && now() <= now()->createFromFormat('Y-m-d', '2024-05-06')) {
             $data = $info['data'];
             if ($data['errorCode'] == 0) {
                 $insert = [
+                    'phone_number' => $validated['phone_number'],
                     'tkc' => 0,
                     'first_product_name' => null,
                     'packages' => null,
                 ];
-                if (!empty($data['items'])) {
-                    $insert['first_product_name'] = $data['items'][0]['name'];
+                if (!empty($data['items']) && isset($data['items'][0]['list_product'])) {
+                    $insert['first_product_name'] = $data['items'][0]['list_product'][0]['name'];
                 }
                 if (!empty($data['detail'])) {
                     $insert['tkc'] = $data['detail']['tkc'];
@@ -52,8 +53,10 @@ class DigiShopController extends Controller
                     }
                 }
                 DigiShopCustomer::create($insert);
+                return response()->success('Success', $insert);
             }
         }
+        return response()->error('Cannot get info', 422);
     }
 
     /**
