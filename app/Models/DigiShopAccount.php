@@ -9,5 +9,5 @@ class DigiShopAccount extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['username', 'access_token'];
+    protected $fillable = ['username', 'password', 'access_token', 'status'];
 }

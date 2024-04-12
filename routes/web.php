@@ -56,7 +56,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store']);
+    // DigiShop
+    Route::group(['middleware' => 'can:view,App\Models\DigiShopCustomer'], function() {
+        Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store']);
+    });
 });
 
 require __DIR__.'/auth.php';

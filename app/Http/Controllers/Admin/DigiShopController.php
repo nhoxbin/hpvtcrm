@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helpers\Facades\VNPTDigiShop;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DigiShop\StoreUserRequest;
+use App\Http\Requests\Admin\DigiShop\StoreUserRequest;
 use App\Models\DigiShopAccount;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class DigiShopController extends Controller
@@ -24,7 +25,9 @@ class DigiShopController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/DigiShop/Login');
+        return Inertia::render('Admin/DigiShop/Login', [
+            'status' => session('status')
+        ]);
     }
 
     /**
@@ -32,6 +35,7 @@ class DigiShopController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        $is_login = true;
         $validated = $request->validated();
         $digishop = VNPTDigiShop::login($validated);
         if ($digishop['success'] && $digishop['statusCode'] == 200) {
@@ -39,10 +43,12 @@ class DigiShopController extends Controller
             if ($data['errorCode'] == 0) {
                 $item = $data['item'];
                 if (!empty($item) && $item['access_token']) {
-                    DigiShopAccount::updateOrCreate(['username' => $item['username']], ['access_token' => $item['access_token']]);
+                    $is_login = true;
+                    DigiShopAccount::updateOrCreate(['username' => $item['username']], ['password' => $validated['password'], 'access_token' => $item['access_token']]);
                 }
             }
         }
+        return Redirect::route('admin.digishop.create')->with('status', ($is_login ? 'Đăng nhập thành công!' : 'Đăng nhập không thành công!'));
     }
 
     /**

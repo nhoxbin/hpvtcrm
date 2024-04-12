@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('digi_shop_customers', function (Blueprint $table) {
             $table->id();
-            $table->string('tkc');
-            $table->string('first_product_name');
-            $table->text('packages');
+            $table->string('phone_number');
+            $table->string('tkc')->default(0);
+            $table->string('first_product_name')->nullable();
+            $table->text('packages')->nullable();
             $table->timestamps();
         });
     }

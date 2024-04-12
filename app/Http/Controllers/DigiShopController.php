@@ -32,13 +32,28 @@ class DigiShopController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate(['phone_number' => 'required|string|numeric']);
-        $digishop = DigiShopAccount::latest();
+        $digishop = DigiShopAccount::where('status', true)->latest()->firstOrFail();
         $info = VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
-        DigiShopCustomer::create([
-            'tkc' => $info,
-            'first_product_name' => $info,
-            'packages' => $info,
-        ]);
+        if ($info['success'] && $info['statusCode'] == 200) {
+            $data = $info['data'];
+            if ($data['errorCode'] == 0) {
+                $insert = [
+                    'tkc' => 0,
+                    'first_product_name' => null,
+                    'packages' => null,
+                ];
+                if (!empty($data['items'])) {
+                    $insert['first_product_name'] = $data['items'][0]['name'];
+                }
+                if (!empty($data['detail'])) {
+                    $insert['tkc'] = $data['detail']['tkc'];
+                    if (!empty($data['detail']['packages'])) {
+                        $insert['packages'] = $data['detail']['packages'][0];
+                    }
+                }
+                DigiShopCustomer::create($insert);
+            }
+        }
     }
 
     /**

@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('digi_shop_accounts', function (Blueprint $table) {
             $table->id();
             $table->string('username')->unique();
+            $table->string('password');
             $table->string('access_token');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

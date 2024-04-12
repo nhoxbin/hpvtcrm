@@ -47,7 +47,10 @@
             leave-active-class="transition ease-in-out"
             leave-to-class="opacity-0"
           >
-            <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Thành công.</p>
+            <!-- <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Thành công.</p> -->
+            <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+              {{ status }}
+            </div>
           </Transition>
         </div>
     </form>
@@ -68,6 +71,10 @@ import { Head } from '@inertiajs/vue3';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+
+const props = defineProps({
+    status: String,
+});
 
 const form = useForm({
   username: '',
