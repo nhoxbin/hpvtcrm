@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Shared\File;
 
 class DigiShopController extends Controller
 {
@@ -20,10 +21,10 @@ class DigiShopController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         // Set document properties
-        $spreadsheet->getProperties()->setCreator('hpvt.net')
-                    ->setLastModifiedBy('HPVT')
+        $spreadsheet->getProperties()->setCreator('DigiShop')
+                    ->setLastModifiedBy('DigiShop')
                     ->setTitle('data')
-                    ->setSubject('data HPVT')
+                    ->setSubject('data DigiShop')
                     ->setDescription('Export data to Excel Work for me!');
         // add style to the header
         $styleArray = array(
@@ -64,7 +65,7 @@ class DigiShopController extends Controller
             // Add data
             $x = 2;
             foreach($customers as $customer) {
-                $sheet->setCellValue('A'.$x, $customer->number_phone);
+                $sheet->setCellValue('A'.$x, $customer->phone_number);
                 $sheet->setCellValue('B'.$x, $customer->tkc);
                 $sheet->setCellValue('C'.$x, $customer->first_product_name);
                 $sheet->setCellValue('D'.$x, $customer->packages['service_name']);
@@ -73,9 +74,9 @@ class DigiShopController extends Controller
             }
             //Create file excel.xlsx
             $writer = new Xlsx($spreadsheet);
-            $file = 'storage/data-digishop-'.date('d-m-Y', time()).'.xlsx';
-            $writer->save($file);
-            return response()->download($file)->deleteFileAfterSend();
+            $path = storage_path('app/public/digishop-'.date('d-m-Y', time()).'.xlsx');
+            $writer->save($path);
+            return response()->download($path)->deleteFileAfterSend();
         }
     }
 }
