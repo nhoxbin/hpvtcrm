@@ -21,12 +21,7 @@
                                 required
                                 autofocus
                                 autocomplete="phone_numbers"
-                            >856666339
-856666323
-856666318
-856666316
-856666305
-856666304</textarea>
+                            ></textarea>
                         </div>
 
                         <div class="flex items-center gap-4">
@@ -39,8 +34,8 @@
                                 leave-to-class="opacity-0"
                             >
                                 <p v-if="1" class="text-sm text-gray-600">Saved.</p>
-                                <p v-if="1" @click="exportDigiShop" class="text-sm text-gray-600">Xuất Excel.</p>
                             </Transition>
+                            <a :href="route('digishop.export')" class="rounded-lg border border-transparent bg-purple-600 px-4 py-2 text-center text-sm font-medium leading-5 text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:ring active:bg-purple-600">Export</a>
                         </div>
                     </form>
                 </div>
@@ -65,17 +60,19 @@ defineProps({
     },
 });
 
-const phone_numbers = ref([]);
+const phone_numbers = ref('');
 
 const getInfo = () => {
     let phones = phone_numbers.value.split("\n");
     console.log(phones);
     phones.forEach(phone => {
-        axios.post(route('digishop.store', {
-            phone_number: phone
-        })).then((({data}) => {
-            products.value = data;
-        }));
+        if (phone.length > 0) {
+            axios.post(route('digishop.store', {
+                phone_number: phone
+            })).then((({data}) => {
+                products.value = data;
+            }));
+        }
     });
 }
 

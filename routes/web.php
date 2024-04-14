@@ -10,6 +10,7 @@ use App\Http\Controllers\{
     ProfileController,
     TransactionController,
 };
+use App\Http\Controllers\Export\DigiShopController as ExportDigiShopController;
 use Illuminate\Support\Facades\{
     Artisan,
     Log,
@@ -58,6 +59,7 @@ Route::middleware('auth')->group(function () {
 
     // DigiShop
     Route::group(['middleware' => 'can:view,App\Models\DigiShopCustomer'], function() {
+        Route::get('digishop/export', ExportDigiShopController::class)->name('digishop.export');
         Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store']);
     });
 });

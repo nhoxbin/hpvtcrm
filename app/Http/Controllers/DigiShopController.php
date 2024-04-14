@@ -38,7 +38,6 @@ class DigiShopController extends Controller
             $data = $info['data'];
             if ($data['errorCode'] == 0) {
                 $insert = [
-                    'phone_number' => $validated['phone_number'],
                     'tkc' => 0,
                     'first_product_name' => null,
                     'packages' => null,
@@ -52,7 +51,7 @@ class DigiShopController extends Controller
                         $insert['packages'] = $data['detail']['packages'][0];
                     }
                 }
-                DigiShopCustomer::create($insert);
+                DigiShopCustomer::updateOrCreate(['phone_number' => $validated['phone_number']], $insert);
                 return response()->success('Success', $insert);
             }
         }
