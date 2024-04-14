@@ -60,7 +60,7 @@ Route::middleware('auth')->group(function () {
     // DigiShop
     Route::group(['middleware' => 'can:view,App\Models\DigiShopCustomer'], function() {
         Route::get('digishop/export', ExportDigiShopController::class)->name('digishop.export');
-        Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store']);
+        Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store', 'destroy']);
     });
 });
 

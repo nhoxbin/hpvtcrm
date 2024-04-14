@@ -85,8 +85,8 @@ class DigiShopController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DigiShop $digiShop)
+    public function destroy(DigiShopCustomer $digiShop)
     {
-        //
+        DigiShopCustomer::truncate();
     }
 }

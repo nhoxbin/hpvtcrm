@@ -18,7 +18,6 @@
                                 class="mt-1 block w-full"
                                 v-model="phone_numbers"
                                 rows=10
-                                required
                                 autofocus
                                 autocomplete="phone_numbers"
                             ></textarea>
@@ -26,8 +25,10 @@
 
                         <div class="flex items-center gap-4">
                             <PrimaryButton :disabled="0">Lấy dữ liệu DigiShop</PrimaryButton>
+                            <DangerButton @click="deleteDigiShopCustomers" :disabled="0">Xóa hết dữ liệu khách hàng</DangerButton>
 
                             <a :href="route('digishop.export')" class="rounded-lg border border-transparent bg-purple-600 px-4 py-2 text-center text-sm font-medium leading-5 text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:ring active:bg-purple-600">Export</a>
+                            <p class="text-sm text-gray-600">{{ phones_count }}/{{ phones.length-1 }}</p>
                             <Transition
                                 enter-active-class="transition ease-in-out"
                                 enter-from-class="opacity-0"
@@ -50,26 +51,42 @@ import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { reactive, ref } from 'vue';
+import DangerButton from '@/Components/DangerButton.vue';
 
 const msg = ref('');
+const phones_count = ref(0);
 const phone_numbers = ref('');
+let phones = reactive([]);
 
 const getInfo = () => {
-    msg.value = 0;
-    let phones = phone_numbers.value.split("\n");
-    phones.every((phone, i) => {
+    msg.value = '';
+    phones = phone_numbers.value.split("\n");
+
+    for (let i = 0; i < phones.length; i++) {
+        const phone = phones[i];
         if (phone.length > 0) {
             axios.post(route('digishop.store', {
                 phone_number: phone
             })).then((({data}) => {
-                products.value = data;
-            })).catch(({response}) => {
-                msg.value = response.data.msg;
+                phones_count.value++;
+            })).catch((err) => {
+                console.log(err);
+                // msg.value = response.data.msg;
             });
         }
         if (msg.value.length) {
-            return false;
+            break;
         }
+    }
+}
+
+const deleteDigiShopCustomers = () => {
+    axios.delete(route('digishop.destroy', 1)).then((({data}) => {
+        alert('Thành công!');
+        window.location.reload();
+    })).catch((err) => {
+        console.log(err);
+        // msg.value = response.data.msg;
     });
 }
 </script>
