@@ -27,15 +27,15 @@
                         <div class="flex items-center gap-4">
                             <PrimaryButton :disabled="0">Lấy dữ liệu DigiShop</PrimaryButton>
 
+                            <a :href="route('digishop.export')" class="rounded-lg border border-transparent bg-purple-600 px-4 py-2 text-center text-sm font-medium leading-5 text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:ring active:bg-purple-600">Export</a>
                             <Transition
                                 enter-active-class="transition ease-in-out"
                                 enter-from-class="opacity-0"
                                 leave-active-class="transition ease-in-out"
                                 leave-to-class="opacity-0"
                             >
-                                <p v-if="1" class="text-sm text-gray-600">Saved.</p>
+                                <p v-if="msg.length" class="text-sm text-gray-600">{{ msg }}</p>
                             </Transition>
-                            <a :href="route('digishop.export')" class="rounded-lg border border-transparent bg-purple-600 px-4 py-2 text-center text-sm font-medium leading-5 text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:ring active:bg-purple-600">Export</a>
                         </div>
                     </form>
                 </div>
@@ -49,34 +49,27 @@ import InputLabel from '@/Components/Admin/InputLabel.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
-defineProps({
-    mustVerifyEmail: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
-});
-
+const msg = ref('');
 const phone_numbers = ref('');
 
 const getInfo = () => {
+    msg.value = 0;
     let phones = phone_numbers.value.split("\n");
-    console.log(phones);
-    phones.forEach(phone => {
+    phones.every((phone, i) => {
         if (phone.length > 0) {
             axios.post(route('digishop.store', {
                 phone_number: phone
             })).then((({data}) => {
                 products.value = data;
-            }));
+            })).catch(({response}) => {
+                msg.value = response.data.msg;
+            });
+        }
+        if (msg.value.length) {
+            return false;
         }
     });
-}
-
-const exportDigiShop = () => {
-    return 1;
 }
 </script>

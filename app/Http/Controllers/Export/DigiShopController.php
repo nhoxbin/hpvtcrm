@@ -60,23 +60,23 @@ class DigiShopController extends Controller
         $sheet->setCellValue('D1', 'Gói cước sử dụng');
         $sheet->setCellValue('E1', 'Ngày hết hạn');
 
-        if (Auth::user()->hasPermissionTo('Read DigiShop')) {
-            $customers = DigiShopCustomer::all();
-            // Add data
-            $x = 2;
-            foreach($customers as $customer) {
-                $sheet->setCellValue('A'.$x, $customer->phone_number);
-                $sheet->setCellValue('B'.$x, $customer->tkc);
-                $sheet->setCellValue('C'.$x, $customer->first_product_name);
-                $sheet->setCellValue('D'.$x, $customer->packages['service_name']);
-                $sheet->setCellValue('E'.$x, $customer->packages['expired_at']);
-                $x++;
+        $customers = DigiShopCustomer::all();
+        // Add data
+        $x = 2;
+        foreach($customers as $customer) {
+            $sheet->setCellValue('A'.$x, $customer->phone_number);
+            $sheet->setCellValue('B'.$x, $customer->tkc);
+            $sheet->setCellValue('C'.$x, $customer?->first_product_name);
+            if (!empty($customer->packages)) {
+              $sheet->setCellValue('D'.$x, $customer->packages['service_name']);
+              $sheet->setCellValue('E'.$x, $customer->packages['expired_at']);
             }
-            //Create file excel.xlsx
-            $writer = new Xlsx($spreadsheet);
-            $path = storage_path('app/public/digishop-'.date('d-m-Y', time()).'.xlsx');
-            $writer->save($path);
-            return response()->download($path)->deleteFileAfterSend();
+            $x++;
         }
+        //Create file excel.xlsx
+        $writer = new Xlsx($spreadsheet);
+        $path = storage_path('app/public/digishop-'.date('d-m-Y', time()).'.xlsx');
+        $writer->save($path);
+        return response()->download($path)->deleteFileAfterSend();
     }
 }
