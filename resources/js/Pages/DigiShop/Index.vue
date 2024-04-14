@@ -25,8 +25,6 @@
 
                         <div class="flex items-center gap-4">
                             <PrimaryButton :disabled="0">Lấy dữ liệu DigiShop</PrimaryButton>
-                            <DangerButton @click="deleteDigiShopCustomers" :disabled="0">Xóa hết dữ liệu khách hàng</DangerButton>
-
                             <a :href="route('digishop.export')" class="rounded-lg border border-transparent bg-purple-600 px-4 py-2 text-center text-sm font-medium leading-5 text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:ring active:bg-purple-600">Export</a>
                             <p class="text-sm text-gray-600">{{ phones_count }}/{{ phones.length-1 }}</p>
                             <Transition
@@ -39,6 +37,7 @@
                             </Transition>
                         </div>
                     </form>
+                    <DangerButton @click="deleteDigiShopCustomers" :disabled="0">Xóa hết dữ liệu khách hàng</DangerButton>
                 </div>
             </div>
         </div>
