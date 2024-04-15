@@ -27,7 +27,7 @@ class CheckDigiShopSession extends Command
      */
     public function handle()
     {
-        $digishop = DigiShopAccount::latest()->first();
+        $digishop = DigiShopAccount::where('status', 1)->latest()->first();
         if (!empty($digishop) && $digishop->status) {
             $is_login = VNPTDigiShop::checkSession($digishop->access_token);
             if (!$is_login) {
@@ -38,14 +38,15 @@ class CheckDigiShopSession extends Command
                     if ($data['errorCode'] == 0) {
                         $item = $data['item'];
                         if (!empty($item) && $item['access_token']) {
+                            $digishop->status = true;
                             $digishop->access_token = $item['access_token'];
                             $digishop->save();
                             return;
                         }
                     }
                 }
-
                 $digishop->status = false;
+                $digishop->access_token = NULL;
                 $digishop->save();
             }
         }
