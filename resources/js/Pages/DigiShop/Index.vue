@@ -79,7 +79,7 @@ const getInfo = async () => {
         if (msg.value.length) {
             break;
         }
-        if (i > 0 && i%4 == 0) {
+        if (i > 0 && i%8 == 0) {
             await sleep(5e3);
         }
     }
