@@ -6,6 +6,7 @@ use App\Helpers\Facades\VNPTDigiShop;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class DigiShopController extends Controller
@@ -34,7 +35,7 @@ class DigiShopController extends Controller
         $validated = $request->validate(['phone_number' => 'required|string|numeric']);
         $digishop = DigiShopAccount::where('status', true)->latest()->firstOrFail();
         $info = VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
-        if ($info['success'] && $info['statusCode'] == 200 && now() <= now()->createFromFormat('Y-m-d', '2024-05-06')) {
+        if (!empty($info) && $info['success'] && $info['statusCode'] == 200 && now() <= now()->createFromFormat('Y-m-d', '2024-05-06')) {
             $data = $info['data'];
             if ($data['errorCode'] == 0) {
                 $insert = [
@@ -54,6 +55,8 @@ class DigiShopController extends Controller
                 DigiShopCustomer::updateOrCreate(['phone_number' => $validated['phone_number']], $insert);
                 return response()->success('Success', $insert);
             }
+        } else {
+            Log::info($info);
         }
         return response()->error('Cannot get info', 422);
     }
