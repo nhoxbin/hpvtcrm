@@ -51,13 +51,16 @@ import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { reactive, ref } from 'vue';
 import DangerButton from '@/Components/DangerButton.vue';
+import { delay } from 'lodash';
 
 const msg = ref('');
 const phones_count = ref(0);
 const phone_numbers = ref('');
 let phones = reactive([]);
 
-const getInfo = () => {
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const getInfo = async () => {
     msg.value = '';
     phones = phone_numbers.value.split("\n");
 
@@ -75,6 +78,9 @@ const getInfo = () => {
         }
         if (msg.value.length) {
             break;
+        }
+        if (i > 0 && i%4 == 0) {
+            await sleep(5e3);
         }
     }
 }
