@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Helpers\Facades\VNPTDigiShop;
 use App\Models\DigiShopAccount;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class CheckDigiShopSession extends Command
 {
@@ -33,6 +34,7 @@ class CheckDigiShopSession extends Command
             if (!$is_login) {
                 $credentials = ['username' => $digishop->username, 'password' => $digishop->password];
                 $login = VNPTDigiShop::login($credentials);
+                Log::error($login);
                 if ($login['success'] && $login['statusCode'] == 200) {
                     $data = $login['data'];
                     if ($data['errorCode'] == 0) {
