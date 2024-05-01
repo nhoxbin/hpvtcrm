@@ -10,6 +10,19 @@
                 <div class="p-4 bg-white rounded-lg shadow-xs">
                     <form @submit.prevent="getInfo" class="mt-6 space-y-6">
                         <div>
+                            <InputLabel for="run_nums" value="Số chạy" />
+
+                            <TextInput
+                                id="run_nums"
+                                type="number"
+                                class="mt-1 block w-full"
+                                v-model="run_nums"
+                                required
+                                autofocus
+                                autocomplete="run_nums"
+                            />
+                        </div>
+                        <div>
                             <InputLabel for="phone_numbers" value="Phone Numbers" />
 
                             <textarea
@@ -26,7 +39,7 @@
                         <div class="flex items-center gap-4">
                             <PrimaryButton :disabled="0">Lấy dữ liệu DigiShop</PrimaryButton>
                             <a :href="route('digishop.export')" class="rounded-lg border border-transparent bg-purple-600 px-4 py-2 text-center text-sm font-medium leading-5 text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:ring active:bg-purple-600">Export</a>
-                            <p class="text-sm text-gray-600">{{ phones_count }}/{{ phones.length-1 }}</p>
+                            <p class="text-sm text-gray-600">{{ phones_count+1 }}/{{ phones.length }}</p>
                             <Transition
                                 enter-active-class="transition ease-in-out"
                                 enter-from-class="opacity-0"
@@ -44,18 +57,18 @@
     </AuthenticatedLayout>
 </template>
 <script setup>
-import InputError from '@/Components/Admin/InputError.vue';
 import InputLabel from '@/Components/Admin/InputLabel.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { reactive, ref } from 'vue';
 import DangerButton from '@/Components/DangerButton.vue';
-import { delay } from 'lodash';
+import TextInput from '@/Components/TextInput.vue';
 
 const msg = ref('');
-const phones_count = ref(0);
+const phones_count = ref(-1);
 const phone_numbers = ref('');
+const run_nums = ref('5');
 let phones = reactive([]);
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -65,6 +78,9 @@ const getInfo = async () => {
     phones = phone_numbers.value.split("\n");
 
     for (let i = 0; i < phones.length; i++) {
+        if (i > 0 && i % parseInt(run_nums.value) == 0) {
+            await sleep(5e3);
+        }
         const phone = phones[i];
         if (phone.length > 0) {
             axios.post(route('digishop.store', {
@@ -78,9 +94,6 @@ const getInfo = async () => {
         }
         if (msg.value.length) {
             break;
-        }
-        if (i > 0 && i%8 == 0) {
-            await sleep(5e3);
         }
     }
 }

@@ -5,12 +5,14 @@ use Inertia\Inertia;
 use App\Http\Controllers\{
     CustomerController,
     DigiShopController,
+    OneBssController,
     ProductController,
     UserController,
     ProfileController,
     TransactionController,
 };
 use App\Http\Controllers\Export\DigiShopController as ExportDigiShopController;
+use App\Http\Controllers\Export\OneBssController as ExportOneBssController;
 use Illuminate\Support\Facades\{
     Artisan,
     Log,
@@ -61,6 +63,12 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => 'can:view,App\Models\DigiShopCustomer'], function() {
         Route::get('digishop/export', ExportDigiShopController::class)->name('digishop.export');
         Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store', 'destroy']);
+    });
+
+    // OneBss
+    Route::group(['middleware' => 'can:view,App\Models\OneBssCustomer'], function() {
+        Route::get('OneBss/export', ExportOneBssController::class)->name('OneBss.export');
+        Route::apiResource('OneBss', OneBssController::class)->only(['index', 'store', 'destroy']);
     });
 });
 

@@ -3,7 +3,7 @@
 use App\Http\Controllers\Admin\Customer\ExportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
- 
+
 Route::group([
 	'as' => 'admin.',
 	'prefix' => 'admin',
@@ -41,6 +41,15 @@ Route::group([
     Route::group(['middleware' => 'can:create,App\Models\DigiShopAccount'], function() {
         Route::apiResource('digishop', 'DigiShopController', [
         	'only' => ['create', 'store']
+        ]);
+    });
+
+    // OneBss
+    Route::group(['middleware' => 'can:create,App\Models\OneBssAccount'], function() {
+        Route::post('login', 'OneBssController@login')->name('onebss.login');
+        Route::post('oauth-token', 'OneBssController@get_oauth_token')->name('onebss.oauth');
+        Route::apiResource('onebss', 'OneBssController', [
+        	'only' => ['create']
         ]);
     });
 });

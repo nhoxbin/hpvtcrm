@@ -40,10 +40,31 @@ class PermissionSeeder extends Seeder
                 'guard_name' => 'web',
                 'created_at' => now(),
                 'updated_at' => now(),
+            ], [
+                'name' => 'Read OneBss',
+                'guard_name' => 'web',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ], [
+                'name' => 'Write OneBss',
+                'guard_name' => 'web',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ], [
+                'name' => 'Edit OneBss',
+                'guard_name' => 'web',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ], [
+                'name' => 'Delete OneBss',
+                'guard_name' => 'web',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         ]);
 
-        User::firstWhere('username', 'nhoxbin')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
         User::firstWhere('username', 'tymcrm')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
+        User::firstWhere('username', 'hpvt')->givePermissionTo(['Read OneBss', 'Write OneBss', 'Edit OneBss', 'Delete OneBss']);
+        User::firstWhere('username', 'nhoxbin')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop', 'Read OneBss', 'Write OneBss', 'Edit OneBss', 'Delete OneBss']);
     }
 }
