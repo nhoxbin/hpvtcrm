@@ -47,7 +47,7 @@ Route::group([
     // OneBss
     Route::group(['middleware' => 'can:create,App\Models\OneBssAccount'], function() {
         Route::post('login', 'OneBssController@login')->name('onebss.login');
-        Route::post('oauth-token', 'OneBssController@get_oauth_token')->name('onebss.oauth');
+        Route::post('oauth-token', 'OneBssController@oauth')->name('onebss.oauth');
         Route::apiResource('onebss', 'OneBssController', [
         	'only' => ['create']
         ]);

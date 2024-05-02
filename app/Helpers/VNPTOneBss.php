@@ -16,6 +16,17 @@ class VNPTOneBss
             ->post();
     }
 
+    public function oauth(array $credentials)
+    {
+        $credentials["grant_type"] = "password";
+        $credentials["client_id"] = "clientapp";
+        $credentials["client_secret"] = "password";
+        return Curl::to(config('onebss.endpoint') . '/quantri/oauth/token')
+            ->withData($credentials)
+            ->asJson(true)
+            ->post();
+    }
+
     public function getInfo(string $phone_number, string $access_token)
     {
         return Curl::to(config('onebss.endpoint') . '/customer/get-info?' . http_build_query(['phone_number' => $phone_number]))

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Helpers\OneSell;
 use App\Helpers\VNPTDigiShop;
+use App\Helpers\VNPTOneBss;
 use Illuminate\Support\ServiceProvider;
 
 class HelperServiceProvider extends ServiceProvider
@@ -18,6 +19,9 @@ class HelperServiceProvider extends ServiceProvider
         });
         $this->app->singleton('VNPTDigiShop',function(){
             return new VNPTDigiShop();
+        });
+        $this->app->singleton('VNPTOneBss',function(){
+            return new VNPTOneBss();
         });
     }
 
