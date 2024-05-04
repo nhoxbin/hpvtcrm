@@ -41,22 +41,22 @@ class PermissionSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ], [
-                'name' => 'Read OneBss',
+                'name' => 'Login OneBss',
                 'guard_name' => 'web',
                 'created_at' => now(),
                 'updated_at' => now(),
             ], [
-                'name' => 'Write OneBss',
+                'name' => 'Import Excel OneBss',
                 'guard_name' => 'web',
                 'created_at' => now(),
                 'updated_at' => now(),
             ], [
-                'name' => 'Edit OneBss',
+                'name' => 'Export Excel OneBss',
                 'guard_name' => 'web',
                 'created_at' => now(),
                 'updated_at' => now(),
             ], [
-                'name' => 'Delete OneBss',
+                'name' => 'Delete Customer OneBss',
                 'guard_name' => 'web',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -64,7 +64,8 @@ class PermissionSeeder extends Seeder
         ]);
 
         User::firstWhere('username', 'tymcrm')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
-        User::firstWhere('username', 'hpvt')->givePermissionTo(['Read OneBss', 'Write OneBss', 'Edit OneBss', 'Delete OneBss']);
-        User::firstWhere('username', 'nhoxbin')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop', 'Read OneBss', 'Write OneBss', 'Edit OneBss', 'Delete OneBss']);
+        User::firstWhere('username', 'hpvt')->givePermissionTo(['Login OneBss', 'Import Excel OneBss', 'Export Excel OneBss', 'Delete Customer OneBss']);
+        User::firstWhere('username', 'nhoxbin')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop',
+                                                                    'Login OneBss', 'Import Excel OneBss', 'Export Excel OneBss', 'Delete Customer OneBss']);
     }
 }

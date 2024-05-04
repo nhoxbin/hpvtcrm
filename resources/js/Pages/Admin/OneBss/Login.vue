@@ -53,6 +53,7 @@
           />
 
           <InputError class="mt-2" :message="formOAuth.errors.otp" />
+          <InputError class="mt-2" :message="formOAuth.errors.secretCode" />
         </div>
       </section>
 
@@ -105,7 +106,7 @@ const formLogin = useForm({
 
 const formOAuth = useForm({
   username: '',
-  secretCode: props.secretCode || '',
+  secretCode: '',
   otp: '',
 });
 
@@ -118,6 +119,7 @@ async function getOTP() {
     onSuccess: () => {
       if (props.secretCode) {
         formOAuth.username = formLogin.username;
+        formOAuth.secretCode = props.secretCode;
         step.value++;
       }
     },

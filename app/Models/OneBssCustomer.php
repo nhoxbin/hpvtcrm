@@ -16,4 +16,8 @@ class OneBssCustomer extends Model
         'goi_data' => 'json',
         'sales_state' => OneBssSalesStateEnum::class,
     ];
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('one_bss_accounts', function (Blueprint $table) {
             $table->id();
             $table->string('username');
-            $table->integer('expires_in');
-            $table->text('access_token');
+            $table->integer('expires_in')->nullable();
+            $table->text('access_token')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });

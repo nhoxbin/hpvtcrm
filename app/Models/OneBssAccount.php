@@ -9,5 +9,5 @@ class OneBssAccount extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['username', 'password', 'access_token', 'status'];
+    protected $fillable = ['username', 'expires_in', 'access_token', 'user_id'];
 }

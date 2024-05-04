@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OneBss\LoginRequest;
 use App\Http\Requests\OneBss\OAuthRequest;
 use App\Models\OneBssAccount;
+use App\Models\OneBssCustomer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -17,9 +18,14 @@ class OneBssController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return Inertia::render('Admin/OneBss/Customer/Index', [
+            'customers' => OneBssCustomer::query()->with(['user'])
+                ->when($request->search, function($query, $search) {
+                    $query->where('phone', 'like', '%'.$search.'%');
+                })->paginate()->withQueryString()
+        ]);
     }
 
     /**
@@ -41,12 +47,15 @@ class OneBssController extends Controller
     {
         $validated = $request->validated();
         $onebss = VNPTOneBss::login($validated);
-        if ($onebss['error_code'] == "BSS-00000000") {
-            $data = $onebss['data'];
-            $secretCode = $data['secretCode'];
-            return Redirect::route('admin.onebss.create')->with('secretCode', $secretCode);
+        if ($onebss) {
+            if ($onebss['error_code'] == "BSS-00000000") {
+                $data = $onebss['data'];
+                $secretCode = $data['secretCode'];
+                return Redirect::route('admin.onebss.create')->with('secretCode', $secretCode);
+            }
+            return Redirect::route('admin.onebss.create')->with('status', $onebss['message']);
         }
-        return Redirect::route('admin.onebss.create')->with('status', $onebss['message']);
+        return Redirect::route('admin.onebss.create')->with('status', 'Something happen! Please try again.');
     }
 
     /**
@@ -54,14 +63,13 @@ class OneBssController extends Controller
      */
     public function oauth(OAuthRequest $request)
     {
-        $is_login = false;
         $validated = $request->validated();
         $onebss = VNPTOneBss::oauth($validated);
         if (isset($onebss['access_token'])) {
-            $is_login = true;
             OneBssAccount::updateOrCreate(['username' => $request->username], ['access_token' => $onebss['access_token'], 'expires_in' => $onebss['expires_in'], 'user_id' => Auth::id()]);
+            return Redirect::route('admin.onebss.create')->with(['status' => 'Đăng nhập thành công!', 'error' => false]);
         }
-        return Redirect::route('admin.onebss.create')->with(['status' => ($is_login ? 'Đăng nhập thành công!' : $onebss['message']), 'error' => !$is_login]);
+        return Redirect::route('admin.onebss.create')->with(['status' => $onebss ? $onebss['message'] : 'Something happen! Please try again.', 'error' => true]);
     }
 
     /**
