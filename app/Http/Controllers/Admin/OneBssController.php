@@ -6,6 +6,7 @@ use App\Helpers\Facades\VNPTOneBss;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OneBss\LoginRequest;
 use App\Http\Requests\OneBss\OAuthRequest;
+use App\Jobs\OneBssClearAuth;
 use App\Models\OneBssAccount;
 use App\Models\OneBssCustomer;
 use Illuminate\Http\Request;
@@ -66,7 +67,8 @@ class OneBssController extends Controller
         $validated = $request->validated();
         $onebss = VNPTOneBss::oauth($validated);
         if (isset($onebss['access_token'])) {
-            OneBssAccount::updateOrCreate(['username' => $request->username], ['access_token' => $onebss['access_token'], 'expires_in' => $onebss['expires_in'], 'user_id' => Auth::id()]);
+            $account = OneBssAccount::updateOrCreate(['username' => $request->username], ['access_token' => $onebss['access_token'], 'expires_in' => $onebss['expires_in'], 'user_id' => Auth::id()]);
+            OneBssClearAuth::dispatch($account)->delay($onebss['expires_in']);
             return Redirect::route('admin.onebss.create')->with(['status' => 'Đăng nhập thành công!', 'error' => false]);
         }
         return Redirect::route('admin.onebss.create')->with(['status' => $onebss ? $onebss['message'] : 'Something happen! Please try again.', 'error' => true]);
