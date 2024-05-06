@@ -13,16 +13,36 @@
         <DangerButton @click="actions.isDeleteCustomer = true">Delete</DangerButton>
       </div>
 
+      <div class="relative mb-4 flex flex-wrap items-stretch">
+          <input
+              type="text"
+              class="relative m-1 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
+              placeholder="Gói data"
+              aria-label="Gói data"
+              :value="formSearch.goi_data" />
+          <input
+              type="text"
+              class="relative m-1 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
+              placeholder="Trước ngày hết hạn"
+              aria-label="Trước ngày hết hạn"
+              :value="formSearch.expires_in" />
+          <button
+              class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
+              data-te-ripple-init
+              type="button"
+              @click="onSearching()">
+              <svg class="h-8 w-8 text-red-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <circle cx="10" cy="10" r="7" />  <line x1="21" y1="21" x2="15" y2="15" /></svg>
+          </button>
+      </div>
       <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
         <div class="overflow-x-auto w-full">
           <table class="w-full whitespace-no-wrap">
             <thead>
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase bg-gray-50 border-b">
                 <th class="px-4 py-3">Số điện thoại</th>
-                <th class="px-4 py-3">Gói hiện tại</th>
-                <th class="px-4 py-3">Ngày bắt đầu</th>
-                <th class="px-4 py-3">Ngày kết thúc</th>
-                <th class="px-4 py-3">Gói có sẵn</th>
+                <th class="px-4 py-3">Tài khoản chính</th>
+                <th class="px-4 py-3">Loại thuê bao</th>
+                <th class="px-4 py-3">Gói data</th>
                 <th class="px-4 py-3">Người làm việc</th>
                 <th class="px-4 py-3">Trạng thái</th>
                 <th class="px-4 py-3">Sales Ghi chú</th>
@@ -33,10 +53,9 @@
             <tbody class="bg-white divide-y">
               <tr v-for="customer in customers.data" :key="customer.id" class="text-gray-700">
                 <td class="px-4 py-3 text-sm">{{ customer.phone }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.data }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.registered_at }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.expired_at }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.available_data }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.core_balance }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.tra_sau == 1 ? 'Trả sau' : 'Trả trước' }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.goi_data }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.state }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
@@ -90,13 +109,21 @@ import 'element-plus/es/components/message-box/style/css';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
+import InputLabel from '@/Components/Admin/InputLabel.vue';
+import TextInput from '@/Components/Admin/TextInput.vue';
+import InputError from '@/Components/Admin/InputError.vue';
 
 const props = defineProps({
   auth: Object,
   customers: Object,
   users: Array,
+});
+
+const formSearch = useForm({
+  goi_data: '',
+  expires_in: '',
 });
 
 const currentCustomer = ref(null);
@@ -115,6 +142,13 @@ const edit = (customer) => {
   currentCustomer.value = customer;
   actions.isEditCustomer = true;
 };
+
+const onSearching = () => {
+  formSearch.get(route('admin.onebss.customers.index'), {
+    preserveScroll: true,
+    onSuccess: () => {},
+  });
+}
 
 const del = (customer) => {
   ElMessageBox.confirm(

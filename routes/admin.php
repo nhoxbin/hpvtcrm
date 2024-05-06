@@ -54,7 +54,10 @@ Route::group([
         Route::post('customers/import', OneBssController::class)->name('customers.import');
         Route::get('customers/export', OneBssController::class)->name('customers.export');
 
-        Route::apiResource('customers', 'OneBssController', [
+        /* Route::apiResource('customers', 'OneBssController', [
+        	'only' => ['index']
+        ]); */
+        Route::apiResource('customers', 'OneBssCustomerController', [
         	'only' => ['index']
         ]);
     });

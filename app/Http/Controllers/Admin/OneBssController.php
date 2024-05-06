@@ -21,12 +21,7 @@ class OneBssController extends Controller
      */
     public function index(Request $request)
     {
-        return Inertia::render('Admin/OneBss/Customer/Index', [
-            'customers' => OneBssCustomer::query()->with(['user'])
-                ->when($request->search, function($query, $search) {
-                    $query->where('phone', 'like', '%'.$search.'%');
-                })->paginate()->withQueryString()
-        ]);
+        //
     }
 
     /**
