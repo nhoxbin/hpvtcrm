@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\OneBssCustomer;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class OneBssCustomerController extends Controller
@@ -14,33 +17,23 @@ class OneBssCustomerController extends Controller
      */
     public function index(Request $request)
     {
-        dd(OneBssCustomer::query()
-        ->whereNotNull('goi_data')->with(['user'])
-        ->when($request->goi_data || $request->expires_in, function($query, $search) use ($request) {
-            if ($request->goi_data) {
-                // $query->whereJsonContains('goi_data', ["PACKAGE_NAME" => $request->goi_data]);
-                $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].PACKAGE_NAME") like "%?%"', [$request->goi_data]);
-                // $query->where('goi_data->*->PACKAGE_NAME", "'.$request->goi_data.'")');
-                // $query->where('goi_data', 'like', '%'.$request->goi_data.'%');
-            }
-            if ($request->expires_in) {
-                // $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") <= ?', [$request->expires_in]);
-            }
-        })->paginate());
         return Inertia::render('Admin/OneBss/Customer/Index', [
             'customers' => OneBssCustomer::query()
-                ->whereNotNull('goi_data')->with(['user'])
                 ->when($request->goi_data || $request->expires_in, function($query, $search) use ($request) {
                     if ($request->goi_data) {
-                        // $query->whereJsonContains('goi_data', ["PACKAGE_NAME" => $request->goi_data]);
-                        $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].PACKAGE_NAME") like "%?%"', [$request->goi_data]);
+                        $query->whereJsonContains('goi_data', ["PACKAGE_NAME" => $request->goi_data]);
+                        // $query->whereRaw('JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME") like "%?%"', [$request->goi_data]);
                         // $query->where('goi_data->*->PACKAGE_NAME", "'.$request->goi_data.'")');
                         // $query->where('goi_data', 'like', '%'.$request->goi_data.'%');
                     }
                     if ($request->expires_in) {
                         // $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") <= ?', [$request->expires_in]);
                     }
-                })->paginate()->withQueryString()
+                })
+                ->whereNotNull('goi_data')
+                ->with(['user'])
+                ->paginate()
+                ->withQueryString()
         ]);
     }
 
@@ -81,7 +74,86 @@ class OneBssCustomerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            if (in_array('all', $request->user_id)) {
+                // chia đều tất cả user
+                if ($request->user()->is_admin) {
+                    $users = User::all();
+                } else {
+                    $users = $request->user()->created_users;
+                }
+            } else {
+                // chọn nhiều user
+                $users = User::whereIn('id', $request->user_id)->get();
+            }
+
+            $customers = OneBssCustomer::query()
+                ->when($request->goi_data || $request->expires_in || $request->tra_sau, function($query, $search) use ($request) {
+                    if ($request->goi_data) {
+                        $query->whereJsonContains('goi_data', ["PACKAGE_NAME" => $request->goi_data]);
+                        // $query->whereRaw('JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME") like "%?%"', [$request->goi_data]);
+                        // $query->where('goi_data->*->PACKAGE_NAME", "'.$request->goi_data.'")');
+                        // $query->where('goi_data', 'like', '%'.$request->goi_data.'%');
+                    }
+                    if ($request->expires_in) {
+                        // $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") <= ?', [$request->expires_in]);
+                    }
+                    if ($request->tra_sau) {
+                        $query->where('tra_sau', $request->tra_sau);
+                    }
+                })
+                ->whereNotNull('goi_data')->where('is_request', 1)->get();
+
+            foreach ($customers as $customer) {
+                // đoạn code phân cho 1 người
+                if (is_numeric($request->user_id) && $request->user_id > 0) {
+                    $user_id = $request->user_id;
+                }
+                $customers[] = [
+                    'phone' => $phone,
+                    'data' => $data,
+                    'registered_at' => $registered_at,
+                    'expired_at' => $expired_at,
+                    'available_data' => json_encode($available_data),
+                    'user_id' => $user_id ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            OneBssCustomer::upsert();
+
+            // đoạn code phân cho sales
+            if (isset($users) && $users->count() > 0) {
+                $customers = Customer::where('user_id', null)->get();
+                $maxLength = intval($customers->count() / $users->count()) + 1;
+                $pos = 0;
+                foreach ($users as $key => $user) {
+                    $usersAfter = $users->count() - $key - 1;
+
+                    for ($i = 0; $i < $maxLength && $pos < $customers->count(); $i++) {
+                        if ($usersAfter > 0) {
+                            $elCountAfter = $customers->count() - $pos - 1;
+                            $maxLengthAfter = floor(($elCountAfter / $usersAfter) + 1);
+                            if ($i + 1 > $maxLengthAfter) {
+                                break;
+                            }
+                        }
+                        if (!empty($customers[$pos])) {
+                            $customers[$pos]->user_id = $user->id;
+                            $customers[$pos]->save();
+                        }
+                        $pos++;
+                    }
+                }
+            }
+            DB::commit();
+            return redirect()->route('admin.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
+        } catch(\Exception $e) {
+            DB::rollBack();
+            Log::error($e);
+            return redirect()->route('admin.customers.index')->withError('Lỗi rồi!');
+        }
     }
 
     /**
