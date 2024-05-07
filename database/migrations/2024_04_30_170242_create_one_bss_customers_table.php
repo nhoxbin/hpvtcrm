@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('tra_sau', 1)->nullable();
             $table->integer('core_balance')->default(0);
             $table->text('goi_data')->nullable();
-            $table->string('has_data', 1)->default(0);
+            $table->string('is_request', 1)->default(0);
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->enum('sales_state', OneBssSalesStateEnum::names())->nullable();
             $table->string('sales_note')->nullable();

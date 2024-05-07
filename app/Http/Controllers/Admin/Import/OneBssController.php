@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Admin\Import;
 
 use App\Http\Controllers\Controller;
-use App\Models\Customer;
 use App\Models\OneBssCustomer;
-use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -44,6 +41,7 @@ class OneBssController extends Controller
 
             $spreadsheet = $reader->load($inputFileName);
             $worksheet = $spreadsheet->getSheet(0)->toArray();
+
             $customers = [];
             $phones = [];
             foreach ($worksheet as $key => $row) {
@@ -93,14 +91,12 @@ class OneBssController extends Controller
                     $phones[] = $phone;
                     $customers[] = [
                         'phone' => $phone,
-                        'core_balance' => 0,
-                        'goi_data' => null,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
                 }
             }
-            OneBssCustomer::upsert($customers, ['phone'], ['core_balance', 'goi_data', 'created_at', 'updated_at']);
+            OneBssCustomer::upsert($customers, ['phone'], ['created_at', 'updated_at']);
 
             // đoạn code phân cho sales
             /* if (isset($users) && $users->count() > 0) {

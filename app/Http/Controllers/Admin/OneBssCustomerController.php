@@ -14,16 +14,32 @@ class OneBssCustomerController extends Controller
      */
     public function index(Request $request)
     {
+        dd(OneBssCustomer::query()
+        ->whereNotNull('goi_data')->with(['user'])
+        ->when($request->goi_data || $request->expires_in, function($query, $search) use ($request) {
+            if ($request->goi_data) {
+                // $query->whereJsonContains('goi_data', ["PACKAGE_NAME" => $request->goi_data]);
+                $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].PACKAGE_NAME") like "%?%"', [$request->goi_data]);
+                // $query->where('goi_data->*->PACKAGE_NAME", "'.$request->goi_data.'")');
+                // $query->where('goi_data', 'like', '%'.$request->goi_data.'%');
+            }
+            if ($request->expires_in) {
+                // $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") <= ?', [$request->expires_in]);
+            }
+        })->paginate());
         return Inertia::render('Admin/OneBss/Customer/Index', [
             'customers' => OneBssCustomer::query()
                 ->whereNotNull('goi_data')->with(['user'])
-                ->when($request->search, function($query, $search) {
-                    $query->where('phone', 'like', '%'.$search.'%');
-                })->when($request->goi_data, function($query, $search) {
-                    $query->whereJsonContains('goi_data', 'like', ['PACKAGE_NAME' => '%'.$search.'%']);
-                })->when($request->expires_in, function($query, $search) {
-                    $time = $search;
-                    $query->whereJsonContains('goi_data', ['TIME_END' => '%'.$search.'%']);
+                ->when($request->goi_data || $request->expires_in, function($query, $search) use ($request) {
+                    if ($request->goi_data) {
+                        // $query->whereJsonContains('goi_data', ["PACKAGE_NAME" => $request->goi_data]);
+                        $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].PACKAGE_NAME") like "%?%"', [$request->goi_data]);
+                        // $query->where('goi_data->*->PACKAGE_NAME", "'.$request->goi_data.'")');
+                        // $query->where('goi_data', 'like', '%'.$request->goi_data.'%');
+                    }
+                    if ($request->expires_in) {
+                        // $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") <= ?', [$request->expires_in]);
+                    }
                 })->paginate()->withQueryString()
         ]);
     }

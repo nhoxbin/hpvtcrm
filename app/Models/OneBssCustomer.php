@@ -10,7 +10,7 @@ class OneBssCustomer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['phone', 'tra_sau', 'core_balance', 'has_data', 'goi_data', 'user_id', 'sales_state', 'sales_note', 'admin_note'];
+    protected $fillable = ['phone', 'tra_sau', 'core_balance', 'is_request', 'goi_data', 'user_id', 'sales_state', 'sales_note', 'admin_note'];
 
     protected $casts = [
         'goi_data' => 'json',

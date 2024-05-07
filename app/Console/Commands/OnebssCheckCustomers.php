@@ -35,7 +35,7 @@ class OnebssCheckCustomers extends Command
         if ($account != null) {
             $token = $account->access_token;
             $concurrent = 20;
-            $customers = OneBssCustomer::whereNull('goi_data')->where('has_data', false)->get();
+            $customers = OneBssCustomer::whereNull('goi_data')->where('is_request', 0)->get();
             $upsert = [];
 
             Http::mixin(new HttpMixin());
@@ -61,7 +61,7 @@ class OnebssCheckCustomers extends Command
                             'tra_sau' => (string) $data['TRA_SAU'],
                             'goi_data' => !empty($goi_data) ? json_encode($goi_data) : null,
                             'core_balance' => 0,
-                            'has_data' => empty($goi_data) ? '0' : '1',
+                            'is_request' => 1,
                         ];
                     }
                 }
@@ -84,7 +84,7 @@ class OnebssCheckCustomers extends Command
             );
             $this->info(microtime(true) - $start);
             $upsert = array_values($upsert);
-            OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'has_data']);
+            OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
             $this->info('DONE');
         }
     }

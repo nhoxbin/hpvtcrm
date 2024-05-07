@@ -29,7 +29,7 @@ class DatabaseServiceProvider extends ServiceProvider
     public function boot()
     {
         // log db queries
-        if (!config('app.debug')) {
+        if (config('app.debug')) {
             $logFile = storage_path('logs/db/laravel.log');
             $custom_log = new Logger('log');
             $custom_log->pushHandler(
