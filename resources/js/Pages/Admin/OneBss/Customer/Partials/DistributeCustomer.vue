@@ -1,11 +1,11 @@
 <template>
   <div>
-    <Modal :show="isUploadCustomer" @close="closeModal">
+    <Modal :show="isDistributeCustomer" @close="closeModal">
       <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
         <!-- Modal header -->
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
           <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-            Tải lên tệp khách hàng
+            Phân phối khách hàng đến sales
           </h3>
           <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" @click="closeModal">
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -17,10 +17,10 @@
         <!-- Modal body -->
         <div class="p-4 md:p-5">
           <form class="space-y-4" @submit.prevent="submit">
-            <input type="file" @input="form.excel = $event.target.files[0]" class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-            <progress v-if="form.progress" :value="form.progress.percentage" max="100">
-              {{ form.progress.percentage }}%
-            </progress>
+            <select class="form-control" v-model="form.user_id" multiple size="10">
+              <option value="all">Chia đều</option>
+              <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+            </select>
             <button type="submit" :disabled="form.processing" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tải lên</button>
           </form>
         </div>
@@ -35,13 +35,13 @@ import { router, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
   users: Array,
-  isUploadCustomer: Boolean
+  isDistributeCustomer: Boolean
 });
 
 const emit = defineEmits(['closeForm']);
 
 const closeModal = () => {
-  emit('closeForm', 'isUploadCustomer');
+  emit('closeForm', 'isDistributeCustomer');
 
   form.reset();
 

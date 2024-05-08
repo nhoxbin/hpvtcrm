@@ -9,8 +9,9 @@
     <div class="p-4 bg-white rounded-lg shadow-xs">
       <div class="mb-4 w-full">
         <SecondaryButton @click="actions.isUploadCustomer = true">Upload</SecondaryButton>
-        <a :href="route('admin.customers.export')" class="rounded-lg border border-transparent bg-purple-600 px-4 py-2 text-center text-sm font-medium leading-5 text-white transition-colors duration-150 hover:bg-purple-700 focus:outline-none focus:ring active:bg-purple-600">Export</a>
+        <PrimaryButton @click="exportExcel(route('admin.onebss.customers.export'))">Export</PrimaryButton>
         <DangerButton @click="actions.isDeleteCustomer = true">Delete</DangerButton>
+        <PrimaryButton @click="actions.isDistributeCustomer = true">Phân phối</PrimaryButton>
       </div>
 
       <div class="relative mb-4 flex flex-wrap items-stretch">
@@ -43,6 +44,7 @@
                 <th class="px-4 py-3">Tài khoản chính</th>
                 <th class="px-4 py-3">Loại thuê bao</th>
                 <th class="px-4 py-3">Gói data</th>
+                <th class="px-4 py-3">Ngày hết hạn</th>
                 <th class="px-4 py-3">Người làm việc</th>
                 <th class="px-4 py-3">Trạng thái</th>
                 <th class="px-4 py-3">Sales Ghi chú</th>
@@ -53,9 +55,10 @@
             <tbody class="bg-white divide-y">
               <tr v-for="customer in customers.data" :key="customer.id" class="text-gray-700">
                 <td class="px-4 py-3 text-sm">{{ customer.phone }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.core_balance }}</td>
+                <td class="px-4 py-3 text-sm">{{ vnd_format(customer.core_balance) }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.tra_sau == 1 ? 'Trả sau' : 'Trả trước' }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.goi_data }}</td>
+                <td class="px-4 py-3 text-sm">{{ get_goidata(customer.goi_data) }}</td>
+                <td class="px-4 py-3 text-sm">{{ get_expires_date(customer.goi_data) }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.state }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
@@ -93,6 +96,7 @@
     <EditCustomerForm v-if="actions.isEditCustomer" :isEditCustomer="actions.isEditCustomer" :customer="currentCustomer" @closeForm="onCloseForm"></EditCustomerForm>
     <UploadCustomerForm :users="users" :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm"></UploadCustomerForm>
     <DeleteCustomerForm :isDeleteCustomer="actions.isDeleteCustomer" @closeForm="onCloseForm"></DeleteCustomerForm>
+    <DistributeCustomer :is="actions.isDistributeCustomer" @closeForm="onCloseForm"></DistributeCustomer>
   </AuthenticatedLayout>
 </template>
 
@@ -108,12 +112,9 @@ import 'element-plus/es/components/message/style/css';
 import 'element-plus/es/components/message-box/style/css';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import DangerButton from '@/Components/DangerButton.vue';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
+import DistributeCustomer from './Partials/DistributeCustomer.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
-import { Head, router, useForm, usePage } from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3';
-import InputLabel from '@/Components/Admin/InputLabel.vue';
-import TextInput from '@/Components/Admin/TextInput.vue';
-import InputError from '@/Components/Admin/InputError.vue';
 
 const props = defineProps({
   auth: Object,
@@ -143,7 +144,21 @@ const actions = reactive({
   isUploadCustomer: false,
   isEditCustomer: false,
   isDeleteCustomer: false,
+  isDistributeCustomer: false,
 });
+
+const vnd_format = (num) => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
+}
+const get_goidata = (goi_data) => {
+  return _.join(_.map(goi_data, 'SERVICES'), "\n");
+};
+const get_expires_date = (goi_data) => {
+  return _.join(_.map(goi_data, 'TIME_END'), "\n");
+};
+const exportExcel = (url) => {
+  document.location = url
+};
 
 const onCloseForm = (prop) => {
   actions[prop] = false;

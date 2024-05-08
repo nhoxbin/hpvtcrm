@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\OneBss;
 
 use App\Helpers\Facades\VNPTOneBss;
 use App\Http\Controllers\Controller;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
-class OneBssController extends Controller
+class OAuthController extends Controller
 {
     /**
      * Display a listing of the resource.

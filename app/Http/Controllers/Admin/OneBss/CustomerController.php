@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\OneBss;
 
 use App\Http\Controllers\Controller;
 use App\Models\OneBssCustomer;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class OneBssCustomerController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.

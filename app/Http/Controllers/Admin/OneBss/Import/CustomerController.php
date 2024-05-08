@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Import;
+namespace App\Http\Controllers\Admin\OneBss\Import;
 
 use App\Http\Controllers\Controller;
 use App\Models\OneBssCustomer;
@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class OneBssController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Handle the incoming request.

@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\Customer\ExportController;
-use App\Http\Controllers\Admin\Import\OneBssController;
+use App\Http\Controllers\Admin\OneBss\Export\CustomerController as ExportCustomerController;
+use App\Http\Controllers\Admin\OneBss\Import\CustomerController as ImportCustomerController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -47,17 +48,14 @@ Route::group([
     });
 
     // OneBss
-    Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'middleware' => 'can:create,App\Models\OneBssAccount'], function() {
-        Route::get('login', 'OneBssController@create')->name('create');
-        Route::post('login', 'OneBssController@login')->name('login');
-        Route::post('oauth', 'OneBssController@oauth')->name('oauth');
-        Route::post('customers/import', OneBssController::class)->name('customers.import');
-        Route::get('customers/export', OneBssController::class)->name('customers.export');
+    Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'can:create,App\Models\OneBssAccount'], function() {
+        Route::get('login', 'OAuthController@create')->name('create');
+        Route::post('login', 'OAuthController@login')->name('login');
+        Route::post('oauth', 'OAuthController@oauth')->name('oauth');
+        Route::post('customers/import', ImportCustomerController::class)->name('customers.import');
+        Route::get('customers/export', ExportCustomerController::class)->name('customers.export');
 
-        /* Route::apiResource('customers', 'OneBssController', [
-        	'only' => ['index']
-        ]); */
-        Route::apiResource('customers', 'OneBssCustomerController', [
+        Route::apiResource('customers', 'CustomerController', [
         	'only' => ['index']
         ]);
     });
