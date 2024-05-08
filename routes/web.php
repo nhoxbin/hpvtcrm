@@ -13,6 +13,7 @@ use App\Http\Controllers\{
 };
 use App\Http\Controllers\Export\DigiShopController as ExportDigiShopController;
 use App\Http\Controllers\Export\OneBssController as ExportOneBssController;
+use App\Http\Controllers\OneBss\Export\CustomerController as ExportCustomerController;
 use Illuminate\Support\Facades\{
     Artisan,
     Log,
@@ -66,9 +67,9 @@ Route::middleware('auth')->group(function () {
     });
 
     // OneBss
-    Route::group(['middleware' => 'can:view,App\Models\OneBssCustomer'], function() {
-        Route::get('OneBss/export', ExportOneBssController::class)->name('OneBss.export');
-        Route::apiResource('OneBss', OneBssController::class)->only(['index', 'store', 'destroy']);
+    Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'can:view,App\Models\OneBssCustomer'], function() {
+        Route::get('onebss/export', ExportCustomerController::class)->name('OneBss.export');
+        Route::apiResource('onebss', OneBssController::class)->only(['index', 'store', 'destroy']);
     });
 });
 

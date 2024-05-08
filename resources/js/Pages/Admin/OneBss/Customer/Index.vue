@@ -96,7 +96,7 @@
     <EditCustomerForm v-if="actions.isEditCustomer" :isEditCustomer="actions.isEditCustomer" :customer="currentCustomer" @closeForm="onCloseForm"></EditCustomerForm>
     <UploadCustomerForm :users="users" :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm"></UploadCustomerForm>
     <DeleteCustomerForm :isDeleteCustomer="actions.isDeleteCustomer" @closeForm="onCloseForm"></DeleteCustomerForm>
-    <DistributeCustomer :is="actions.isDistributeCustomer" @closeForm="onCloseForm"></DistributeCustomer>
+    <DistributeCustomerForm :is="actions.isDistributeCustomer" @closeForm="onCloseForm"></DistributeCustomerForm>
   </AuthenticatedLayout>
 </template>
 
@@ -112,8 +112,8 @@ import 'element-plus/es/components/message/style/css';
 import 'element-plus/es/components/message-box/style/css';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import DangerButton from '@/Components/DangerButton.vue';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
-import DistributeCustomer from './Partials/DistributeCustomer.vue';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import DistributeCustomer from './Partials/DistributeCustomerForm.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 
 const props = defineProps({
