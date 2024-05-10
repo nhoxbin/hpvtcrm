@@ -93,10 +93,10 @@
       </div>
     </div>
 
-    <EditCustomerForm v-if="actions.isEditCustomer" :isEditCustomer="actions.isEditCustomer" :customer="currentCustomer" @closeForm="onCloseForm"></EditCustomerForm>
-    <UploadCustomerForm :users="users" :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm"></UploadCustomerForm>
-    <DeleteCustomerForm :isDeleteCustomer="actions.isDeleteCustomer" @closeForm="onCloseForm"></DeleteCustomerForm>
-    <DistributeCustomerForm :is="actions.isDistributeCustomer" @closeForm="onCloseForm"></DistributeCustomerForm>
+    <EditCustomerForm v-if="actions.isEditCustomer" :isEditCustomer="actions.isEditCustomer" :customer="currentCustomer" @closeForm="onCloseForm" />
+    <UploadCustomerForm :users="users" :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm" />
+    <DeleteCustomerForm :isDeleteCustomer="actions.isDeleteCustomer" @closeForm="onCloseForm" />
+    <DistributeCustomerForm :is="actions.isDistributeCustomer" @closeForm="onCloseForm" />
   </AuthenticatedLayout>
 </template>
 
@@ -113,7 +113,7 @@ import 'element-plus/es/components/message-box/style/css';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import DangerButton from '@/Components/DangerButton.vue';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
-import DistributeCustomer from './Partials/DistributeCustomerForm.vue';
+import DistributeCustomerForm from './Partials/DistributeCustomerForm.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 
 const props = defineProps({

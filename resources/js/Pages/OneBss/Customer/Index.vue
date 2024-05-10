@@ -227,7 +227,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Admin/Pagination.vue';
-import EditCustomerForm from './Customer/Partials/EditCustomerForm.vue';
+import EditCustomerForm from './Partials/EditCustomerForm.vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import 'element-plus/es/components/message/style/css';
