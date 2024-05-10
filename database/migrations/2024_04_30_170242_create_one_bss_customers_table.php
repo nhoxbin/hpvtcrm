@@ -23,7 +23,7 @@ return new class extends Migration
             $table->enum('sales_state', OneBssSalesStateEnum::names())->nullable();
             $table->string('sales_note')->nullable();
             $table->string('admin_note')->nullable();
-            $table->index(['phone', 'tra_sau', 'goi_data', 'is_request'], 'phone_trasau_goidata_isrequest_IDX');
+            $table->index(['phone', 'tra_sau', 'is_request'], 'phone_trasau_isrequest_IDX');
             $table->timestamps();
         });
     }
