@@ -35,7 +35,7 @@ class DigiShopController extends Controller
         $validated = $request->validate(['phone_number' => 'required|string|numeric']);
         $digishop = DigiShopAccount::where('status', true)->latest()->firstOrFail();
         $info = VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
-        if (!empty($info) && $info['success'] && $info['statusCode'] == 200) {
+        if (!empty($info) && $info['success'] && $info['statusCode'] == 200 && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')) {
             $data = $info['data'];
             if ($data['errorCode'] == 0) {
                 $insert = [
