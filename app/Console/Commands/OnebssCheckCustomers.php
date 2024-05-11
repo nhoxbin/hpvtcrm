@@ -83,7 +83,9 @@ class OnebssCheckCustomers extends Command
                         if ($balance[1]['error_code'] == 'BSS-00000000') {
                             $data = $balance[1]['data'];
                             $key = array_search('1', array_column($data, 'ID'));
-                            $upsert[$balance[0]]['core_balance'] = $data[$key]['REMAIN'];
+                            if (isset($upsert[$balance[0]])) {
+                                $upsert[$balance[0]]['core_balance'] = $data[$key]['REMAIN'];
+                            }
                         }
                     }
                 );
