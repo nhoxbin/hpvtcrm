@@ -31,7 +31,7 @@ class OnebssCheckCustomers extends Command
      */
     public function handle()
     {
-        $account = OneBssAccount::whereNotNull('access_token')->latest();
+        $account = OneBssAccount::whereNotNull('access_token')->latest()->first();
         if ($account != null) {
             $token = $account->access_token;
             $concurrent = 20;
