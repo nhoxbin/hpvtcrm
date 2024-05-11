@@ -31,7 +31,7 @@ class OnebssCheckCustomers extends Command
      */
     public function handle()
     {
-        $account = OneBssAccount::whereNotNull('access_token')->first();
+        $account = OneBssAccount::whereNotNull('access_token')->latest();
         if ($account != null) {
             $token = $account->access_token;
             $concurrent = 20;
@@ -47,7 +47,7 @@ class OnebssCheckCustomers extends Command
                         yield $pool->async()->withHeader('app-secret', config('onebss.app_secret'))->withToken($token)->post(config('onebss.endpoint') . '/ccbs/oneBss/app_tb_tc_thongtin', ['so_tb' => $customer->phone, 'service' => 'SIM4G'])->then(fn($response) => $response->json());
                     }
                 },
-                function ($info) use (&$upsert) {
+                function ($info) use (&$upsert, $account) {
                     if ($info['error_code'] == 'BSS-00000000') {
                         $data = $info['data'];
                         $goi_data = null;
@@ -63,28 +63,34 @@ class OnebssCheckCustomers extends Command
                             'core_balance' => 0,
                             'is_request' => 1,
                         ];
+                    } elseif ($info['error_code'] == 'BSS-00000401') {
+                        $account->access_token = null;
+                        $account->expires = null;
+                        $account->save();
                     }
                 }
             );
 
-            Http::concurrent(
-                $concurrent,
-                function (Pool $pool) use ($customers, $token): Generator {
-                    foreach ($customers as $customer) {
-                        yield $pool->async()->withHeaders(['app-secret' => config('onebss.app_secret')])->withToken($token)->post(config('onebss.endpoint') . '/ccbs/didong/taikhoan-tien', ['so_tb' => $customer->phone])->then(fn($response) => [$customer->phone, $response->json()]);
+            if ($account->access_token) {
+                Http::concurrent(
+                    $concurrent,
+                    function (Pool $pool) use ($customers, $token): Generator {
+                        foreach ($customers as $customer) {
+                            yield $pool->async()->withHeaders(['app-secret' => config('onebss.app_secret')])->withToken($token)->post(config('onebss.endpoint') . '/ccbs/didong/taikhoan-tien', ['so_tb' => $customer->phone])->then(fn($response) => [$customer->phone, $response->json()]);
+                        }
+                    },
+                    function ($balance) use (&$upsert) {
+                        if ($balance[1]['error_code'] == 'BSS-00000000') {
+                            $data = $balance[1]['data'];
+                            $key = array_search('1', array_column($data, 'ID'));
+                            $upsert[$balance[0]]['core_balance'] = $data[$key]['REMAIN'];
+                        }
                     }
-                },
-                function ($balance) use (&$upsert) {
-                    if ($balance[1]['error_code'] == 'BSS-00000000') {
-                        $data = $balance[1]['data'];
-                        $key = array_search('1', array_column($data, 'ID'));
-                        $upsert[$balance[0]]['core_balance'] = $data[$key]['REMAIN'];
-                    }
-                }
-            );
-            $this->info(microtime(true) - $start);
-            $upsert = array_values($upsert);
-            OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
+                );
+                $this->info(microtime(true) - $start);
+                $upsert = array_values($upsert);
+                OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
+            }
             $this->info('DONE');
         }
     }

@@ -11,8 +11,11 @@
         <SecondaryButton @click="actions.isUploadCustomer = true">Upload</SecondaryButton>
         <PrimaryButton @click="actions.isDistributeCustomer = true">Phân phối</PrimaryButton>
         <PrimaryButton @click="exportExcel(route('admin.onebss.customers.export'))">Export</PrimaryButton>
-        <label for="total">{{ running + '/' + total }}</label>
+        <label for="process">{{ process_customers['processing'] + '/' + process_customers['total'] }}</label>
         <DangerButton class="float-right" @click="actions.isDeleteCustomer = true">Delete</DangerButton>
+      </div>
+      <div class="mb-4 w-full">
+        <label for="auth_status">{{ auth_status }}</label>
       </div>
 
       <div class="relative mb-4 flex flex-wrap items-stretch">
@@ -125,8 +128,8 @@ const props = defineProps({
   msg: String,
   goi_data: String,
   expires_in: String,
-  total: Number,
-  running: Number,
+  process_customers: Array,
+  auth_status: String,
 });
 
 if (props.msg) {

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin\OneBss;
 
 use App\Http\Controllers\Controller;
+use App\Models\OneBssAccount;
 use App\Models\OneBssCustomer;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +20,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
+        $session = $request->user()->onebss_account()->whereNotNull('access_token')->first();
         return Inertia::render('Admin/OneBss/Customer/Index', [
             'customers' => OneBssCustomer::query()
                 ->when($request->goi_data || $request->expires_in, function($query, $search) use ($request) {
@@ -34,8 +37,8 @@ class CustomerController extends Controller
                 ->with(['user'])
                 ->paginate()
                 ->withQueryString(),
-            'total' => DB::table((new OneBssCustomer)->getTable())->count(),
-            'running' => DB::table((new OneBssCustomer)->getTable())->where('is_request', 1)->count(),
+            'process_customers' => DB::select('call process_customers()')[0],
+            'auth_status' => $session ? 'Phiên làm việc OneBss còn: ' . $session->updated_at->addSeconds($session->expires_in) : 'Phiên làm việc OneBss đã hết hiệu lực, Vui lòng đăng nhập!',
         ]);
     }
 
