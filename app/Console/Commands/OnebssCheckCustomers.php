@@ -37,6 +37,7 @@ class OnebssCheckCustomers extends Command
             $concurrent = 20;
             $customers = OneBssCustomer::whereNull('goi_data')->where('is_request', 0)->get();
             $upsert = [];
+            $delete = [];
 
             Http::mixin(new HttpMixin());
             $start = microtime(true);
@@ -44,12 +45,12 @@ class OnebssCheckCustomers extends Command
                 $concurrent,
                 function (Pool $pool) use ($customers, $token): Generator {
                     foreach ($customers as $customer) {
-                        yield $pool->async()->withHeader('app-secret', config('onebss.app_secret'))->withToken($token)->post(config('onebss.endpoint') . '/ccbs/oneBss/app_tb_tc_thongtin', ['so_tb' => $customer->phone, 'service' => 'SIM4G'])->then(fn($response) => $response->json());
+                        yield $pool->async()->withHeader('app-secret', config('onebss.app_secret'))->withToken($token)->post(config('onebss.endpoint') . '/ccbs/oneBss/app_tb_tc_thongtin', ['so_tb' => $customer->phone, 'service' => 'SIM4G'])->then(fn($response) => [$customer->phone, $response->json()]);
                     }
                 },
-                function ($info) use (&$upsert, $account) {
-                    if ($info['error_code'] == 'BSS-00000000') {
-                        $data = $info['data'];
+                function ($info) use (&$upsert, &$delete, $account) {
+                    if ($info[1]['error_code'] == 'BSS-00000000') {
+                        $data = $info[1]['data'];
                         $goi_data = null;
                         if ($data['TRA_SAU'] == 0) {
                             $goi_data = $data['GOI_CUOC'];
@@ -63,7 +64,9 @@ class OnebssCheckCustomers extends Command
                             'core_balance' => 0,
                             'is_request' => 1,
                         ];
-                    } elseif ($info['error_code'] == 'BSS-00000401') {
+                    } elseif ($info[1]['error_code'] == 'BSS-0000420') {
+                        $delete[] = $info[0];
+                    } elseif ($info[1]['error_code'] == 'BSS-00000401') {
                         $account->access_token = null;
                         $account->expires = null;
                         $account->save();
@@ -71,7 +74,7 @@ class OnebssCheckCustomers extends Command
                 }
             );
 
-            if ($account->access_token) {
+            if ($account->access_token && !empty($upsert)) {
                 Http::concurrent(
                     $concurrent,
                     function (Pool $pool) use ($customers, $token): Generator {
@@ -92,6 +95,9 @@ class OnebssCheckCustomers extends Command
                 $this->info(microtime(true) - $start);
                 $upsert = array_values($upsert);
                 OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
+            }
+            if (!empty($delete)) {
+                OneBssCustomer::whereIn('phone', $delete)->delete();
             }
             $this->info('DONE');
         }
