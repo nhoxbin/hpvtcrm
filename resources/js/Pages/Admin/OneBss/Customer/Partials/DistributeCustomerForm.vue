@@ -16,12 +16,12 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5">
-          <form class="space-y-4" @submit.prevent="submit">
-            <select class="form-control" v-model="form.user_id" multiple size="10">
+          <form class="max-w-sm mx-auto" @submit.prevent="submit">
+            <select v-model="form.user_id" multiple size="10" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
               <option value="all">Chia đều</option>
               <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
             </select>
-            <button type="submit" :disabled="form.processing" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tải lên</button>
+            <button type="submit" :disabled="form.processing" class="mt-2 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Phân phối</button>
           </form>
         </div>
       </div>
@@ -31,7 +31,7 @@
 
 <script setup>
 import Modal from '@/Components/Admin/Modal.vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
   users: Array,
@@ -47,14 +47,17 @@ const closeModal = () => {
 
   router.reload({only: ['customers']});
 };
+const page = usePage();
 
 const form = useForm({
   excel: null,
   user_id: ['all'],
+  goi_data: page.props.query.goi_data || '',
+  expires_in: page.props.query.expires_in || '',
 });
 
 const submit = () => {
-  form.post(route('admin.onebss.customers.import'), {
+  form.put(route('admin.onebss.customers.distribute'), {
     preserveScroll: true,
     onSuccess: () => closeModal(),
   });

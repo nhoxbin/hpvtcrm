@@ -35,7 +35,7 @@ class OnebssCheckCustomers extends Command
         if ($account != null) {
             $token = $account->access_token;
             $concurrent = 20;
-            $customers = OneBssCustomer::whereNull('goi_data')->where('is_request', 0)->get();
+            $customers = OneBssCustomer::where('is_request', 0)->limit(100)->get();
             $upsert = [];
             $delete = [];
 
@@ -49,21 +49,20 @@ class OnebssCheckCustomers extends Command
                     }
                 },
                 function ($info) use (&$upsert, &$delete, $account) {
+                    $this->info('Processing: ' . $info[0]);
                     if ($info[1]['error_code'] == 'BSS-00000000') {
                         $data = $info[1]['data'];
-                        $goi_data = null;
-                        if ($data['TRA_SAU'] == 0) {
-                            $goi_data = $data['GOI_CUOC'];
+                        if (!empty($data['GOI_CUOC_TS'])) {
+                            $upsert[$data['SO_TB']] = [
+                                'phone' => $data['SO_TB'],
+                                'tra_sau' => (string) $data['TRA_SAU'],
+                                'goi_data' => json_encode($data['GOI_CUOC_TS']),
+                                'core_balance' => 0,
+                                'is_request' => 1,
+                            ];
                         } else {
-                            $goi_data = $data['GOI_DATA'];
+                            $delete[] = $info[0];
                         }
-                        $upsert[$data['SO_TB']] = [
-                            'phone' => $data['SO_TB'],
-                            'tra_sau' => (string) $data['TRA_SAU'],
-                            'goi_data' => !empty($goi_data) ? json_encode($goi_data) : null,
-                            'core_balance' => 0,
-                            'is_request' => 1,
-                        ];
                     } elseif ($info[1]['error_code'] == 'BSS-0000420') {
                         $delete[] = $info[0];
                     } elseif ($info[1]['error_code'] == 'BSS-00000401') {
@@ -93,13 +92,14 @@ class OnebssCheckCustomers extends Command
                     }
                 );
                 $this->info(microtime(true) - $start);
-                $upsert = array_values($upsert);
                 OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
             }
             if (!empty($delete)) {
                 OneBssCustomer::whereIn('phone', $delete)->delete();
             }
             $this->info('DONE');
+        } else {
+            $this->info('Access Token Expired!');
         }
     }
 }

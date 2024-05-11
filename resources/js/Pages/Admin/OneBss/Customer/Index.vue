@@ -11,11 +11,13 @@
         <SecondaryButton @click="actions.isUploadCustomer = true">Upload</SecondaryButton>
         <PrimaryButton @click="actions.isDistributeCustomer = true">Phân phối</PrimaryButton>
         <PrimaryButton @click="exportExcel(route('admin.onebss.customers.export'))">Export</PrimaryButton>
-        <label for="process">{{ process_customers['processing'] + '/' + process_customers['total'] }}</label>
         <DangerButton class="float-right" @click="actions.isDeleteCustomer = true">Delete</DangerButton>
       </div>
       <div class="mb-4 w-full">
         <label for="auth_status">{{ auth_status }}</label>
+      </div>
+      <div class="mb-4 w-full">
+        <label for="process">Đã chạy: {{ process_customers['processing'] + '/' + process_customers['total'] }}</label>
       </div>
 
       <div class="relative mb-4 flex flex-wrap items-stretch">
@@ -98,9 +100,9 @@
     </div>
 
     <EditCustomerForm v-if="actions.isEditCustomer" :isEditCustomer="actions.isEditCustomer" :customer="currentCustomer" @closeForm="onCloseForm" />
-    <UploadCustomerForm :users="users" :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm" />
+    <UploadCustomerForm :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm" />
     <DeleteCustomerForm :isDeleteCustomer="actions.isDeleteCustomer" @closeForm="onCloseForm" />
-    <DistributeCustomerForm :is="actions.isDistributeCustomer" @closeForm="onCloseForm" />
+    <DistributeCustomerForm :expires_in="formSearch.expires_in" :users="users" :isDistributeCustomer="actions.isDistributeCustomer" @closeForm="onCloseForm" />
   </AuthenticatedLayout>
 </template>
 
@@ -126,9 +128,8 @@ const props = defineProps({
   customers: Object,
   users: Array,
   msg: String,
-  goi_data: String,
-  expires_in: String,
-  process_customers: Array,
+  error: String,
+  process_customers: Object,
   auth_status: String,
 });
 
@@ -136,6 +137,12 @@ if (props.msg) {
   ElMessage({
     type: 'info',
     message: props.msg,
+  });
+}
+if (props.error) {
+  ElMessage({
+    type: 'info',
+    message: props.error,
   });
 }
 const page = usePage();

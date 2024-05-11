@@ -23,7 +23,7 @@ class UserController extends Controller
     }
 
     public function store(StoreUserRequest $request) {
-        $user = User::create($request->safe()->except(['role']) + ['created_by_user_id' => Auth::id()]);
+        $user = User::create(array_merge($request->safe()->except(['role']), ['created_by_user_id' => Auth::id()]));
         $user->assignRole($request->safe()->only(['role']));
         return redirect()->route('admin.users.index')->with('msg', __('Thêm mới nhân viên thành công.'));
     }

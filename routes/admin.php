@@ -55,6 +55,7 @@ Route::group([
         Route::post('customers/import', ImportCustomerController::class)->name('customers.import');
         Route::get('customers/export', ExportCustomerController::class)->name('customers.export');
 
+        Route::put('customers/distribute', 'DistributeController')->name('customers.distribute');
         Route::apiResource('customers', 'CustomerController', [
         	'only' => ['index', 'update', 'show']
         ]);
