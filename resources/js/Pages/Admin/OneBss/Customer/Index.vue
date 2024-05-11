@@ -9,9 +9,10 @@
     <div class="p-4 bg-white rounded-lg shadow-xs">
       <div class="mb-4 w-full">
         <SecondaryButton @click="actions.isUploadCustomer = true">Upload</SecondaryButton>
-        <PrimaryButton @click="exportExcel(route('admin.onebss.customers.export'))">Export</PrimaryButton>
-        <DangerButton @click="actions.isDeleteCustomer = true">Delete</DangerButton>
         <PrimaryButton @click="actions.isDistributeCustomer = true">Phân phối</PrimaryButton>
+        <PrimaryButton @click="exportExcel(route('admin.onebss.customers.export'))">Export</PrimaryButton>
+        <label for="total">{{ running + '/' + total }}</label>
+        <DangerButton class="float-right" @click="actions.isDeleteCustomer = true">Delete</DangerButton>
       </div>
 
       <div class="relative mb-4 flex flex-wrap items-stretch">
@@ -56,7 +57,7 @@
               <tr v-for="customer in customers.data" :key="customer.id" class="text-gray-700">
                 <td class="px-4 py-3 text-sm">{{ customer.phone }}</td>
                 <td class="px-4 py-3 text-sm">{{ vnd_format(customer.core_balance) }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.tra_sau == 1 ? 'Trả sau' : 'Trả trước' }}</td>
+                <td class="px-4 py-3 text-sm">{{ get_trasau(customer.tra_sau) }}</td>
                 <td class="px-4 py-3 text-sm">{{ get_goidata(customer.goi_data) }}</td>
                 <td class="px-4 py-3 text-sm">{{ get_expires_date(customer.goi_data) }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
@@ -115,6 +116,7 @@ import DangerButton from '@/Components/DangerButton.vue';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import DistributeCustomerForm from './Partials/DistributeCustomerForm.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
+import _ from 'lodash';
 
 const props = defineProps({
   auth: Object,
@@ -123,6 +125,8 @@ const props = defineProps({
   msg: String,
   goi_data: String,
   expires_in: String,
+  total: Number,
+  running: Number,
 });
 
 if (props.msg) {
@@ -152,6 +156,12 @@ const vnd_format = (num) => {
 }
 const get_goidata = (goi_data) => {
   return _.join(_.map(goi_data, 'SERVICES'), "\n");
+};
+const get_trasau = (tra_sau) => {
+  let label = null;
+  if (tra_sau === 0) label = 'Trả trước';
+  else if (tra_sau === 1) label = 'Trả sau';
+  return label;
 };
 const get_expires_date = (goi_data) => {
   return _.join(_.map(goi_data, 'TIME_END'), "\n");
@@ -186,7 +196,7 @@ const del = (customer) => {
       type: 'warning',
     }
   ).then(() => {
-    axios.delete(route('admin.customers.destroy', customer)).then(({data}) => {
+    axios.delete(route('admin.onebss.customers.destroy', customer)).then(({data}) => {
       ElMessage({
         type: 'success',
         message: 'Xóa thành công',

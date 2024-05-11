@@ -19,7 +19,7 @@
             <!-- <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo tài khoản</button> -->
             <div class="mt-6 flex justify-end">
               <SecondaryButton @click="closeModal"> Hủy </SecondaryButton>
-    
+
               <DangerButton
                 class="ms-3"
                 :class="{ 'opacity-25': form.processing }"
@@ -49,8 +49,10 @@ const props = defineProps({
 
 const commands = reactive({
   all: 'Tất cả',
-  duplicate: 'Trùng',
-  sales_state: 'Trạng thái',
+  no_data: 'Không có gói',
+  tra_sau: 'Trả sau',
+  // duplicate: 'Trùng',
+  // sales_state: 'Trạng thái',
 });
 
 const form = useForm({
@@ -58,7 +60,7 @@ const form = useForm({
 });
 
 const del = () => {
-  form.delete(route('admin.customers.destroy'), {
+  form.delete(route('admin.onebss.customers.destroy'), {
     preserveScroll: true,
     onSuccess: () => closeModal(),
   });

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 
 class CustomerController extends Controller
@@ -30,10 +31,11 @@ class CustomerController extends Controller
                         // $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") <= ?', [$request->expires_in]);
                     }
                 })
-                ->whereNotNull('goi_data')
                 ->with(['user'])
                 ->paginate()
-                ->withQueryString()
+                ->withQueryString(),
+            'total' => DB::table((new OneBssCustomer)->getTable())->count(),
+            'running' => DB::table((new OneBssCustomer)->getTable())->where('is_request', 1)->count(),
         ]);
     }
 
@@ -159,8 +161,32 @@ class CustomerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, ?OneBssCustomer $customer)
     {
-        //
+        if ($customer->exists) {
+            $customer->delete();
+            return response()->success('Xóa dữ liệu thành công.');
+        }
+
+        switch ($request->command) {
+            case 'all':
+                Schema::disableForeignKeyConstraints();
+                OneBssCustomer::truncate();
+                Schema::enableForeignKeyConstraints();
+                break;
+            /* case 'duplicate':
+                $customers = OneBssCustomer::selectRaw('MAX(id) as id, phone')->groupBy('phone')->havingRaw('COUNT(*) > 1')->pluck('phone', 'id');
+                $ids = $customers->keys();
+                $phones = $customers->values();
+                OneBssCustomer::whereIn('phone', $phones)->whereNotIn('id', $ids)->delete();
+                break; */
+            /* case 'sales_state':
+                $request->validate([
+                    'sales_state' => 'required|in:'.implode(',', SalesStateEnum::values())
+                ]);
+                Customer::whereIn('sales_state', $request->command)->delete();
+                break; */
+        }
+        return redirect()->route('admin.onebss.customers.index')->with('msg', 'Xóa dữ liệu thành công.');
     }
 }

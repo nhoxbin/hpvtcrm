@@ -56,7 +56,8 @@ Route::group([
         Route::get('customers/export', ExportCustomerController::class)->name('customers.export');
 
         Route::apiResource('customers', 'CustomerController', [
-        	'only' => ['index']
+        	'only' => ['index', 'update', 'show']
         ]);
+        Route::delete('customers/{customer?}', 'CustomerController@destroy')->name('customers.destroy');
     });
 });
