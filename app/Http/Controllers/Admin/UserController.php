@@ -17,7 +17,7 @@ class UserController extends Controller
 {
     public function index() {
         return Inertia::render('Admin/User/Index', [
-            'users' => User::with(['roles', 'created_by_user'])->withCount('customers')->paginate(),
+            'users' => User::where('user_id', Auth::id())->with(['roles', 'created_by_user'])->withCount('customers')->paginate(),
             'roles' => Role::all()->pluck('name'),
         ]);
     }
