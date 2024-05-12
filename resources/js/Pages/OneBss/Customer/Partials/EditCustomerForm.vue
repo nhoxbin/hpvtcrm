@@ -66,7 +66,7 @@ const closeModal = () => {
 };
 
 const submit = () => {
-  form.put(route('customers.update', props.customer.id), {
+  form.put(route('onebss.customers.update', props.customer.id), {
     preserveScroll: true,
     preserveState: false,
     onSuccess: () => closeModal(),

@@ -39,9 +39,11 @@
 import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Admin/Modal.vue';
 import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 import InputError from '@/Components/Admin/InputError.vue';
+
+const page = usePage();
 
 const props = defineProps({
   isDeleteCustomer: Boolean,
@@ -51,12 +53,16 @@ const commands = reactive({
   all: 'Tất cả',
   no_data: 'Không có gói',
   tra_sau: 'Trả sau',
+  search: 'Tìm kiếm',
   // duplicate: 'Trùng',
   // sales_state: 'Trạng thái',
 });
 
 const form = useForm({
   command: '',
+  tra_sau: page.props.query.tra_sau || [],
+  goi_data: page.props.query.goi_data || '',
+  expires_in: page.props.query.expires_in || '',
 });
 
 const del = () => {

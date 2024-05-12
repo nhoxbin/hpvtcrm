@@ -50,7 +50,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
             </template>
-            Đăng nhập DigiShop
+            Login DigiShop
           </NavLink>
         </li>
 
@@ -67,7 +67,7 @@
           </NavLink>
         </li> -->
 
-        <li class="relative px-6 py-3">
+        <li class="relative px-6 py-3" v-if="$page.props.auth.user.roles.some(r => r.name == 'OneBss Admin')">
           <button @click="showingTwoLevelMenu = !showingTwoLevelMenu"
               class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
               aria-haspopup="true">
@@ -86,13 +86,13 @@
           </button>
             <ul v-show="showingTwoLevelMenu" class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50"
                 aria-label="submenu">
-              <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800" v-if="$page.props.auth.user.permissions.some(r => r.name == 'Login OneBss')">
+              <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800">
                 <NavLink :href="route('admin.onebss.create')">
                   Đăng nhập
                 </NavLink>
               </li>
 
-              <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800" v-if="$page.props.auth.user.permissions.some(r => r.name == 'Import Excel OneBss')">
+              <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800">
                 <NavLink :href="route('admin.onebss.customers.index')">
                   Khách hàng
                 </NavLink>

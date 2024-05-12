@@ -24,7 +24,7 @@ class CustomerController extends Controller
         $customers = new OneBssCustomer();
         return Inertia::render('Admin/OneBss/Customer/Index', [
             'users' => $request->user()->created_users,
-            'customers' => $customers->search($request->goi_data, $request->expires_in)->paginate()->withQueryString(),
+            'customers' => $customers->search($request)->paginate()->withQueryString(),
             'process_customers' => DB::select('call process_customers()')[0],
             'auth_status' => $session ? 'Phiên làm việc OneBss đến: ' . $session->updated_at->addSeconds($session->expires_in)->format('d/m/Y \l\ú\c H:i:s') : 'Phiên làm việc OneBss đã hết hiệu lực, Vui lòng đăng nhập!',
             'msg' => session('msg'),
@@ -87,6 +87,10 @@ class CustomerController extends Controller
                 Schema::disableForeignKeyConstraints();
                 OneBssCustomer::truncate();
                 Schema::enableForeignKeyConstraints();
+                break;
+            case 'search':
+                $customer = new OneBssCustomer();
+                $customer->search($request)->delete();
                 break;
             /* case 'duplicate':
                 $customers = OneBssCustomer::selectRaw('MAX(id) as id, phone')->groupBy('phone')->havingRaw('COUNT(*) > 1')->pluck('phone', 'id');

@@ -21,6 +21,16 @@
       </div>
 
       <div class="relative mb-4 flex flex-wrap items-stretch">
+        <div class="m-2">
+          <div class="flex items-center mb-4">
+              <input id="default-checkbox" type="checkbox" :value="0" v-model="formSearch.tra_sau" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="default-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Trả trước</label>
+          </div>
+          <div class="flex items-center">
+              <input id="checked-checkbox" type="checkbox" :value="1" v-model="formSearch.tra_sau" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="checked-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Trả sau</label>
+          </div>
+        </div>
           <vue3-tags-input
             :tags="formSearch.goi_data"
             @on-tags-changed="newTags => formSearch.goi_data = newTags"
@@ -100,7 +110,7 @@
     <EditCustomerForm v-if="actions.isEditCustomer" :isEditCustomer="actions.isEditCustomer" :customer="currentCustomer" @closeForm="onCloseForm" />
     <UploadCustomerForm :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm" />
     <DeleteCustomerForm :isDeleteCustomer="actions.isDeleteCustomer" @closeForm="onCloseForm" />
-    <DistributeCustomerForm :expires_in="formSearch.expires_in" :users="users" :isDistributeCustomer="actions.isDistributeCustomer" @closeForm="onCloseForm" />
+    <DistributeCustomerForm :users="users" :isDistributeCustomer="actions.isDistributeCustomer" @closeForm="onCloseForm" />
   </AuthenticatedLayout>
 </template>
 
@@ -153,8 +163,10 @@ if (props.error) {
 }
 const page = usePage();
 
+const tra_sau = ref(page.props.query.tra_sau || []);
 const formSearch = useForm({
-  goi_data: page.props.query.goi_data || '',
+  tra_sau: tra_sau,
+  goi_data: page.props.query.goi_data || [],
   expires_in: page.props.query.expires_in || '',
 });
 

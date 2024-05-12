@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'can:view,App\Models\OneBssCustomer'], function() {
         // Route::get('onebss/export', ExportCustomerController::class)->name('OneBss.export');
         Route::post('customers/{customer}/reload-balance', 'OneBssCustomerController@reload_balance')->name('customers.reload_balance');
-        Route::apiResource('customers', OneBssCustomerController::class)->only(['index', 'store', 'destroy']);
+        Route::apiResource('customers', OneBssCustomerController::class)->only(['index', 'update', 'store', 'destroy']);
     });
 });
 

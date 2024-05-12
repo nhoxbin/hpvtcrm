@@ -23,13 +23,10 @@
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
-                                <NavLink v-if="$page.props.auth.user.is_admin && $page.props.auth.user.permissions.some(r => r.name == 'Write DigiShop')" :href="route('admin.digishop.create')" :active="route().current('admin.digishop')">
-                                    Login DigiShop
+                                <NavLink v-if="$page.props.auth.user.permissions.some(r => r.name == 'Read DigiShop')" :href="route('digishop.index')" :active="route().current('digishop.index')">
+                                    DigiShop Customers
                                 </NavLink>
-                                <NavLink v-if="$page.props.auth.user.is_admin && $page.props.auth.user.permissions.some(r => r.name == 'Read DigiShop')" :href="route('digishop.index')" :active="route().current('digishop')">
-                                    DigiShop
-                                </NavLink>
-                                <NavLink v-if="$page.props.auth.user.is_admin && $page.props.auth.user.permissions.some(r => r.name == 'View Customer OneBss')" :href="route('onebss.customers.index')" :active="route().current('onebss.customers')">
+                                <NavLink v-if="$page.props.auth.user.all_permissions.some(r => r.name == 'View Customer OneBss')" :href="route('onebss.customers.index')" :active="route().current('onebss.customers.index')">
                                     OneBss Customers
                                 </NavLink>
                             </div>
