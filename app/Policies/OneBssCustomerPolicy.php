@@ -13,7 +13,7 @@ class OneBssCustomerPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return $user->hasPermissionTo('View Customer OneBss');
     }
 
     /**
@@ -37,7 +37,7 @@ class OneBssCustomerPolicy
      */
     public function update(User $user, OneBssCustomer $oneBssCustomer): bool
     {
-        //
+        return $user->hasPermissionTo('View Customer OneBss');
     }
 
     /**

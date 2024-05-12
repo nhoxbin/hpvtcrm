@@ -21,12 +21,10 @@
       </div>
 
       <div class="relative mb-4 flex flex-wrap items-stretch">
-          <input
-              type="text"
-              class="relative m-1 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
-              placeholder="Gói data"
-              aria-label="Gói data"
-              v-model="formSearch.goi_data" />
+          <vue3-tags-input
+            :tags="formSearch.goi_data"
+            @on-tags-changed="newTags => formSearch.goi_data = newTags"
+          />
           <input
               type="text"
               class="relative m-1 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
@@ -122,6 +120,14 @@ import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import DistributeCustomerForm from './Partials/DistributeCustomerForm.vue';
 import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
 import _ from 'lodash';
+import Vue3TagsInput from 'vue3-tags-input';
+import { defineComponent } from 'vue';
+
+defineComponent({
+  components: {
+    Vue3TagsInput
+  },
+});
 
 const props = defineProps({
   auth: Object,

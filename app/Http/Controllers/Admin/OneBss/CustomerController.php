@@ -20,23 +20,11 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $session = $request->user()->onebss_account()->whereNotNull('access_token')->first();
+        $session = $request->user()->onebss_account()->getToken()->first();
+        $customers = new OneBssCustomer();
         return Inertia::render('Admin/OneBss/Customer/Index', [
             'users' => $request->user()->created_users,
-            'customers' => OneBssCustomer::query()
-                ->when($request->goi_data || $request->expires_in, function($query, $search) use ($request) {
-                    if ($request->goi_data) {
-                        $query->whereRaw('JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME") like "%'.$request->goi_data.'%"');
-                    }
-                    if ($request->expires_in) {
-                        $query->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].TIME_END"), "$[0]")) >= "'.Carbon::now()->format('d/m/Y H:i:s').'"');
-                        $query->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].TIME_END"), "$[0]")) <= "'.Carbon::now()->addDays($request->expires_in)->format('d/m/Y H:i:s').'"');
-                    }
-                })
-                ->with(['user'])
-                ->orderBy('id', 'asc')
-                ->paginate()
-                ->withQueryString(),
+            'customers' => $customers->search($request->goi_data, $request->expires_in)->paginate()->withQueryString(),
             'process_customers' => DB::select('call process_customers()')[0],
             'auth_status' => $session ? 'Phiên làm việc OneBss đến: ' . $session->updated_at->addSeconds($session->expires_in)->format('d/m/Y \l\ú\c H:i:s') : 'Phiên làm việc OneBss đã hết hiệu lực, Vui lòng đăng nhập!',
             'msg' => session('msg'),

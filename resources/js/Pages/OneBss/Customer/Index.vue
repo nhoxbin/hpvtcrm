@@ -101,7 +101,6 @@ const props = defineProps({
 
 const page = usePage();
 
-const products = ref({});
 
 const search = reactive({
     customers: page.props.query.search?.customers || '',

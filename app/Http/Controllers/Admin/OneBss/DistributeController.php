@@ -20,15 +20,8 @@ class DistributeController extends Controller
         DB::beginTransaction();
         try {
             if (is_array($request->user_id) && count($request->user_id) == 1) {
-                $customers = OneBssCustomer::query()
-                    ->when($request->goi_data || $request->expires_in, function($query, $search) use ($request) {
-                        if ($request->goi_data) {
-                            $query->whereRaw('JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME") like "%'.$request->goi_data.'%"');
-                        }
-                        if ($request->expires_in) {
-                            $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") >= ?', [Carbon::now()->subDays($request->expires_in)]);
-                        }
-                    })->update(['user_id' => $request->user_id[0]]);
+                $customers = new OneBssCustomer();
+                $customers = $customers->search($request->goi_data, $request->expires_in)->update(['user_id' => $request->user_id[0]]);
             } else {
                 if (in_array('all', $request->user_id)) {
                     // chia đều tất cả user

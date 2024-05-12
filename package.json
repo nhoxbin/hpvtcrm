@@ -22,6 +22,7 @@
     },
     "dependencies": {
         "element-plus": "^2.4.4",
-        "lodash": "^4.17.21"
+        "lodash": "^4.17.21",
+        "vue3-tags-input": "^1.0.12"
     }
 }

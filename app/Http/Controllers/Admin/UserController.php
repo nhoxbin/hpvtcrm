@@ -33,6 +33,11 @@ class UserController extends Controller
     }
 
     public function update(UpdateUserRequest $request, User $user) {
+        if ($request->role == 'OneBss Sales' || $request->role == 'OneBss admin') {
+            if (!$user->hasRole('OneBss Admin')) {
+                return back()->withSuccess('Bạn không có quyền OneBss để tạo thành viên!');
+            }
+        }
         $request->user()->fill($request->validated());
         $request->user()->save();
 
