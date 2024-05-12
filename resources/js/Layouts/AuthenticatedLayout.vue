@@ -29,6 +29,9 @@
                                 <NavLink v-if="$page.props.auth.user.is_admin && $page.props.auth.user.permissions.some(r => r.name == 'Read DigiShop')" :href="route('digishop.index')" :active="route().current('digishop')">
                                     DigiShop
                                 </NavLink>
+                                <NavLink v-if="$page.props.auth.user.is_admin && $page.props.auth.user.permissions.some(r => r.name == 'View Customer OneBss')" :href="route('onebss.customers.index')" :active="route().current('onebss.customers')">
+                                    OneBss Customers
+                                </NavLink>
                             </div>
                         </div>
 

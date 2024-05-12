@@ -36,20 +36,13 @@ class VNPTOneBss
             ->post();
     }
 
-    public function checkSession(string $access_token) {
-        $notifications = Curl::to(config('onebss.endpoint') . '/app-thicong/common/kiemTraTacNghiep')
-            ->withHeaders(['app-secret' => config('onebss.app_secret')])
+    public function getBalance(string $phone_number, string $access_token)
+    {
+        return Curl::to(config('onebss.endpoint') . '/ccbs/didong/taikhoan-tien')
+            ->withHeaders(['x-api-key' => config('onebss.apiKey')])
+            ->withData(['so_tb' => $phone_number])
             ->withBearer($access_token)
             ->asJson(true)
-            ->get();
-
-        $is_login = false;
-        if ($notifications && $notifications['error'] == "BSS-00000000" && $notifications['error_code'] == "BSS-00000000") {
-            $data = $notifications['data'];
-            if ($data['errorCode'] == 0) {
-                $is_login = true;
-            }
-        }
-        return $is_login;
+            ->post();
     }
 }

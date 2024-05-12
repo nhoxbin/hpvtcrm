@@ -1,22 +1,37 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\OneBss;
 
+use App\Enums\SalesStateEnum;
 use App\Helpers\Facades\VNPTOneBss;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Models\OneBssAccount;
 use App\Models\OneBssCustomer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class OneBssController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('DigiShop/Index');
+        return Inertia::render('OneBss/Customer/Index', [
+            'customers' => OneBssCustomer::query()
+                ->when($request->goi_data, function($query, $search) {
+                    $query->whereRaw('JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME") like "%'.$search.'%"');
+                })
+                ->where('user_id', Auth::id())
+                ->orderBy('id', 'asc')
+                ->paginate()
+                ->withQueryString(),
+            'sales_states' => SalesStateEnum::trans(),
+        ]);
     }
 
     /**
@@ -80,9 +95,12 @@ class OneBssController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, OneBssAccount $oneBssAccount)
+    public function update(UpdateCustomerRequest $request, OneBssCustomer $customer)
     {
-        //
+        $customer->fill($request->validated());
+    	$customer->save();
+
+        return back()->with('msg', 'Lưu thành công.');
     }
 
     /**
@@ -91,5 +109,13 @@ class OneBssController extends Controller
     public function destroy(OneBssAccount $oneBssAccount)
     {
         OneBssCustomer::truncate();
+    }
+
+    public function reload_balance(OneBssCustomer $customer)
+    {
+        $account = OneBssAccount::getToken()->first();
+        if ($account) {
+            $balance = VNPTOneBss::getBalance($customer->phone, $account->access_token);
+        }
     }
 }

@@ -19,9 +19,9 @@ class OneBssCustomerPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, OneBssCustomer $oneBssCustomer): bool
+    public function view(User $user): bool
     {
-        return $user->hasPermissionTo('Read OneBss');
+        return $user->hasPermissionTo('View Customer OneBss');
     }
 
     /**

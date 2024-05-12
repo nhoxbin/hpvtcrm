@@ -5,7 +5,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\{
     CustomerController,
     DigiShopController,
-    OneBssController,
     ProductController,
     UserController,
     ProfileController,
@@ -13,6 +12,7 @@ use App\Http\Controllers\{
 };
 use App\Http\Controllers\Export\DigiShopController as ExportDigiShopController;
 use App\Http\Controllers\Export\OneBssController as ExportOneBssController;
+use App\Http\Controllers\OneBss\CustomerController as OneBssCustomerController;
 use App\Http\Controllers\OneBss\Export\CustomerController as ExportCustomerController;
 use Illuminate\Support\Facades\{
     Artisan,
@@ -68,8 +68,9 @@ Route::middleware('auth')->group(function () {
 
     // OneBss
     Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'can:view,App\Models\OneBssCustomer'], function() {
-        Route::get('onebss/export', ExportCustomerController::class)->name('OneBss.export');
-        Route::apiResource('onebss', OneBssController::class)->only(['index', 'store', 'destroy']);
+        // Route::get('onebss/export', ExportCustomerController::class)->name('OneBss.export');
+        Route::post('customers/{customer}/reload-balance', 'OneBssCustomerController@reload_balance')->name('customers.reload_balance');
+        Route::apiResource('customers', OneBssCustomerController::class)->only(['index', 'store', 'destroy']);
     });
 });
 

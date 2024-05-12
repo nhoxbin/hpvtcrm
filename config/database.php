@@ -148,4 +148,6 @@ return [
 
     ],
 
+    'log' => env('DB_LOG', false),
+
 ];

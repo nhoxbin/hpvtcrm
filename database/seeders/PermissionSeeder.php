@@ -56,6 +56,11 @@ class PermissionSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ], [
+                'name' => 'View Customer OneBss',
+                'guard_name' => 'web',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ], [
                 'name' => 'Delete Customer OneBss',
                 'guard_name' => 'web',
                 'created_at' => now(),
