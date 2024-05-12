@@ -29,7 +29,7 @@ class CustomerController extends Controller
                         $query->whereRaw('JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME") like "%'.$request->goi_data.'%"');
                     }
                     if ($request->expires_in) {
-                        $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") >= ?', [Carbon::now()->subDays($request->expires_in)]);
+                        $query->whereRaw('JSON_EXTRACT(`goi_data` , "$[*].TIME_END") >= "'.Carbon::now()->subDays($request->expires_in).'"');
                     }
                 })
                 ->with(['user'])

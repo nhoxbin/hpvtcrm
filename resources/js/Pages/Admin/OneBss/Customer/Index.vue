@@ -169,8 +169,8 @@ const get_goidata = (goi_data) => {
 };
 const get_trasau = (tra_sau) => {
   let label = null;
-  if (tra_sau === 0) label = 'Trả trước';
-  else if (tra_sau === 1) label = 'Trả sau';
+  if (tra_sau == 0) label = 'Trả trước';
+  else if (tra_sau == 1) label = 'Trả sau';
   return label;
 };
 const get_expires_date = (goi_data) => {
