@@ -165,7 +165,9 @@ const vnd_format = (num) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
 }
 const get_goidata = (goi_data) => {
-  return _.join(_.map(goi_data, 'SERVICES'), "\n");
+  return _.join(_.map(goi_data, function(data) {
+    return 'Tên gói: ' + data['PACKAGE_NAME'] + ', dịch vụ: ' + data['SERVICES'];
+  }), "\n");
 };
 const get_trasau = (tra_sau) => {
   let label = null;
