@@ -42,8 +42,12 @@ class OneBssCustomer extends Model
             ->when($goi_data, function($query, $search) {
                 foreach ($search as $goi_data) {
                     $query->orWhere(function($q) use ($goi_data) {
-                        $q->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME")) like "%'.$goi_data.'%"');
-                        $q->orWhereRaw('JSON_UNQUOTE(JSON_EXTRACT(`goi_data`, "$[*].SERVICES")) like "%'.$goi_data.'%"');
+                        $operator = 'like "%'.$goi_data.'%"';
+                        if (str_contains($goi_data, ' ')) {
+                            $operator = '= "'.$goi_data.'"';
+                        }
+                        $q->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME")) ' . $operator);
+                        $q->orWhereRaw('JSON_UNQUOTE(JSON_EXTRACT(`goi_data`, "$[*].SERVICES")) ' . $operator);
                     });
                 }
             })
