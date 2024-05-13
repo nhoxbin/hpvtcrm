@@ -38,7 +38,7 @@ class PermissionSeeder extends Seeder
         $insertPermissions = [];
         foreach ($permissions as $permission) {
             $insertPermissions[] = [
-                'name' => $permission['name'],
+                'name' => $permission,
                 'guard_name' => 'web',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -46,20 +46,28 @@ class PermissionSeeder extends Seeder
         }
     	DB::table('permissions')->insert($insertPermissions);
 
-        DB::table('roles')->insert([
-            [
-                'name' => 'OneBss Admin',
-            ], [
-                'name' => 'OneBss Sales',
-            ]
-        ]);
+        $roles = [
+            'Super Admin',
+            'Admin',
+            'OneBss Admin',
+            'OneBss Sales',
+        ];
+        $insertRoles = [];
+        foreach ($roles as $role) {
+            $insertRoles[] = [
+                'name' => $role,
+            ];
+        }
+    	DB::table('roles')->insert($insertRoles);
+        // roles
         Role::firstWhere('name', 'OneBss Admin')->givePermissionTo(['Login OneBss', 'Import Excel OneBss', 'Export Excel OneBss', 'View Customer OneBss', 'Delete Customer OneBss']);
         Role::firstWhere('name', 'OneBss Sales')->givePermissionTo(['View Customer OneBss']);
 
-        User::firstWhere('username', 'tymcrm')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
+        // users
+        // User::firstWhere('username', 'tymcrm')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
         User::firstWhere('username', 'nhoxbin')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
 
-        User::firstWhere('username', 'hpvt')->assignRole('OneBss Admin');
-        User::firstWhere('username', 'nhoxbin')->assignRole('OneBss Admin');
+        User::firstWhere('username', 'hpvt')->syncRoles(['Admin', 'OneBss Admin']);
+        User::firstWhere('username', 'nhoxbin')->syncRoles(['Super Admin', 'Admin', 'OneBss Admin']);
     }
 }

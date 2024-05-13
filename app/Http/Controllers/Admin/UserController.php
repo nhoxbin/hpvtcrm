@@ -33,7 +33,7 @@ class UserController extends Controller
     }
 
     public function update(UpdateUserRequest $request, User $user) {
-        if ($request->role == 'OneBss Sales' || $request->role == 'OneBss admin') {
+        if ($request->role == 'OneBss Sales') {
             if (!$user->hasRole('OneBss Admin')) {
                 return back()->withSuccess('Bạn không có quyền OneBss để tạo thành viên!');
             }
@@ -47,6 +47,7 @@ class UserController extends Controller
     }
 
     public function destroy(Request $request, User $user) {
+        $this->authorize('delete', $user);
         $validated = $request->validate([
             'command' => 'required|in:user,customers',
         ]);

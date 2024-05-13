@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\OneBssSalesStateEnum;
+use App\Enums\SalesStateEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,6 +20,14 @@ class OneBssCustomer extends Model
         'goi_data' => 'json',
         'sales_state' => OneBssSalesStateEnum::class,
     ];
+
+    protected $appends = [
+        'state'
+    ];
+
+    protected function state() : Attribute {
+        return Attribute::get(fn () => !empty($this->attributes['sales_state']) && SalesStateEnum::tryFrom($this->attributes['sales_state']) ? __('sales_state.' . $this->attributes['sales_state']) : null);
+    }
 
     public function user() {
         return $this->belongsTo(User::class);

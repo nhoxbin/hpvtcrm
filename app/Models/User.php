@@ -49,11 +49,7 @@ class User extends Authenticatable
     ];
 
     protected $appends = [
-        'is_admin',
-    ];
-
-    protected $with = [
-        'permissions',
+        'is_admin', 'all_permissions'
     ];
 
     protected function getDefaultGuardName(): string { return 'web'; }
@@ -61,9 +57,12 @@ class User extends Authenticatable
     protected function isAdmin() : Attribute {
         return Attribute::get(fn () => $this->hasAnyRole(['Super Admin', 'Admin']));
     }
+    protected function allPermissions() : Attribute {
+        return Attribute::get(fn () => $this->getAllPermissions());
+    }
 
     public function created_by_user() {
-        return $this->hasOne(self::class, 'created_by_user_id');
+        return $this->belongsTo(self::class, 'created_by_user_id');
     }
 
     public function created_users() {

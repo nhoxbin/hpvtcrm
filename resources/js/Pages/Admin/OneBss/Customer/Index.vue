@@ -100,7 +100,7 @@
     <EditCustomerForm v-if="actions.isEditCustomer" :isEditCustomer="actions.isEditCustomer" :customer="currentCustomer" @closeForm="onCloseForm" />
     <UploadCustomerForm :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm" />
     <DeleteCustomerForm :isDeleteCustomer="actions.isDeleteCustomer" @closeForm="onCloseForm" />
-    <DistributeCustomerForm :expires_in="formSearch.expires_in" :users="users" :isDistributeCustomer="actions.isDistributeCustomer" @closeForm="onCloseForm" />
+    <DistributeCustomerForm :users="users" :isDistributeCustomer="actions.isDistributeCustomer" @closeForm="onCloseForm" />
   </AuthenticatedLayout>
 </template>
 

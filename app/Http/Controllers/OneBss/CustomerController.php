@@ -23,8 +23,10 @@ class CustomerController extends Controller
     {
         return Inertia::render('OneBss/Customer/Index', [
             'customers' => OneBssCustomer::query()
-                ->when($request->goi_data, function($query, $search) {
-                    $query->whereRaw('JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME") like "%'.$search.'%"');
+                ->when($request->search, function($query, $search) {
+                    if (!empty($search['phone'])) {
+                        $query->where('phone', 'like', '%'.$search['phone'].'%');
+                    }
                 })
                 ->where('user_id', Auth::id())
                 ->orderBy('id', 'asc')
