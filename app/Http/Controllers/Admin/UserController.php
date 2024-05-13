@@ -23,7 +23,7 @@ class UserController extends Controller
                 'OneBss Sales',
             ];
             $roles = Role::whereIn('name', $r)->pluck('name');
-        } else if (Auth::user()->hasPermissions('Write DigiShop')) {
+        } else if (Auth::user()->hasPermissionTo('Write DigiShop')) {
             $r = [
                 'Sales'
             ];
