@@ -87,6 +87,7 @@ import { reactive, ref } from 'vue';
 import 'element-plus/es/components/message/style/css';
 import { ElMessage } from 'element-plus'
 import { debounce, startCase, toLower } from 'lodash';
+import _ from 'lodash';
 
 const props = defineProps({
     sales_states: {
