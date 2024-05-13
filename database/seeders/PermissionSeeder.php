@@ -49,6 +49,7 @@ class PermissionSeeder extends Seeder
         $roles = [
             'Super Admin',
             'Admin',
+            'Sales',
             'OneBss Admin',
             'OneBss Sales',
         ];
@@ -64,7 +65,7 @@ class PermissionSeeder extends Seeder
         Role::firstWhere('name', 'OneBss Sales')->givePermissionTo(['View Customer OneBss']);
 
         // users
-        // User::firstWhere('username', 'tymcrm')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
+        User::firstWhere('username', 'tymcrm')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
         User::firstWhere('username', 'nhoxbin')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
 
         User::firstWhere('username', 'hpvt')->syncRoles(['Admin', 'OneBss Admin']);
