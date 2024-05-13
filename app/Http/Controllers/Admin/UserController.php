@@ -16,9 +16,22 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
     public function index() {
+        if (Auth::user()->hasRole('OneBss Admin')) {
+            $r = [
+                'Sales',
+                'OneBss Admin',
+                'OneBss Sales',
+            ];
+            $roles = Role::whereIn('name', $r)->pluck('name');
+        } else if (Auth::user()->hasPermissions('Write DigiShop')) {
+            $r = [
+                'Sales'
+            ];
+            $roles = Role::whereIn('name', $r)->pluck('name');
+        }
         return Inertia::render('Admin/User/Index', [
             'users' => User::where('created_by_user_id', Auth::id())->with(['roles', 'created_by_user'])->withCount('customers')->paginate(),
-            'roles' => Role::all()->pluck('name'),
+            'roles' => $roles,
         ]);
     }
 
