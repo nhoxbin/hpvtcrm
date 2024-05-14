@@ -21,7 +21,7 @@ class DistributeController extends Controller
         try {
             if (is_array($request->user_id) && count($request->user_id) == 1) {
                 $customers = new OneBssCustomer();
-                $customers = $customers->search($request->goi_data, $request->expires_in)->update(['user_id' => $request->user_id[0]]);
+                $customers = $customers->search($request)->update(['user_id' => $request->user_id[0]]);
             } else {
                 if (in_array('all', $request->user_id)) {
                     // chia đều tất cả user
