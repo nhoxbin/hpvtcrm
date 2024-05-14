@@ -118,6 +118,14 @@ class CustomerController extends Controller
         $account = OneBssAccount::getToken()->first();
         if ($account) {
             $balance = VNPTOneBss::getBalance($customer->phone, $account->access_token);
+            if ($balance['error_code'] == 'BSS-00000000') {
+                return response()->success('', $balance);
+            } elseif ($balance['error_code'] == 'BSS-00001101' || $balance['error_code'] == 'BSS-00000401') {
+                $account->expires_in = null;
+                $account->access_token = null;
+                $account->save();
+            }
         }
+        return response()->error('Authenticate Error...');
     }
 }
