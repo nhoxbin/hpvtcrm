@@ -119,6 +119,10 @@ class CustomerController extends Controller
         if ($account) {
             $balance = VNPTOneBss::getBalance($customer->phone, $account->access_token);
             if ($balance['error_code'] == 'BSS-00000000') {
+                $data = $balance['data'];
+                $key = array_search('1', array_column($data, 'ID'));
+                $customer->core_balance = $data[$key]['REMAIN'];
+                $customer->save();
                 return response()->success('', $balance);
             } elseif ($balance['error_code'] == 'BSS-00001101' || $balance['error_code'] == 'BSS-00000401') {
                 $account->expires_in = null;
