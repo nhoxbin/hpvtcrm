@@ -49,8 +49,8 @@ class OnebssCheckCustomers extends Command
                     }
                 },
                 function ($info) use (&$upsert, &$delete, $account) {
-                    $this->info('Processing: ' . $info[0]);
                     if ($info[1]['error_code'] == 'BSS-00000000') {
+                        $this->info('Processing: ' . $info[0]);
                         $data = $info[1]['data'];
                         if (!empty($data['GOI_CUOC_TS'])) {
                             $upsert[$data['SO_TB']] = [

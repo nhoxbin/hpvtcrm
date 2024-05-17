@@ -46,14 +46,14 @@ class OneBssCustomer extends Model
                         if (str_contains($goi_data, ' ')) {
                             $operator = '= "'.$goi_data.'"';
                         }
-                        $q->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME")) ' . $operator);
-                        $q->orWhereRaw('JSON_UNQUOTE(JSON_EXTRACT(`goi_data`, "$[*].SERVICES")) ' . $operator);
+                        $q->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME"), "$[0]")) ' . $operator);
+                        $q->orWhereRaw('JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].SERVICES"), "$[0]")) ' . $operator);
                     });
                 }
             })
             ->when($expires_in, function($query, $search) {
-                $query->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].TIME_END"), "$[0]")) >= "'.Carbon::now()->format('d/m/Y H:i:s').'"');
-                $query->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].TIME_END"), "$[0]")) <= "'.Carbon::now()->addDays($search)->format('d/m/Y H:i:s').'"');
+                $query->whereRaw('str_to_date(JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].TIME_END"), "$[0]")), "%d/%m/%Y %H:%i:%s") >= "'.Carbon::now().'"');
+                $query->whereRaw('str_to_date(JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].TIME_END"), "$[0]")), "%d/%m/%Y %H:%i:%s") <= "'.Carbon::now()->addDays($search).'"');
             })
             ->when($tra_sau, function($query, $search) {
                 if (count($search) == 1) {
