@@ -29,8 +29,14 @@ class UserController extends Controller
             ];
             $roles = Role::whereIn('name', $r)->pluck('name');
         }
+
+        if (Auth::user()->hasRole('Super Admin')) {
+            $users = User::with(['roles', 'created_by_user'])->withCount('customers')->paginate();
+        } else {
+            $users = User::where('created_by_user_id', Auth::id())->with(['roles', 'created_by_user'])->withCount('customers')->paginate();
+        }
         return Inertia::render('Admin/User/Index', [
-            'users' => User::where('created_by_user_id', Auth::id())->with(['roles', 'created_by_user'])->withCount('customers')->paginate(),
+            'users' => $users,
             'roles' => $roles,
         ]);
     }

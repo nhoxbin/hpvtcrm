@@ -90,7 +90,9 @@ class OnebssCheckCustomers extends Command
                                 $upsert[$balance[0]]['core_balance'] = $data[$key]['REMAIN'];
                             }
                         } elseif ($balance[1]['error_code'] == 'BSS-00000500') {
-                            unset($upsert[$balance[0]]);
+                            if (isset($upsert[$balance[0]])) {
+                                unset($upsert[$balance[0]]);
+                            }
                         } else {
                             Log::info($balance);
                         }
