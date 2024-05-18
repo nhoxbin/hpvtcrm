@@ -9,6 +9,7 @@ use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class OnebssCheckCustomers extends Command
 {
@@ -35,7 +36,7 @@ class OnebssCheckCustomers extends Command
         if ($account != null) {
             $token = $account->access_token;
             $concurrent = 20;
-            $customers = OneBssCustomer::where('is_request', 0)->limit(1000)->get();
+            $customers = OneBssCustomer::where('is_request', 0)->limit(500)->get();
             $upsert = [];
             $delete = [];
 
@@ -88,6 +89,10 @@ class OnebssCheckCustomers extends Command
                             if (isset($upsert[$balance[0]])) {
                                 $upsert[$balance[0]]['core_balance'] = $data[$key]['REMAIN'];
                             }
+                        } elseif ($balance[1]['error_code'] == 'BSS-00000500') {
+                            unset($upsert[$balance[0]]);
+                        } else {
+                            Log::info($balance);
                         }
                     }
                 );
