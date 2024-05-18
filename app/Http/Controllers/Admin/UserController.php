@@ -16,25 +16,19 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
     public function index() {
-        if (Auth::user()->hasRole('OneBss Admin')) {
-            $r = [
-                'Sales',
-                'OneBss Admin',
-                'OneBss Sales',
-            ];
+        if (Auth::user()->is_super_admin) {
+            $users = User::with(['roles', 'created_by_user'])->paginate();
+            $roles = Role::all()->pluck('name');
+        } else {
+            if (Auth::user()->hasRole('OneBss Admin')) {
+                $r = ['Sales', 'OneBss Sales',];
+            } elseif (Auth::user()->hasPermissionTo('Write DigiShop')) {
+                $r = ['Sales',];
+            }
             $roles = Role::whereIn('name', $r)->pluck('name');
-        } else if (Auth::user()->hasPermissionTo('Write DigiShop')) {
-            $r = [
-                'Sales'
-            ];
-            $roles = Role::whereIn('name', $r)->pluck('name');
+            $users = User::where('created_by_user_id', Auth::id())->with(['roles', 'created_by_user'])->paginate();
         }
 
-        if (Auth::user()->hasRole('Super Admin')) {
-            $users = User::with(['roles', 'created_by_user'])->withCount('customers')->paginate();
-        } else {
-            $users = User::where('created_by_user_id', Auth::id())->with(['roles', 'created_by_user'])->withCount('customers')->paginate();
-        }
         return Inertia::render('Admin/User/Index', [
             'users' => $users,
             'roles' => $roles,
@@ -67,14 +61,7 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user) {
         $this->authorize('delete', $user);
-        $validated = $request->validate([
-            'command' => 'required|in:user,customers',
-        ]);
-        if ($validated['command'] == 'user') {
-            $user->delete();
-        } else {
-            $user->customers()->delete();
-        }
+        $user->delete();
         return response()->success('Xóa thành công.');
     }
 }

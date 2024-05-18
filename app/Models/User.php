@@ -57,6 +57,11 @@ class User extends Authenticatable
     protected function isAdmin() : Attribute {
         return Attribute::get(fn () => $this->hasAnyRole(['Super Admin', 'Admin']));
     }
+
+    protected function isSuperAdmin() : Attribute {
+        return Attribute::get(fn () => $this->hasRole(['Super Admin']));
+    }
+
     protected function allPermissions() : Attribute {
         return Attribute::get(fn () => $this->getAllPermissions());
     }
@@ -71,6 +76,10 @@ class User extends Authenticatable
 
     public function customers() {
         return $this->hasMany(Customer::class);
+    }
+
+    public function onebss_customers() {
+        return $this->hasMany(OneBssCustomer::class);
     }
 
     public function onebss_account() {

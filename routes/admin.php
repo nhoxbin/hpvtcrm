@@ -48,17 +48,22 @@ Route::group([
     });
 
     // OneBss
-    Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'can:create,App\Models\OneBssAccount'], function() {
-        Route::get('login', 'OAuthController@create')->name('create');
-        Route::post('login', 'OAuthController@login')->name('login');
-        Route::post('oauth', 'OAuthController@oauth')->name('oauth');
+    Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'role:OneBss Admin'], function() {
+        Route::post('login', 'OAuthController@login')->name('accounts.login');
+        Route::post('oauth', 'OAuthController@oauth')->name('accounts.oauth');
+        Route::apiResource('accounts', 'OAuthController', [
+        	'only' => ['index', 'destroy']
+        ]);
         Route::post('customers/import', ImportCustomerController::class)->name('customers.import');
         Route::get('customers/export', ExportCustomerController::class)->name('customers.export');
 
         Route::put('customers/distribute', 'DistributeController')->name('customers.distribute');
+        Route::delete('customers/{customer?}', 'CustomerController@destroy')->name('customers.destroy');
         Route::apiResource('customers', 'CustomerController', [
         	'only' => ['index', 'update', 'show']
         ]);
-        Route::delete('customers/{customer?}', 'CustomerController@destroy')->name('customers.destroy');
+        Route::apiResource('users', 'UserController', [
+            'only' => ['index', 'destroy']
+        ]);
     });
 });

@@ -69,7 +69,7 @@ class OnebssCheckCustomers extends Command
                         $delete[] = $info[0];
                     } elseif ($info[1]['error_code'] == 'BSS-00000401') {
                         $account->access_token = null;
-                        $account->expires = null;
+                        $account->expires_in = null;
                         $account->save();
                     }
                 }

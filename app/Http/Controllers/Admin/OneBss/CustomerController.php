@@ -8,6 +8,7 @@ use App\Models\OneBssCustomer;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -20,10 +21,15 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $session = $request->user()->onebss_account()->getToken()->first();
+        if (Auth::user()->is_super_admin) {
+            $session = OneBssAccount::getToken()->first();
+        } else {
+            $session = $request->user()->onebss_account()->getToken()->first();
+        }
+
         $customers = new OneBssCustomer();
         return Inertia::render('Admin/OneBss/Customer/Index', [
-            'users' => $request->user()->created_users,
+            'users' => $request->user()->created_users()->role(['OneBss Admin', 'OneBss Sales'])->get(),
             'customers' => $customers->search($request)->paginate()->withQueryString(),
             'process_customers' => DB::select('call process_customers()')[0],
             'auth_status' => $session ? 'Phiên làm việc OneBss đến: ' . $session->updated_at->addSeconds($session->expires_in)->format('d/m/Y \l\ú\c H:i:s') : 'Phiên làm việc OneBss đã hết hiệu lực, Vui lòng đăng nhập!',

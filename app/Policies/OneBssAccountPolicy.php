@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\OneBssAccount;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Auth;
 
 class OneBssAccountPolicy
 {
@@ -19,7 +20,7 @@ class OneBssAccountPolicy
     /**
      * Determine whether the user can view the model.
      */
-    /* public function view(User $user, OneBssAccount $oneBssAccount): bool
+    /* public function view(User $user, OneBssAccount $account): bool
     {
         return $user->hasPermissionTo('Read OneBss');
     } */
@@ -35,7 +36,7 @@ class OneBssAccountPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, OneBssAccount $oneBssAccount): bool
+    public function update(User $user, OneBssAccount $account): bool
     {
         //
     }
@@ -43,15 +44,15 @@ class OneBssAccountPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, OneBssAccount $oneBssAccount): bool
+    public function delete(User $user, OneBssAccount $account): bool
     {
-        //
+        return $account->user_id == Auth::id() || $user->hasRole('Super Admin');
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, OneBssAccount $oneBssAccount): bool
+    public function restore(User $user, OneBssAccount $account): bool
     {
         //
     }
@@ -59,7 +60,7 @@ class OneBssAccountPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, OneBssAccount $oneBssAccount): bool
+    public function forceDelete(User $user, OneBssAccount $account): bool
     {
         //
     }

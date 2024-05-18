@@ -8,7 +8,6 @@ use App\Http\Requests\OneBss\LoginRequest;
 use App\Http\Requests\OneBss\OAuthRequest;
 use App\Jobs\OneBssClearAuth;
 use App\Models\OneBssAccount;
-use App\Models\OneBssCustomer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +22,12 @@ class OAuthController extends Controller
      */
     public function index(Request $request)
     {
-        //
+        return Inertia::render('Admin/OneBss/Login', [
+            'status' => session('status'),
+            'error' => session('error'),
+            'secretCode' => session('secretCode'),
+            'accounts' => OneBssAccount::selectRaw('*, TIMESTAMPADD(SECOND,expires_in,updated_at) expires_at')->paginate(),
+        ]);
     }
 
     /**
@@ -31,11 +35,7 @@ class OAuthController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/OneBss/Login', [
-            'status' => session('status'),
-            'error' => session('error'),
-            'secretCode' => session('secretCode'),
-        ]);
+        //
     }
 
     /**
@@ -49,11 +49,11 @@ class OAuthController extends Controller
             if ($onebss['error_code'] == "BSS-00000000") {
                 $data = $onebss['data'];
                 $secretCode = $data['secretCode'];
-                return Redirect::route('admin.onebss.create')->with('secretCode', $secretCode);
+                return Redirect::route('admin.onebss.accounts.index')->with('secretCode', $secretCode);
             }
-            return Redirect::route('admin.onebss.create')->with('status', $onebss['message']);
+            return Redirect::route('admin.onebss.accounts.index')->with('status', $onebss['message']);
         }
-        return Redirect::route('admin.onebss.create')->with('status', 'Something happen! Please try again.');
+        return Redirect::route('admin.onebss.accounts.index')->with('status', 'Something happen! Please try again.');
     }
 
     /**
@@ -67,9 +67,9 @@ class OAuthController extends Controller
             $account = OneBssAccount::updateOrCreate(['username' => $request->username], ['access_token' => $onebss['access_token'], 'expires_in' => $onebss['expires_in'], 'user_id' => Auth::id()]);
             Log::info($onebss);
             OneBssClearAuth::dispatch($account)->delay(Carbon::now()->addSeconds($onebss['expires_in']));
-            return Redirect::route('admin.onebss.create')->with(['status' => 'Đăng nhập thành công!', 'error' => false]);
+            return Redirect::route('admin.onebss.accounts.index')->with(['status' => 'Đăng nhập thành công!', 'error' => false]);
         }
-        return Redirect::route('admin.onebss.create')->with(['status' => $onebss ? $onebss['message'] : 'Something happen! Please try again.', 'error' => true]);
+        return Redirect::route('admin.onebss.accounts.index')->with(['status' => $onebss ? $onebss['message'] : 'Something happen! Please try again.', 'error' => true]);
     }
 
     /**
@@ -99,8 +99,10 @@ class OAuthController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(OneBssAccount $account)
     {
-        //
+        $this->authorize('delete', $account);
+        $account->delete();
+        return response()->success('Xóa tài khoản OneBss thành công.');
     }
 }
