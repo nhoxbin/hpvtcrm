@@ -21,15 +21,11 @@ class DistributeController extends Controller
         try {
             if (is_array($request->user_id) && count($request->user_id) == 1) {
                 $customers = new OneBssCustomer();
-                $customers = $customers->search($request)->update(['user_id' => $request->user_id[0]]);
+                $customers = $customers->search($request)->whereNotNull('user_id')->update(['user_id' => $request->user_id[0]]);
             } else {
                 if (in_array('all', $request->user_id)) {
                     // chia đều tất cả user
-                    if ($request->user()->is_admin) {
-                        $users = User::all();
-                    } else {
-                        $users = $request->user()->created_users;
-                    }
+                    $users = $request->user()->created_users;
                 } else {
                     // chọn nhiều user
                     $users = User::whereIn('id', $request->user_id)->get();
