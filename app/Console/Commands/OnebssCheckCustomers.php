@@ -3,11 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Http\Mixins\HttpMixin;
+use App\Jobs\OneBssClearAuth;
 use App\Models\OneBssAccount;
 use App\Models\OneBssCustomer;
 use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\Pool;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -32,11 +34,23 @@ class OnebssCheckCustomers extends Command
      */
     public function handle()
     {
-        $account = OneBssAccount::whereNotNull('access_token')->latest()->first();
-        if ($account != null) {
+        if (Cache::has('account')) {
+            $account = Cache::get('account');
+        } else {
+            $account = OneBssAccount::whereNotNull('access_token')->latest()->first();
+            if ($account) {
+                $seconds = $account->expires_in - now()->subSeconds($account->expires_in)->diffInSeconds();
+                if ($seconds > 0) {
+                    Cache::remember('account', $seconds, function() use ($account) {
+                        return $account;
+                    });
+                }
+            }
+        }
+        if ($account) {
             $token = $account->access_token;
             $concurrent = 20;
-            $customers = OneBssCustomer::where('is_request', 0)->get();
+            $customers = OneBssCustomer::where('is_request', 0)->limit(1000)->get();
             $upsert = [];
             $delete = [];
 
@@ -51,6 +65,7 @@ class OnebssCheckCustomers extends Command
                     }
                 },
                 function ($info) use (&$upsert, &$delete, $account) {
+                    if ($account->access_token == null) return;
                     if ($info[1]['error_code'] == 'BSS-00000000') {
                         $this->info('Processing: ' . $info[0]);
                         $data = $info[1]['data'];
@@ -68,9 +83,7 @@ class OnebssCheckCustomers extends Command
                     } elseif ($info[1]['error_code'] == 'BSS-0000420') {
                         $delete[] = $info[0];
                     } elseif ($info[1]['error_code'] == 'BSS-00000401') {
-                        $account->access_token = null;
-                        $account->expires_in = null;
-                        $account->save();
+                        OneBssClearAuth::dispatch($account);
                     }
                 }
             );
