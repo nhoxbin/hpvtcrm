@@ -36,7 +36,7 @@ class OnebssCheckCustomers extends Command
         if ($account != null) {
             $token = $account->access_token;
             $concurrent = 20;
-            $customers = OneBssCustomer::where('is_request', 0)->limit(10)->get();
+            $customers = OneBssCustomer::where('is_request', 0)->get();
             $upsert = [];
             $delete = [];
 
@@ -46,7 +46,7 @@ class OnebssCheckCustomers extends Command
                 $concurrent,
                 function (Pool $pool) use ($customers, $token): Generator {
                     foreach ($customers as $customer) {
-                        sleep(5);
+                        sleep(20);
                         yield $pool->async()->withHeader('app-secret', config('onebss.app_secret'))->withToken($token)->post(config('onebss.endpoint') . '/ccbs/oneBss/app_tb_tc_thongtin', ['so_tb' => $customer->phone, 'service' => 'SIM4G'])->then(fn($response) => [$customer->phone, $response->json()]);
                     }
                 },
@@ -80,7 +80,7 @@ class OnebssCheckCustomers extends Command
                     $concurrent,
                     function (Pool $pool) use ($customers, $token): Generator {
                         foreach ($customers as $customer) {
-                            sleep(5);
+                            sleep(20);
                             yield $pool->async()->withHeaders(['app-secret' => config('onebss.app_secret')])->withToken($token)->post(config('onebss.endpoint') . '/ccbs/didong/taikhoan-tien', ['so_tb' => $customer->phone])->then(fn($response) => [$customer->phone, $response->json()]);
                         }
                     },
