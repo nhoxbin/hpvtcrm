@@ -34,7 +34,7 @@ class Handler extends ExceptionHandler
         });
     }
 
-    /* public function render($request, Throwable $e)
+    public function render($request, Throwable $e)
     {
         $e = $this->mapException($e);
 
@@ -52,17 +52,19 @@ class Handler extends ExceptionHandler
             return $response;
         }
 
-        // Add the exception class name, message and stack trace to response
-        $response['exception'] = get_class($e); // Reflection might be better here
-        $response['message'] = $e->getMessage();
-        $response['trace'] = $e->getTraceAsString();
-        Log::error($response);
+        if (!$e instanceof AuthenticationException) {
+            // Add the exception class name, message and stack trace to response
+            $response['exception'] = get_class($e); // Reflection might be better here
+            $response['message'] = $e->getMessage();
+            $response['trace'] = $e->getTraceAsString();
+            Log::error($response);
 
-        if ($this->shouldReturnJson($request, $e)) {
-            if (config('app.debug')) {
-                return response()->error($e->getMessage());
-            } else {
-                return response()->error('Có lỗi xảy ra!');
+            if ($this->shouldReturnJson($request, $e)) {
+                if (config('app.debug')) {
+                    return response()->error($e->getMessage());
+                } else {
+                    return response()->error('Có lỗi xảy ra!');
+                }
             }
         }
 
@@ -72,5 +74,5 @@ class Handler extends ExceptionHandler
             $e instanceof ValidationException => $this->convertValidationExceptionToResponse($e, $request),
             default => $this->renderExceptionResponse($request, $e),
         };
-    } */
+    }
 }

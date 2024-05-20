@@ -45,7 +45,7 @@ class OneBssCustomer extends Model
                         /* $operator = 'like "%'.$goi_data.'%"';
                         if (str_contains($goi_data, ' ')) {
                         } */
-                        $operator = '= "'.$goi_data.'"';
+                        $operator = 'like "'.$goi_data.'"';
                         // $q->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].PACKAGE_NAME"), "$[0]")) ' . $operator);
                         $q->whereRaw('JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT(`goi_data`, "$[*].SERVICES"), "$[0]")) ' . $operator);
                     });
