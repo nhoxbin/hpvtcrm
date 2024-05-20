@@ -19,9 +19,11 @@ class DistributeController extends Controller
         DB::beginTransaction();
         try {
             if (is_array($request->user_id)) {
+                $customers = new OneBssCustomer();
+                $search = $customers->search($request)->whereNull('user_id');
+
                 if (count($request->user_id) == 1 && is_numeric($request->user_id[0])) {
-                    $customers = new OneBssCustomer();
-                    $customers = $customers->search($request)->whereNull('user_id')->update(['user_id' => $request->user_id[0]]);
+                    $customers = $search->update(['user_id' => $request->user_id[0]]);
                 } else {
                     if (in_array('all', $request->user_id)) {
                         // chia đều tất cả user
@@ -32,8 +34,7 @@ class DistributeController extends Controller
                     }
                     // đoạn code phân cho sales
                     if ($users->count() > 0) {
-                        $customers = new OneBssCustomer();
-                        $customers = $customers->search($request)->whereNull('user_id')->get();
+                        $customers = $search->get();
                         $maxLength = intval($customers->count() / $users->count()) + 1;
                         $pos = 0;
                         foreach ($users as $key => $user) {
