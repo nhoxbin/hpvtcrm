@@ -33,7 +33,8 @@ class DistributeController extends Controller
                     }
                     // đoạn code phân cho sales
                     if (isset($users) && $users->count() > 0) {
-                        $customers = OneBssCustomer::where('user_id', null)->get();
+                        $customers = $request->user()->created_users()->whereNull('user_id')->get();
+                        Log::info($customers);
                         $maxLength = intval($customers->count() / $users->count()) + 1;
                         $pos = 0;
                         foreach ($users as $key => $user) {
