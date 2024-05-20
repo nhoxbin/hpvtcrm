@@ -27,12 +27,13 @@ class DistributeController extends Controller
                     if (in_array('all', $request->user_id)) {
                         // chia đều tất cả user
                         $users = $request->user()->created_users;
+                        Log::info($users);
                     } else {
                         // chọn nhiều user
                         $users = User::whereIn('id', $request->user_id)->get();
                     }
                     // đoạn code phân cho sales
-                    if (isset($users) && $users->count() > 0) {
+                    if ($users->count() > 0) {
                         $customers = $request->user()->created_users()->whereNull('user_id')->get();
                         Log::info($customers);
                         $maxLength = intval($customers->count() / $users->count()) + 1;
