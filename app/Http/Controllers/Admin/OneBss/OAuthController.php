@@ -8,7 +8,6 @@ use App\Http\Requests\OneBss\LoginRequest;
 use App\Http\Requests\OneBss\OAuthRequest;
 use App\Jobs\OneBssClearAuth;
 use App\Models\OneBssAccount;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -66,7 +65,7 @@ class OAuthController extends Controller
         if (isset($onebss['access_token'])) {
             $account = OneBssAccount::updateOrCreate(['username' => $request->username], ['access_token' => $onebss['access_token'], 'expires_in' => $onebss['expires_in'], 'user_id' => Auth::id()]);
             Log::info($onebss);
-            OneBssClearAuth::dispatch($account)->delay(Carbon::now()->addSeconds($onebss['expires_in']));
+            OneBssClearAuth::dispatch($account)->delay(now()->addSeconds($onebss['expires_in']));
             return Redirect::route('admin.onebss.accounts.index')->with(['status' => 'Đăng nhập thành công!', 'error' => false]);
         }
         return Redirect::route('admin.onebss.accounts.index')->with(['status' => $onebss ? $onebss['message'] : 'Something happen! Please try again.', 'error' => true]);
