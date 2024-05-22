@@ -64,7 +64,6 @@ class OAuthController extends Controller
         $onebss = VNPTOneBss::oauth($validated);
         if (isset($onebss['access_token'])) {
             $account = OneBssAccount::updateOrCreate(['username' => $request->username], ['access_token' => $onebss['access_token'], 'expires_in' => $onebss['expires_in'], 'user_id' => Auth::id()]);
-            Log::info($onebss);
             OneBssClearAuth::dispatch($account)->delay(now()->addSeconds($onebss['expires_in']));
             return Redirect::route('admin.onebss.accounts.index')->with(['status' => 'Đăng nhập thành công!', 'error' => false]);
         }

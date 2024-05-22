@@ -9,6 +9,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -52,7 +53,7 @@ class Handler extends ExceptionHandler
             return $response;
         }
 
-        if (!$e instanceof AuthenticationException) {
+        if (!$e instanceof AuthenticationException && !$e instanceof ValidationException && !$e instanceof NotFoundHttpException) {
             // Add the exception class name, message and stack trace to response
             $response['exception'] = get_class($e); // Reflection might be better here
             $response['message'] = $e->getMessage();
