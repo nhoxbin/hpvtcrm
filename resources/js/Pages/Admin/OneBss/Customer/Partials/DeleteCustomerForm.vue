@@ -55,7 +55,7 @@ const commands = reactive({
   tra_sau: 'Trả sau',
   search: 'Tìm kiếm',
   // duplicate: 'Trùng',
-  // sales_state: 'Trạng thái',
+  sales_state: 'Trạng thái',
 });
 
 const form = useForm({

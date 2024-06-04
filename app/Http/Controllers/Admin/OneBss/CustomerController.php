@@ -104,11 +104,14 @@ class CustomerController extends Controller
                 $phones = $customers->values();
                 OneBssCustomer::whereIn('phone', $phones)->whereNotIn('id', $ids)->delete();
                 break; */
+            case 'sales_state':
+                OneBssCustomer::whereNotNull('sales_state')->update(['sales_state' => null]);
+                break;
             /* case 'sales_state':
                 $request->validate([
                     'sales_state' => 'required|in:'.implode(',', SalesStateEnum::values())
                 ]);
-                Customer::whereIn('sales_state', $request->command)->delete();
+                OneBssCustomer::whereIn('sales_state', $request->command)->delete();
                 break; */
         }
         return redirect()->route('admin.onebss.customers.index')->with('msg', 'Xóa dữ liệu thành công.');
