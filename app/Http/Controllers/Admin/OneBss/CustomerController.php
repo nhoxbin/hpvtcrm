@@ -98,14 +98,10 @@ class CustomerController extends Controller
                 $customer = new OneBssCustomer();
                 $customer->search($request)->delete();
                 break;
-            /* case 'duplicate':
-                $customers = OneBssCustomer::selectRaw('MAX(id) as id, phone')->groupBy('phone')->havingRaw('COUNT(*) > 1')->pluck('phone', 'id');
-                $ids = $customers->keys();
-                $phones = $customers->values();
-                OneBssCustomer::whereIn('phone', $phones)->whereNotIn('id', $ids)->delete();
-                break; */
             case 'sales_state':
-                OneBssCustomer::whereNotNull('sales_state')->update(['sales_state' => null]);
+                $customer = new OneBssCustomer();
+                $customer->search($request)->whereNotNull('sales_state')->update(['user_id' => null, 'sales_state' => null, 'sales_note' => null, 'admin_note' => null]);
+                // OneBssCustomer::whereNotNull('sales_state')->update(['sales_state' => null]);
                 break;
             /* case 'sales_state':
                 $request->validate([

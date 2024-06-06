@@ -50,7 +50,7 @@ class OnebssCheckCustomers extends Command
         if ($account) {
             $token = $account->access_token;
             $concurrent = 20;
-            $customers = OneBssCustomer::where('is_request', 0)->limit(6)->get();
+            $customers = OneBssCustomer::withTrashed()->where('is_request', 0)->limit(6)->get();
             $upsert = [];
             $delete = [];
 
