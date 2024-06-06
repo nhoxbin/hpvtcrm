@@ -88,18 +88,17 @@ class CustomerController extends Controller
             return response()->success('Xóa dữ liệu thành công.');
         }
 
+        $customer = new OneBssCustomer();
         switch ($request->command) {
             case 'all':
                 Schema::disableForeignKeyConstraints();
-                OneBssCustomer::truncate();
+                $customer->truncate();
                 Schema::enableForeignKeyConstraints();
                 break;
             case 'search':
-                $customer = new OneBssCustomer();
                 $customer->search($request)->delete();
                 break;
             case 'sales_state':
-                $customer = new OneBssCustomer();
                 $customer->search($request)->where(function($q) {
                     $q->orWhereNotNull('sales_state')->orWhereNotNull('sales_note')->orWhereNotNull('admin_note');
                 })->update(['sales_state' => null, 'sales_note' => null, 'admin_note' => null]);
