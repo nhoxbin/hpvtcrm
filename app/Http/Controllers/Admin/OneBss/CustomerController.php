@@ -102,7 +102,7 @@ class CustomerController extends Controller
                 $customer = new OneBssCustomer();
                 $customer->search($request)->where(function($q) {
                     $q->orWhereNotNull('sales_state')->orWhereNotNull('sales_note')->orWhereNotNull('admin_note');
-                })->update(['user_id' => null, 'sales_state' => null, 'sales_note' => null, 'admin_note' => null]);
+                })->update(['sales_state' => null, 'sales_note' => null, 'admin_note' => null]);
                 // OneBssCustomer::whereNotNull('sales_state')->update(['sales_state' => null]);
                 break;
             /* case 'sales_state':
