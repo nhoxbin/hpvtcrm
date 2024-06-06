@@ -72,7 +72,7 @@ class UserController extends Controller
      */
     public function destroy(Request $request, User $user) {
         $this->authorize('delete', $user);
-        $user->onebss_customers()->update(['user_id' => null]);
+        $user->onebss_customers()->update(['user_id' => null, 'sales_state' => null, 'sales_note' => null, 'admin_note' => null]);
         return response()->success('Xóa thành công.');
     }
 }

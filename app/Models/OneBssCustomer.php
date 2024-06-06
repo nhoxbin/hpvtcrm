@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 
 class OneBssCustomer extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     protected $fillable = ['phone', 'tra_sau', 'core_balance', 'is_request', 'goi_data', 'user_id', 'sales_state', 'sales_note', 'admin_note'];
