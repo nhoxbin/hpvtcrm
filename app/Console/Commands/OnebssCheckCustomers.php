@@ -37,8 +37,7 @@ class OnebssCheckCustomers extends Command
         if (Cache::has('account')) {
             $account = Cache::get('account');
         } else {
-            $account = OneBssAccount::whereNotNull('access_token')->latest()->first();
-            if ($account) {
+            if ($account = OneBssAccount::whereNotNull('access_token')->latest()->first()) {
                 $seconds = $account->expires_in - now()->subSeconds($account->expires_in)->diffInSeconds();
                 if ($seconds > 0) {
                     Cache::remember('account', $seconds, function() use ($account) {
@@ -117,7 +116,7 @@ class OnebssCheckCustomers extends Command
                 OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
             }
             if (!empty($delete)) {
-                OneBssCustomer::whereIn('phone', $delete)->delete();
+                OneBssCustomer::whereIn('phone', $delete)->forceDelete();
             }
             $this->info('DONE');
         } else {

@@ -10,6 +10,7 @@ use App\Jobs\OneBssClearAuth;
 use App\Models\OneBssAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -64,6 +65,9 @@ class OAuthController extends Controller
         $onebss = VNPTOneBss::oauth($validated);
         if (isset($onebss['access_token'])) {
             $account = OneBssAccount::updateOrCreate(['username' => $request->username], ['access_token' => $onebss['access_token'], 'expires_in' => $onebss['expires_in'], 'user_id' => Auth::id()]);
+            Cache::remember('account', $onebss['expires_in'], function() use ($account) {
+                return $account;
+            });
             OneBssClearAuth::dispatch($account)->delay(now()->addSeconds($onebss['expires_in']));
             return Redirect::route('admin.onebss.accounts.index')->with(['status' => 'Đăng nhập thành công!', 'error' => false]);
         }
