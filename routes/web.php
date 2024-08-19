@@ -26,7 +26,7 @@ Route::get('artisan/{password}/{command}', function($password, $command) {
             $exitCode = Artisan::call($command, request()->all());
             $artisanOutput = Artisan::output();
 
-            if (in_array("Error", str_split($artisanOutput, 5))) {
+            if ($exitCode != 0) {
                 Log::error($artisanOutput);
             }
             echo $exitCode == 0 ? 'Success' : 'Error';
