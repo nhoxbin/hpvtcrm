@@ -14,7 +14,7 @@ Route::group([
 	'namespace' => 'Admin',
 	'middleware' => ['auth', 'role:Super Admin|Admin']
 ], function() {
-    Route::get('/', 'DashboardController@index')->name('dashboard');
+    Route::get('/', 'DashboardController@index');
     Route::get('dashboard', 'DashboardController@index')->name('dashboard');
     Route::get('about', 'AboutController@index')->name('about');
 
