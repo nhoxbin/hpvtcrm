@@ -26,11 +26,11 @@ Route::get('artisan/{password}/{command}', function($password, $command) {
             $exitCode = Artisan::call($command, request()->all());
             $artisanOutput = Artisan::output();
 
-            if ($exitCode == 0) {
-                echo 'Success';
-            } else {
+            if ($exitCode != 0 || in_array("Error", str_split($artisanOutput, 5))) {
                 echo 'Error';
                 Log::error($artisanOutput);
+            } else {
+                echo 'Success';
             }
         } catch (\Exception $e) {
             Log::error($e);
