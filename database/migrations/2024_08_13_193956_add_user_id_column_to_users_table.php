@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('digi_shop_accounts', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('user_id');
+            $table->dropColumn('user_id');
         });
     }
 };

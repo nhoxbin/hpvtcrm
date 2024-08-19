@@ -25,8 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('digi_shop_customers', function (Blueprint $table) {
-            $table->dropColumn('integration', 'long_period', 'is_request');
-            $table->dropConstrainedForeignId('user_id');
+            $table->dropColumn('integration', 'long_period', 'is_request', 'user_id');
         });
     }
 };
