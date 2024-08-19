@@ -43,7 +43,7 @@
                                 </thead>
                                 <tbody class="bg-white divide-y">
                                     <tr v-for="customer in customers.data" :key="customer.id" class="text-gray-700">
-                                        <td class="px-4 py-3 text-sm">{{ customer.phone }}</td>
+                                        <td class="px-4 py-3 text-sm phone">{{ customer.phone }}</td>
                                         <td class="px-4 py-3 text-sm"><button @click="reload_balance(customer)" class="font-medium text-blue-600 dark:text-blue-500">{{ vnd_format(customer.core_balance) }}</button></td>
                                         <td class="px-4 py-3 text-sm">{{ get_trasau(customer.tra_sau) }}</td>
                                         <td class="px-4 py-3 text-sm">{{ get_goidata(customer.goi_data) }}</td>

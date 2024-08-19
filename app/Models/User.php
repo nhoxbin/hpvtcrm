@@ -85,4 +85,8 @@ class User extends Authenticatable
     public function onebss_account() {
         return $this->hasMany(OneBssAccount::class)->latest();
     }
+
+    public function digishop_customers() {
+        return $this->hasMany(DigiShopCustomer::class);
+    }
 }

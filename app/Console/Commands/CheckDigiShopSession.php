@@ -28,28 +28,31 @@ class CheckDigiShopSession extends Command
      */
     public function handle()
     {
-        $digishop = DigiShopAccount::where('status', 1)->latest()->first();
-        if (!empty($digishop) && $digishop->status) {
-            $is_login = VNPTDigiShop::checkSession($digishop->access_token);
-            if (!$is_login) {
-                $credentials = ['username' => $digishop->username, 'password' => $digishop->password];
-                $login = VNPTDigiShop::login($credentials);
-                Log::error($login);
-                if ($login['success'] && $login['statusCode'] == 200) {
-                    $data = $login['data'];
-                    if ($data['errorCode'] == 0) {
-                        $item = $data['item'];
-                        if (!empty($item) && $item['access_token']) {
-                            $digishop->status = true;
-                            $digishop->access_token = $item['access_token'];
-                            $digishop->save();
-                            return;
+        $accounts = DigiShopAccount::where('status', true)->get();
+        foreach ($accounts as $account) {
+            if (!empty($account) && $account->status) {
+                $is_login = VNPTDigiShop::checkSession($account->access_token);
+                if (!$is_login) {
+                    $credentials = ['username' => $account->username, 'password' => $account->password];
+                    $login = VNPTDigiShop::login($credentials);
+                    // Log::error($login);
+                    if ($login['success'] && $login['statusCode'] == 200) {
+                        $data = $login['data'];
+                        if ($data['errorCode'] == 0) {
+                            $item = $data['item'];
+                            if (!empty($item) && $item['access_token']) {
+                                $account->status = true;
+                                $account->access_token = $item['access_token'];
+                                $account->save();
+                                return;
+                            }
                         }
                     }
+                    $account->status = false;
+                    $account->access_token = NULL;
+                    $account->save();
+                    $this->info('Account ' . $account->username . ' has been updated.');
                 }
-                $digishop->status = false;
-                $digishop->access_token = NULL;
-                $digishop->save();
             }
         }
     }

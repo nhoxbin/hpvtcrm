@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('app:sync-products')->hourly();
         $schedule->command('app:check-digishop-session')->hourly();
-        // $schedule->command('app:onebss-check-customers')->everyFiveMinutes()->shouldSkipDueToOverlapping();
+        $schedule->command('app:onebss-check-customers')->everyFiveMinutes()->shouldSkipDueToOverlapping();
+        $schedule->command('app:digishop-check-customers')->everyFiveMinutes()->shouldSkipDueToOverlapping();
     }
 
     /**

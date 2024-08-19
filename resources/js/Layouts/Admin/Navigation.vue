@@ -44,14 +44,40 @@
         </li>
 
         <li class="relative px-6 py-3" v-if="$page.props.auth.user.permissions.some(r => r.name == 'Read DigiShop')">
-          <NavLink :href="route('admin.digishop.create')" :active="route().current('admin.digishop.create')">
-            <template #icon>
-              <svg class="h-5 w-5 text-teal-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-              </svg>
-            </template>
-            Login DigiShop
-          </NavLink>
+          <button @click="showingDigiShopMenu = !showingDigiShopMenu"
+            class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
+            aria-haspopup="true">
+              <span class="inline-flex items-center">
+                  <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                      <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                  <span class="ml-4">DigiShop</span>
+              </span>
+            <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd"></path>
+            </svg>
+          </button>
+          <ul v-show="showingDigiShopMenu" class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50"
+              aria-label="submenu">
+            <!-- <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800">
+              <NavLink :href="route('admin.onebss.users.index')" :active="route().current('admin.onebss.users.index')">
+                NV Sales
+              </NavLink>
+            </li> -->
+            <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800">
+              <NavLink :href="route('admin.digishop.accounts.create')" :active="route().current('admin.digishop.accounts.create')">
+                Đăng nhập
+              </NavLink>
+            </li>
+            <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800">
+              <NavLink :href="route('admin.digishop.customers.index')" :active="route().current('admin.digishop.customers.index')">
+                Khách hàng
+              </NavLink>
+            </li>
+          </ul>
         </li>
 
         <!-- <li class="relative px-6 py-3">
@@ -68,7 +94,7 @@
         </li> -->
 
         <li class="relative px-6 py-3" v-if="$page.props.auth.user.roles.some(r => r.name == 'OneBss Admin')">
-          <button @click="showingTwoLevelMenu = !showingTwoLevelMenu"
+          <button @click="showingOneBssMenu = !showingOneBssMenu"
             class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800"
             aria-haspopup="true">
               <span class="inline-flex items-center">
@@ -84,7 +110,7 @@
                     clip-rule="evenodd"></path>
             </svg>
           </button>
-          <ul v-show="showingTwoLevelMenu" class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50"
+          <ul v-show="showingOneBssMenu" class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50"
               aria-label="submenu">
             <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800">
               <NavLink :href="route('admin.onebss.users.index')" :active="route().current('admin.onebss.users.index')">
@@ -120,13 +146,17 @@ export default {
   },
 
   setup() {
-    let showingTwoLevelMenu = ref(false)
+    let showingOneBssMenu = ref(false);
+    let showingDigiShopMenu = ref(false);
 
     if (route().current('admin.onebss.*')) {
-      showingTwoLevelMenu.value = true;
+      showingOneBssMenu.value = true;
+    } else if (route().current('admin.digishop.*')) {
+      showingDigiShopMenu.value = true;
     }
     return {
-      showingTwoLevelMenu
+      showingOneBssMenu,
+      showingDigiShopMenu,
     }
   },
 }

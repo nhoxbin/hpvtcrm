@@ -6,7 +6,7 @@
       Admin Login DigiShop
     </template>
 
-    <form @submit.prevent="form.post(route('admin.digishop.store'))" class="mt-6 space-y-6">
+    <form @submit.prevent="form.post(route('admin.digishop.accounts.store'))" class="mt-6 space-y-6">
         <div>
           <InputLabel for="username" value="Username" />
 
