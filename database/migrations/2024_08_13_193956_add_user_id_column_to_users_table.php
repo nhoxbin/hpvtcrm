@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('digi_shop_accounts', function (Blueprint $table) {
-            $table->foreignId('user_id')->after('status')->default(1)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->after('status')->nullable();
         });
     }
 

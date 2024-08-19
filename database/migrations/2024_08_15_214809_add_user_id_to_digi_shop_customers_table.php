@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('integration')->after('first_product_name')->nullable()->default(null);
             $table->text('long_period')->after('integration')->nullable()->default(null);
             $table->boolean('is_request')->default(false)->after('packages');
-            $table->foreignId('user_id')->after('is_request')->default(1)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->after('is_request')->nullable();
         });
     }
 
