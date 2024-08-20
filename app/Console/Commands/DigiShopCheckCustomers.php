@@ -3,10 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Helpers\Facades\VNPTDigiShop;
+use App\Http\Mixins\HttpMixin;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
+use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\Pool;
+use Illuminate\Support\Facades\Http;
 
 class DigiShopCheckCustomers extends Command
 {
@@ -29,6 +33,38 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
+        /* Http::mixin(new HttpMixin());
+        Http::concurrent(
+            $concurrent,
+            function (Pool $pool) use ($customers, $token): Generator {
+                foreach ($customers as $customer) {
+                    sleep(20);
+                    yield $pool->async()->withToken($token)->post(config('onebss.endpoint') . '/ccbs/oneBss/app_tb_tc_thongtin', ['so_tb' => $customer->phone, 'service' => 'SIM4G'])->then(fn($response) => [$customer->phone, $response->json()]);
+                }
+            },
+            function ($info) use (&$upsert, &$delete, $account) {
+                if ($account->access_token == null) return;
+                if ($info[1]['error_code'] == 'BSS-00000000') {
+                    $this->info('Processing: ' . $info[0]);
+                    $data = $info[1]['data'];
+                    if (!empty($data['GOI_CUOC_TS'])) {
+                        $upsert[$data['SO_TB']] = [
+                            'phone' => $data['SO_TB'],
+                            'tra_sau' => (string) $data['TRA_SAU'],
+                            'goi_data' => json_encode($data['GOI_CUOC_TS']),
+                            'core_balance' => 0,
+                            'is_request' => 1,
+                        ];
+                    } else {
+                        $delete[] = $info[0];
+                    }
+                } elseif ($info[1]['error_code'] == 'BSS-0000420') {
+                    $delete[] = $info[0];
+                } elseif ($info[1]['error_code'] == 'BSS-00000401') {
+                    OneBssClearAuth::dispatch($account);
+                }
+            }
+        ); */
         $usernameCheck = 'hpvt';
         $customers = DigiShopCustomer::whereRelation('user', 'username', $usernameCheck)->where('is_request', false)->limit(200)->get();
         $digishop = DigiShopAccount::whereRelation('user', 'username', $usernameCheck)->where('status', true)->firstOrFail();
