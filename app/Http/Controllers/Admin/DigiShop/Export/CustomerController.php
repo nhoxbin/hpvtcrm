@@ -58,7 +58,7 @@ class CustomerController extends Controller
         $sheet->setCellValue('D1', 'Tích hợp');
         $sheet->setCellValue('E1', 'Chu kỳ dài');
 
-        $customers = $request->user()->digishop_customers()->get();
+        $customers = $request->user()->digishop_customers()->where('is_request', true)->get();
         // Add data
         $x = 2;
         foreach($customers as $customer) {
@@ -75,7 +75,7 @@ class CustomerController extends Controller
         $writer = new Xlsx($spreadsheet);
         $path = storage_path('app/public/digishop-'.date('d-m-Y', time()).'.xlsx');
         $writer->save($path);
-        $request->user()->digishop_customers()->delete();
+        $customers->delete();
         return response()->download($path)->deleteFileAfterSend();
     }
 }

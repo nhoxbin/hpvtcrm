@@ -30,7 +30,7 @@ class DigiShopCheckCustomers extends Command
     public function handle()
     {
         $usernameCheck = 'hpvt';
-        $customers = DigiShopCustomer::whereRelation('user', 'username', $usernameCheck)->where('is_request', false)->get();
+        $customers = DigiShopCustomer::whereRelation('user', 'username', $usernameCheck)->where('is_request', false)->limit(200)->get();
         $digishop = DigiShopAccount::whereRelation('user', 'username', $usernameCheck)->where('status', true)->firstOrFail();
         foreach ($customers as $customer) {
             $info = VNPTDigiShop::getInfo($customer->phone_number, $digishop->access_token);
