@@ -75,7 +75,6 @@ class CustomerController extends Controller
         $writer = new Xlsx($spreadsheet);
         $path = storage_path('app/public/digishop-'.date('d-m-Y', time()).'.xlsx');
         $writer->save($path);
-        $customers->delete();
         DigiShopCustomer::whereIn('id', $customers->pluck('id'))->delete();
         return response()->download($path)->deleteFileAfterSend();
     }
