@@ -100,6 +100,8 @@ class DigiShopCheckCustomers extends Command
                     }
                     DigiShopCustomer::updateOrCreate(['phone_number' => $customer->phone_number], $insert);
                     // return response()->success('Success', $insert);
+                } else {
+                    Log::info($info);
                 }
             } else {
                 Log::info($info);
