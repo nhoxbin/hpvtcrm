@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -19,7 +20,7 @@ class CustomerController extends Controller
     public function index()
     {
         return Inertia::render('Admin/DigiShop/Customer/Index', [
-            'customers' => DigiShopCustomer::paginate(10),
+            'customers' => Auth::user()->digishop_customers()->paginate(10),
             'msg' => session('msg'),
         ]);
     }
