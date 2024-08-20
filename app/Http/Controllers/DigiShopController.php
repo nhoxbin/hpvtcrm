@@ -6,6 +6,7 @@ use App\Helpers\Facades\VNPTDigiShop;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -92,6 +93,6 @@ class DigiShopController extends Controller
      */
     public function destroy(DigiShopCustomer $digiShop)
     {
-        DigiShopCustomer::truncate();
+        Auth::user()->digishop_customers()->delete();
     }
 }

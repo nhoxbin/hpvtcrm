@@ -75,6 +75,7 @@ class CustomerController extends Controller
         $writer = new Xlsx($spreadsheet);
         $path = storage_path('app/public/digishop-'.date('d-m-Y', time()).'.xlsx');
         $writer->save($path);
+        $request->user()->digishop_customers()->delete();
         return response()->download($path)->deleteFileAfterSend();
     }
 }
