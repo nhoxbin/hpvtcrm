@@ -41,6 +41,7 @@ class CustomerController extends Controller
                     'phone_number' => $phone,
                     'created_at' => now(),
                     'updated_at' => now(),
+                    'user_id' => $request->user()->id
                 ];
             }
             DigiShopCustomer::upsert($customers, ['phone_number'], ['created_at', 'updated_at']);
