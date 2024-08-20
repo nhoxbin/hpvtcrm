@@ -38,8 +38,7 @@ class DigiShopCheckCustomers extends Command
             $concurrent,
             function (Pool $pool) use ($customers, $token): Generator {
                 foreach ($customers as $customer) {
-                    sleep(20);
-                    yield $pool->async()->withToken($token)->post(config('onebss.endpoint') . '/ccbs/oneBss/app_tb_tc_thongtin', ['so_tb' => $customer->phone, 'service' => 'SIM4G'])->then(fn($response) => [$customer->phone, $response->json()]);
+                    yield $pool->async()->withToken($token)->withHeaders(['x-api-key' => config('digishop.apiKey')])->post(config('digishop.endpoint') . '/customer/get-info?' . http_build_query(['phone_number' => $phone_number]))->then(fn($response) => [$customer->phone, $response->json()]);
                 }
             },
             function ($info) use (&$upsert, &$delete, $account) {
