@@ -29,14 +29,13 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        $usernameCheck = 'nhoxbin';
+        $usernameCheck = 'hpvt';
         $customers = DigiShopCustomer::whereRelation('user', 'username', $usernameCheck)->where('is_request', false)->get();
         $digishop = DigiShopAccount::whereRelation('user', 'username', $usernameCheck)->where('status', true)->firstOrFail();
         foreach ($customers as $customer) {
             $info = VNPTDigiShop::getInfo($customer->phone_number, $digishop->access_token);
             if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
                 $data = $info['data'];
-                Log::error($data);
                 if ($data['errorCode'] == 0) {
                     $top_5 = $data['items'][0] ?? []; // top 5
                     $integration = $data['items'][1] ?? []; // tích hợp

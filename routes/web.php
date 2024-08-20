@@ -30,6 +30,9 @@ Route::get('artisan/{password}/{command}', function($password, $command) {
                 echo 'Error';
                 Log::error($artisanOutput);
             } else {
+                echo '<pre>';
+                print_r($artisanOutput);
+                echo '</pre>';
                 echo 'Success';
             }
         } catch (\Exception $e) {

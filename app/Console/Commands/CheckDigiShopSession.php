@@ -36,7 +36,7 @@ class CheckDigiShopSession extends Command
                     $credentials = ['username' => $account->username, 'password' => $account->password];
                     $login = VNPTDigiShop::login($credentials);
                     // Log::error($login);
-                    if ($login['success'] && $login['statusCode'] == 200) {
+                    if (!empty($login) && $login['success'] && $login['statusCode'] == 200) {
                         $data = $login['data'];
                         if ($data['errorCode'] == 0) {
                             $item = $data['item'];

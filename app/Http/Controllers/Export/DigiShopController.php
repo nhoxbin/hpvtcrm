@@ -60,7 +60,7 @@ class DigiShopController extends Controller
         $sheet->setCellValue('D1', 'Gói cước sử dụng');
         $sheet->setCellValue('E1', 'Ngày hết hạn');
 
-        $customers = DigiShopCustomer::all();
+        $customers = $request->user()->digishop_customers()->get();
         // Add data
         $x = 2;
         foreach($customers as $customer) {

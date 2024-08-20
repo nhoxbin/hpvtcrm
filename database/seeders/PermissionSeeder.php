@@ -70,6 +70,7 @@ class PermissionSeeder extends Seeder
         User::firstWhere('username', 'nhoxbin')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
 
         User::firstWhere('username', 'hpvt')->syncRoles(['Admin', 'OneBss Admin']);
+        User::firstWhere('username', 'hpvt')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
         User::firstWhere('username', 'nhoxbin')->syncRoles(['Super Admin', 'Admin', 'OneBss Admin']);
     }
 }

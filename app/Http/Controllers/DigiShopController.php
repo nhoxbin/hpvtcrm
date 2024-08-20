@@ -42,6 +42,8 @@ class DigiShopController extends Controller
                     'tkc' => 0,
                     'first_product_name' => null,
                     'packages' => null,
+                    'user_id' => $request->user()->id,
+                    'is_request' => true,
                 ];
                 if (!empty($data['items']) && isset($data['items'][0]['list_product'])) {
                     $insert['first_product_name'] = $data['items'][0]['list_product'][0]['name'];
