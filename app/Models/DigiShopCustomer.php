@@ -9,7 +9,7 @@ class DigiShopCustomer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['phone_number', 'tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request'];
+    protected $fillable = ['user_id', 'phone_number', 'tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request'];
 
     protected $casts = [
         'packages' => 'json',
