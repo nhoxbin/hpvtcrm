@@ -54,9 +54,9 @@ class CustomerController extends Controller
         // set the names of header cells
         $sheet->setCellValue('A1', 'Số điện thoại');
         $sheet->setCellValue('B1', 'Gói cước sử dụng');
-        $sheet->setCellValue('C1', 'Ngày hết hạn');
-        $sheet->setCellValue('D1', 'Tích hợp');
-        $sheet->setCellValue('E1', 'Chu kỳ dài');
+        // $sheet->setCellValue('C1', 'Ngày hết hạn');
+        $sheet->setCellValue('C1', 'Tích hợp');
+        $sheet->setCellValue('D1', 'Chu kỳ dài');
 
         $customers = $request->user()->digishop_customers()->where('is_request', true)->get();
         // Add data
@@ -64,11 +64,10 @@ class CustomerController extends Controller
         foreach ($customers as $customer) {
             $sheet->setCellValue('A' . $x, $customer->phone_number);
             if (!empty($customer->packages)) {
-                $sheet->setCellValue('B' . $x, $customer->packages['service_name']);
-                $sheet->setCellValue('C' . $x, $customer->packages['expired_at']);
+                $sheet->setCellValue('B' . $x, $customer->packages);
             }
-            $sheet->setCellValue('D' . $x, $customer->integration ? implode(',', $customer->integration) : '');
-            $sheet->setCellValue('E' . $x, $customer->long_period ? implode(',', $customer->long_period) : '');
+            $sheet->setCellValue('C' . $x, $customer->integration ? implode(',', $customer->integration) : '');
+            $sheet->setCellValue('D' . $x, $customer->long_period ? implode(',', $customer->long_period) : '');
             $x++;
         }
         //Create file excel.xlsx
