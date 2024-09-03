@@ -67,6 +67,7 @@ class DigiShopCheckCustomers extends Command
                         $insert = [
                             'phone_number' => $phone_number,
                             'tkc' => 0,
+                            'user_id' => $account->user_id,
                             'first_product_name' => null,
                             'packages' => null,
                             'integration' => null,

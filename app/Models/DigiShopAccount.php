@@ -9,13 +9,14 @@ class DigiShopAccount extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['username', 'password', 'access_token', 'status'];
+    protected $fillable = ['username', 'password', 'access_token', 'status', 'user_id'];
 
     protected $casts = [
         'status' => 'boolean',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }
