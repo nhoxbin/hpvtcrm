@@ -9,7 +9,7 @@ class DigiShopCustomer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'phone_number', 'tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request'];
+    protected $fillable = ['phone_number', 'user_id', 'tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request'];
 
     protected $casts = [
         'packages' => 'json',
@@ -18,7 +18,8 @@ class DigiShopCustomer extends Model
         'is_request' => 'boolean',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

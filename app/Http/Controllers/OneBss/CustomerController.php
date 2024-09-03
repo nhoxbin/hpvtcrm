@@ -132,4 +132,41 @@ class CustomerController extends Controller
         }
         return response()->error('Authenticate Error...');
     }
+
+    public function get_direct_phone_data(string $phone)
+    {
+        $account = OneBssAccount::getToken()->first();
+        if ($account) {
+            $info = VNPTOneBss::getInfo($phone, $account->access_token);
+            $balance = VNPTOneBss::getBalance($phone, $account->access_token);
+            echo '<pre>';
+            print_r($info);
+            echo '</pre>';die;
+            if ($info && $info['error_code'] == 'BSS-00000000' && $balance['error_code'] == 'BSS-00000000') {
+                // balance
+                $data = $balance['data'];
+                $key = array_search('1', array_column($data, 'ID'));
+                $core_balance = $data[$key]['REMAIN'];
+
+                // info
+                $data = $info[1]['data'];
+                if (!empty($data['GOI_CUOC_TS'])) {
+                    $info = [
+                        'phone' => $data['SO_TB'],
+                        'tra_sau' => (string) $data['TRA_SAU'],
+                        'goi_data' => json_encode($data['GOI_CUOC_TS']),
+                        'core_balance' => 0,
+                        'is_request' => 1,
+                    ];
+                }
+                // $customer->save();
+                return response()->success('', ['info' => $info, 'balance' => $core_balance]);
+            } elseif ($balance['error_code'] == 'BSS-00001101' || $balance['error_code'] == 'BSS-00000401') {
+                $account->expires_in = null;
+                $account->access_token = null;
+                $account->save();
+            }
+        }
+        return response()->error('Authenticate Error...');
+    }
 }

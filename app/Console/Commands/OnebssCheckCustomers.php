@@ -40,7 +40,7 @@ class OnebssCheckCustomers extends Command
             if ($account = OneBssAccount::whereNotNull('access_token')->latest()->first()) {
                 $seconds = $account->expires_in - now()->subSeconds($account->expires_in)->diffInSeconds();
                 if ($seconds > 0) {
-                    Cache::remember('account', $seconds, function() use ($account) {
+                    Cache::remember('account', $seconds, function () use ($account) {
                         return $account;
                     });
                 }
@@ -93,7 +93,11 @@ class OnebssCheckCustomers extends Command
                     function (Pool $pool) use ($customers, $token): Generator {
                         foreach ($customers as $customer) {
                             sleep(20);
-                            yield $pool->async()->withToken($token)->post(config('onebss.endpoint') . '/ccbs/didong/taikhoan-tien', ['so_tb' => $customer->phone])->then(fn($response) => [$customer->phone, $response->json()]);
+                            yield $pool
+                                ->async()
+                                ->withToken($token)
+                                ->post(config('onebss.endpoint') . '/ccbs/didong/taikhoan-tien', ['so_tb' => $customer->phone])
+                                ->then(fn($response) => [$customer->phone, $response->json()]);
                         }
                     },
                     function ($balance) use (&$upsert) {

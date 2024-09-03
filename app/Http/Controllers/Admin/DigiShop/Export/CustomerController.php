@@ -20,10 +20,10 @@ class CustomerController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         // Set document properties
         $spreadsheet->getProperties()->setCreator('DigiShop')
-                    ->setLastModifiedBy('DigiShop')
-                    ->setTitle('data')
-                    ->setSubject('data DigiShop')
-                    ->setDescription('Export data to Excel Work for me!');
+            ->setLastModifiedBy('DigiShop')
+            ->setTitle('data')
+            ->setSubject('data DigiShop')
+            ->setDescription('Export data to Excel Work for me!');
         // add style to the header
         $styleArray = array(
             'font' => array(
@@ -48,8 +48,8 @@ class CustomerController extends Controller
         );
         $spreadsheet->getActiveSheet()->getStyle('A1:I1')->applyFromArray($styleArray);
         // auto fit column to content
-        foreach(range('A', 'E') as $columnID) {
-          $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
+        foreach (range('A', 'E') as $columnID) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
         }
         // set the names of header cells
         $sheet->setCellValue('A1', 'Số điện thoại');
@@ -61,21 +61,21 @@ class CustomerController extends Controller
         $customers = $request->user()->digishop_customers()->where('is_request', true)->get();
         // Add data
         $x = 2;
-        foreach($customers as $customer) {
-            $sheet->setCellValue('A'.$x, $customer->phone_number);
+        foreach ($customers as $customer) {
+            $sheet->setCellValue('A' . $x, $customer->phone_number);
             if (!empty($customer->packages)) {
-              $sheet->setCellValue('B'.$x, $customer->packages['service_name']);
-              $sheet->setCellValue('C'.$x, $customer->packages['expired_at']);
+                $sheet->setCellValue('B' . $x, $customer->packages['service_name']);
+                $sheet->setCellValue('C' . $x, $customer->packages['expired_at']);
             }
-            $sheet->setCellValue('D'.$x, $customer->integration ? implode(',', $customer->integration) : '');
-            $sheet->setCellValue('E'.$x, $customer->long_period ? implode(',', $customer->long_period) : '');
+            $sheet->setCellValue('D' . $x, $customer->integration ? implode(',', $customer->integration) : '');
+            $sheet->setCellValue('E' . $x, $customer->long_period ? implode(',', $customer->long_period) : '');
             $x++;
         }
         //Create file excel.xlsx
         $writer = new Xlsx($spreadsheet);
-        $path = storage_path('app/public/digishop-'.date('d-m-Y', time()).'.xlsx');
+        $path = storage_path('app/public/digishop-' . date('d-m-Y', time()) . '.xlsx');
         $writer->save($path);
-        DigiShopCustomer::whereIn('id', $customers->pluck('id'))->delete();
+        $request->user()->digishop_customers()->where('is_request', true)->delete();
         return response()->download($path)->deleteFileAfterSend();
     }
 }
