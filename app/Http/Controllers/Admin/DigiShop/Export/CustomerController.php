@@ -64,7 +64,7 @@ class CustomerController extends Controller
         foreach ($customers as $customer) {
             $sheet->setCellValue('A' . $x, $customer->phone_number);
             if (!empty($customer->packages)) {
-                $sheet->setCellValue('B' . $x, $customer->packages);
+                $sheet->setCellValue('B' . $x, json_encode($customer->packages));
             }
             $sheet->setCellValue('C' . $x, $customer->integration ? implode(',', $customer->integration) : '');
             $sheet->setCellValue('D' . $x, $customer->long_period ? implode(',', $customer->long_period) : '');
