@@ -75,10 +75,10 @@ class DigiShopCheckCustomers extends Command
                             'is_request' => true,
                         ];
                         if (!empty($integration)) {
-                            $insert['integration'] = array_column($integration['list_product'], 'name');
+                            $insert['integration'] = json_encode(array_column($integration['list_product'], 'name'));
                         }
                         if (!empty($long_period)) {
-                            $insert['long_period'] = array_column($long_period['list_product'], 'name');
+                            $insert['long_period'] = json_encode(array_column($long_period['list_product'], 'name'));
                         }
                         if (!empty($data['items']) && isset($top_5['list_product'])) {
                             $insert['first_product_name'] = $top_5['list_product'][0]['name'];
@@ -86,11 +86,10 @@ class DigiShopCheckCustomers extends Command
                         if (!empty($data['detail'])) {
                             $insert['tkc'] = $data['detail']['tkc'];
                             if (!empty($data['detail']['packages'])) {
-                                $insert['packages'] = $data['detail']['packages'];
+                                $insert['packages'] = json_encode($data['detail']['packages']);
                             }
                         }
                         $upsert[$phone_number] = $insert;
-                        // DigiShopCustomer::updateOrCreate(['phone_number' => $phone_number], $insert);
                     } else {
                         if ($data['errorCode'] == 3) {
                             /* array (
