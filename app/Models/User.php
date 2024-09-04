@@ -49,44 +49,62 @@ class User extends Authenticatable
     ];
 
     protected $appends = [
-        'is_admin', 'all_permissions'
+        'is_admin',
+        'all_permissions'
     ];
 
-    protected function getDefaultGuardName(): string { return 'web'; }
-
-    protected function isAdmin() : Attribute {
-        return Attribute::get(fn () => $this->hasAnyRole(['Super Admin', 'Admin']));
+    protected function getDefaultGuardName(): string
+    {
+        return 'web';
     }
 
-    protected function isSuperAdmin() : Attribute {
-        return Attribute::get(fn () => $this->hasRole(['Super Admin']));
+    protected function isAdmin(): Attribute
+    {
+        return Attribute::get(fn() => $this->hasAnyRole(['Super Admin', 'Admin']));
     }
 
-    protected function allPermissions() : Attribute {
-        return Attribute::get(fn () => $this->getAllPermissions());
+    protected function isSuperAdmin(): Attribute
+    {
+        return Attribute::get(fn() => $this->hasRole(['Super Admin']));
     }
 
-    public function created_by_user() {
+    protected function allPermissions(): Attribute
+    {
+        return Attribute::get(fn() => $this->getAllPermissions());
+    }
+
+    public function created_by_user()
+    {
         return $this->belongsTo(self::class, 'created_by_user_id');
     }
 
-    public function created_users() {
+    public function created_users()
+    {
         return $this->hasMany(self::class, 'created_by_user_id');
     }
 
-    public function customers() {
+    public function customers()
+    {
         return $this->hasMany(Customer::class);
     }
 
-    public function onebss_customers() {
+    public function onebss_customers()
+    {
         return $this->hasMany(OneBssCustomer::class);
     }
 
-    public function onebss_account() {
+    public function onebss_account()
+    {
         return $this->hasMany(OneBssAccount::class)->latest();
     }
 
-    public function digishop_customers() {
+    public function digishop_accounts()
+    {
+        return $this->hasMany(DigiShopAccount::class);
+    }
+
+    public function digishop_customers()
+    {
         return $this->hasMany(DigiShopCustomer::class);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Mixins\HttpMixin;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
 use App\Models\OneBssCustomer;
+use App\Models\User;
 use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -34,14 +35,21 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        $usernameCheck = 'hpvt';
-        $account = DigiShopAccount::whereRelation('user', 'username', $usernameCheck)->where('status', true)->firstOrFail();
 
-        $concurrent = 1000;
-        $customers = DigiShopCustomer::whereRelation('user', 'username', $usernameCheck)->where('is_request', false)->limit($concurrent)->get();
+        $concurrent = 5000;
+        $usernameCheck = 'hpvt';
+        $user = User::where('username', $usernameCheck)->with([
+            'digishop_accounts' => function ($q) {
+                $q->where('status', true);
+            },
+            'digishop_customers' => function ($q) use ($concurrent) {
+                $q->where('is_request', false)->limit($concurrent);
+            }
+        ])->firstOrFail();
+        $customers = $user->digishop_customers;
+        $account = $user->digishop_accounts[0];
         $upsert = [];
         $delete = [];
-
         Http::mixin(new HttpMixin());
         Http::concurrent(
             $concurrent,
@@ -56,6 +64,7 @@ class DigiShopCheckCustomers extends Command
                 }
             },
             function ($resp) use (&$upsert, &$delete, $account) {
+                $this->info('hihi');
                 $phone_number = $resp[0];
                 $info = $resp[1];
                 if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
