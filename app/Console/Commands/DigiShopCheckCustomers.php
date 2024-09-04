@@ -89,8 +89,8 @@ class DigiShopCheckCustomers extends Command
                                 $insert['packages'] = $data['detail']['packages'];
                             }
                         }
-                        // $upsert[$phone_number] = $insert;
-                        DigiShopCustomer::updateOrCreate(['phone_number' => $phone_number], $insert);
+                        $upsert[$phone_number] = $insert;
+                        // DigiShopCustomer::updateOrCreate(['phone_number' => $phone_number], $insert);
                     } else {
                         if ($data['errorCode'] == 3) {
                             /* array (
@@ -107,7 +107,7 @@ class DigiShopCheckCustomers extends Command
                 // $this->call('app:check-digishop-session');
             }
         );
-        // DigiShopCustomer::upsert($upsert, ['phone_number'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
+        DigiShopCustomer::upsert($upsert, ['phone_number'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
         $this->info('Success');
     }
 }
