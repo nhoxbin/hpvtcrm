@@ -262,7 +262,7 @@ const page = usePage();
 
 const search = reactive({
   direct: {
-    phone: page.props.query.search?.direct?.phone || "84913858801",
+    phone: page.props.query.search?.direct?.phone || "",
   },
   phone: page.props.query.search?.phone || "",
   sales_states: page.props.query.search?.products || "",
