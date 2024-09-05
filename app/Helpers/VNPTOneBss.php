@@ -29,9 +29,10 @@ class VNPTOneBss
 
     public function getInfo(string $phone_number, string $access_token)
     {
-        return Curl::to(config('onebss.endpoint') . '/customer/get-info?' . http_build_query(['phone_number' => $phone_number]))
-            ->withHeaders(['x-api-key' => config('onebss.apiKey')])
+        return Curl::to(config('onebss.endpoint') . '/ccbs/oneBss/app_tb_tc_thongtin')
+            ->withHeaders(['app-secret' => config('onebss.apiKey')])
             ->withBearer($access_token)
+            ->withData(['so_tb' => $phone_number, 'service' => 'SIM4G'])
             ->asJson(true)
             ->post();
     }
@@ -39,9 +40,9 @@ class VNPTOneBss
     public function getBalance(string $phone_number, string $access_token)
     {
         return Curl::to(config('onebss.endpoint') . '/ccbs/didong/taikhoan-tien')
-            ->withHeaders(['x-api-key' => config('onebss.apiKey')])
-            ->withData(['so_tb' => $phone_number])
+            ->withHeaders(['app-secret' => config('onebss.apiKey')])
             ->withBearer($access_token)
+            ->withData(['so_tb' => $phone_number])
             ->asJson(true)
             ->post();
     }

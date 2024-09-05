@@ -23,9 +23,9 @@ class CustomerController extends Controller
     {
         return Inertia::render('OneBss/Customer/Index', [
             'customers' => OneBssCustomer::query()
-                ->when($request->search, function($query, $search) {
+                ->when($request->search, function ($query, $search) {
                     if (!empty($search['phone'])) {
-                        $query->where('phone', 'like', '%'.$search['phone'].'%');
+                        $query->where('phone', 'like', '%' . $search['phone'] . '%');
                     }
                 })
                 ->where('user_id', Auth::id())
@@ -100,7 +100,7 @@ class CustomerController extends Controller
     public function update(UpdateCustomerRequest $request, OneBssCustomer $customer)
     {
         $customer->fill($request->validated());
-    	$customer->save();
+        $customer->save();
 
         return back()->with('msg', 'Lưu thành công.');
     }
@@ -138,33 +138,26 @@ class CustomerController extends Controller
         $account = OneBssAccount::getToken()->first();
         if ($account) {
             $info = VNPTOneBss::getInfo($phone, $account->access_token);
-            $balance = VNPTOneBss::getBalance($phone, $account->access_token);
-            echo '<pre>';
-            print_r($info);
-            echo '</pre>';die;
-            if ($info && $info['error_code'] == 'BSS-00000000' && $balance['error_code'] == 'BSS-00000000') {
-                // balance
-                $data = $balance['data'];
-                $key = array_search('1', array_column($data, 'ID'));
-                $core_balance = $data[$key]['REMAIN'];
-
-                // info
-                $data = $info[1]['data'];
-                if (!empty($data['GOI_CUOC_TS'])) {
+            if ($info) {
+                if ($info['error_code'] == 'BSS-00000000') {
+                    $data = $info['data'];
                     $info = [
                         'phone' => $data['SO_TB'],
                         'tra_sau' => (string) $data['TRA_SAU'],
-                        'goi_data' => json_encode($data['GOI_CUOC_TS']),
+                        'goi_cuoc_ts' => $data['GOI_CUOC_TS'],
+                        'goi_cuoc' => $data['GOI_CUOC'],
+                        'goi_data' => $data['GOI_DATA'],
                         'core_balance' => 0,
                         'is_request' => 1,
                     ];
+                    $customer = OneBssCustomer::updateOrCreate(['phone' => $info['phone']], $info);
+                    $info['id'] = $customer->id;
+                    return response()->success('', compact('info'));
+                } elseif ($info['error_code'] == 'BSS-00001101' || $info['error_code'] == 'BSS-00000401') {
+                    $account->expires_in = null;
+                    $account->access_token = null;
+                    $account->save();
                 }
-                // $customer->save();
-                return response()->success('', ['info' => $info, 'balance' => $core_balance]);
-            } elseif ($balance['error_code'] == 'BSS-00001101' || $balance['error_code'] == 'BSS-00000401') {
-                $account->expires_in = null;
-                $account->access_token = null;
-                $account->save();
             }
         }
         return response()->error('Authenticate Error...');

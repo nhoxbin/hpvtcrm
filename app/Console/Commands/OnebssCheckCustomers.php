@@ -68,11 +68,13 @@ class OnebssCheckCustomers extends Command
                     if ($info[1]['error_code'] == 'BSS-00000000') {
                         $this->info('Processing: ' . $info[0]);
                         $data = $info[1]['data'];
-                        if (!empty($data['GOI_CUOC_TS'])) {
+                        if (!empty($data['GOI_CUOC_TS']) || !empty($data['GOI_CUOC']) || !empty($data['GOI_DATA'])) {
                             $upsert[$data['SO_TB']] = [
                                 'phone' => $data['SO_TB'],
                                 'tra_sau' => (string) $data['TRA_SAU'],
-                                'goi_data' => json_encode($data['GOI_CUOC_TS']),
+                                'goi_cuoc_ts' => json_encode($data['GOI_CUOC_TS']),
+                                'goi_cuoc' => json_encode($data['GOI_CUOC']),
+                                'goi_data' => json_encode($data['GOI_DATA']),
                                 'core_balance' => 0,
                                 'is_request' => 1,
                             ];
