@@ -65,7 +65,7 @@ class OAuthController extends Controller
         $onebss = VNPTOneBss::oauth($validated);
         if (isset($onebss['access_token'])) {
             $account = OneBssAccount::updateOrCreate(['username' => $request->username], ['access_token' => $onebss['access_token'], 'expires_in' => $onebss['expires_in'], 'user_id' => Auth::id()]);
-            Cache::remember('account', $onebss['expires_in'], function() use ($account) {
+            Cache::remember('account', $onebss['expires_in'], function () use ($account) {
                 return $account;
             });
             OneBssClearAuth::dispatch($account)->delay(now()->addSeconds($onebss['expires_in']));

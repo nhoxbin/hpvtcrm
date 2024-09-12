@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\DigiShop\StoreUserRequest;
 use App\Models\DigiShopAccount;
 use App\Models\OneBssAccount;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -17,10 +18,7 @@ class AccountController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-
-    }
+    public function index(Request $request) {}
 
     /**
      * Show the form for creating a new resource.
@@ -46,7 +44,7 @@ class AccountController extends Controller
                 $item = $data['item'];
                 if (!empty($item) && $item['access_token']) {
                     $is_login = true;
-                    DigiShopAccount::updateOrCreate(['username' => $item['username']], ['password' => $validated['password'], 'access_token' => $item['access_token']]);
+                    DigiShopAccount::updateOrCreate(['username' => $item['username']], ['password' => $validated['password'], 'access_token' => $item['access_token'], 'user_id' => Auth::id()]);
                 }
             }
         }
