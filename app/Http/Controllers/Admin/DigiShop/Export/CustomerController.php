@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\DigiShop\Export;
 
 use App\Http\Controllers\Controller;
 use App\Models\DigiShopCustomer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -46,31 +47,45 @@ class CustomerController extends Controller
                 'endColor'   => array('rgb' => 'f2f2f2'),
             ),
         );
-        $spreadsheet->getActiveSheet()->getStyle('A1:I1')->applyFromArray($styleArray);
-        // auto fit column to content
-        foreach (range('A', 'E') as $columnID) {
-            $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
-        }
         // set the names of header cells
         $sheet->setCellValue('A1', 'Số điện thoại');
-        $sheet->setCellValue('B1', 'Gói cước sử dụng');
-        $sheet->setCellValue('C1', 'Ngày hết hạn');
-        $sheet->setCellValue('C1', 'Tích hợp');
-        $sheet->setCellValue('E1', 'Chu kỳ dài');
+        $sheet->setCellValue('B1', 'Tích hợp');
+        $sheet->setCellValue('C1', 'Chu kỳ dài');
 
         $query = $request->user()->digishop_customers()->where('is_request', true);
         $customers = $query->get();
         // Add data
+        $endChar = 0;
         $x = 2;
         foreach ($customers as $customer) {
-            $sheet->setCellValue('A' . $x, $customer->phone_number);
-            if (!empty($customer->packages)) {
-                $sheet->setCellValue('B' . $x, $customer->packages ? implode(',', array_column($customer->packages, 'service_name')) : '');
-                $sheet->setCellValue('C' . $x, $customer->packages ? implode(',', array_column($customer->packages, 'expired_at')) : '');
+            if (!empty($customer->integration) || !empty($customer->long_period) || !empty($customer->packages)) {
+                $sheet->setCellValue('A' . $x, $customer->phone_number);
+                $sheet->setCellValue('B' . $x, $customer->integration ? implode(',', $customer->integration) : '');
+                $sheet->setCellValue('C' . $x, $customer->long_period ? implode(',', $customer->long_period) : '');
+                if (!empty($customer->packages)) {
+                    $startChar = ord('D');
+                    foreach ($customer->packages as $package) {
+                        $sheet->setCellValue(chr($startChar) . '1', 'Gói cước sử dụng');
+                        $sheet->setCellValue(chr($startChar + 1) . '1', 'Ngày hết hạn');
+
+                        $sheet->setCellValue(chr($startChar) . $x, $package['service_name']);
+                        if (!empty($package['expired_at'])) {
+                            $carbon = Carbon::createFromFormat('d/m/Y', $package['expired_at']);
+                            $sheet->setCellValue(chr($startChar + 1) . $x, $carbon->format('m/d/Y'));
+                        }
+                        $startChar += 2;
+                        if ($startChar > $endChar) {
+                            $endChar = $startChar;
+                        }
+                    }
+                }
+                $x++;
             }
-            $sheet->setCellValue('D' . $x, $customer->integration ? implode(',', $customer->integration) : '');
-            $sheet->setCellValue('E' . $x, $customer->long_period ? implode(',', $customer->long_period) : '');
-            $x++;
+        }
+        $spreadsheet->getActiveSheet()->getStyle('A1:' . chr($endChar) . '1')->applyFromArray($styleArray);
+        // auto fit column to content
+        foreach (range('A', chr($endChar)) as $columnID) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
         }
         //Create file excel.xlsx
         $writer = new Xlsx($spreadsheet);
