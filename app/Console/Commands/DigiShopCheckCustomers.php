@@ -64,41 +64,43 @@ class DigiShopCheckCustomers extends Command
                 }
             },
             function ($resp) use (&$upsert, &$delete, $account) {
-                $this->info('hihi');
                 $phone_number = $resp[0];
                 $info = $resp[1];
                 if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
                     $data = $info['data'];
                     if ($data['errorCode'] == 0) {
-                        $top_5 = $data['items'][0] ?? []; // top 5
-                        $integration = $data['items'][1] ?? []; // tích hợp
-                        $long_period = $data['items'][2] ?? []; // chu kì dài
-                        $insert = [
-                            'phone_number' => $phone_number,
-                            'tkc' => 0,
-                            'user_id' => $account->user_id,
-                            'first_product_name' => null,
-                            'packages' => null,
-                            'integration' => null,
-                            'long_period' => null,
-                            'is_request' => true,
-                        ];
-                        if (!empty($integration)) {
-                            $insert['integration'] = json_encode(array_column($integration['list_product'], 'name'));
-                        }
-                        if (!empty($long_period)) {
-                            $insert['long_period'] = json_encode(array_column($long_period['list_product'], 'name'));
-                        }
-                        if (!empty($data['items']) && isset($top_5['list_product'])) {
-                            $insert['first_product_name'] = $top_5['list_product'][0]['name'];
-                        }
-                        if (!empty($data['detail'])) {
-                            $insert['tkc'] = $data['detail']['tkc'];
-                            if (!empty($data['detail']['packages'])) {
-                                $insert['packages'] = json_encode($data['detail']['packages']);
+                        if ($data['errorCode'] == 401) {
+                        } else {
+                            $top_5 = $data['items'][0] ?? []; // top 5
+                            $integration = $data['items'][1] ?? []; // tích hợp
+                            $long_period = $data['items'][2] ?? []; // chu kì dài
+                            $insert = [
+                                'phone_number' => $phone_number,
+                                'tkc' => 0,
+                                'user_id' => $account->user_id,
+                                'first_product_name' => null,
+                                'packages' => null,
+                                'integration' => null,
+                                'long_period' => null,
+                                'is_request' => true,
+                            ];
+                            if (!empty($integration)) {
+                                $insert['integration'] = json_encode(array_column($integration['list_product'], 'name'));
                             }
+                            if (!empty($long_period)) {
+                                $insert['long_period'] = json_encode(array_column($long_period['list_product'], 'name'));
+                            }
+                            if (!empty($data['items']) && isset($top_5['list_product'])) {
+                                $insert['first_product_name'] = $top_5['list_product'][0]['name'];
+                            }
+                            if (!empty($data['detail'])) {
+                                $insert['tkc'] = $data['detail']['tkc'];
+                                if (!empty($data['detail']['packages'])) {
+                                    $insert['packages'] = json_encode($data['detail']['packages']);
+                                }
+                            }
+                            $upsert[$phone_number] = $insert;
                         }
-                        $upsert[$phone_number] = $insert;
                     } else {
                         if ($data['errorCode'] == 3) {
                             /* array (

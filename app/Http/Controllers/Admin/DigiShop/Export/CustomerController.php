@@ -58,6 +58,7 @@ class CustomerController extends Controller
         $endChar = 0;
         $x = 2;
         foreach ($customers as $customer) {
+            if (!empty($customer->integration) && !empty($customer->long_period)) continue;
             if (!empty($customer->integration) || !empty($customer->long_period) || !empty($customer->packages)) {
                 $sheet->setCellValue('A' . $x, $customer->phone_number);
                 $sheet->setCellValue('B' . $x, $customer->integration ? implode(',', $customer->integration) : '');
@@ -74,9 +75,9 @@ class CustomerController extends Controller
                             $sheet->setCellValue(chr($startChar + 1) . $x, $carbon->format('m/d/Y'));
                         }
                         $startChar += 2;
-                        if ($startChar > $endChar) {
-                            $endChar = $startChar;
-                        }
+                    }
+                    if ($startChar > $endChar) {
+                        $endChar = $startChar;
                     }
                 }
                 $x++;
