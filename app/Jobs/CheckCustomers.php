@@ -24,7 +24,7 @@ class CheckCustomers implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private DigiShopAccount|OneBssAccount $account, private $customers, private $concurrent)
+    public function __construct(private DigiShopAccount|OneBssAccount $account, private $customers)
     {
         //
     }
@@ -40,7 +40,7 @@ class CheckCustomers implements ShouldQueue
         $delete = [];
         Http::mixin(new HttpMixin());
         Http::concurrent(
-            $this->concurrent,
+            count($this->customers),
             function (Pool $pool) use ($customers, $account): Generator {
                 foreach ($customers as $customer) {
                     yield $pool

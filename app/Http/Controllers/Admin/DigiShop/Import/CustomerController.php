@@ -54,16 +54,17 @@ class CustomerController extends Controller
 
             $assignments = [];
             foreach ($chunks as $i => $chunk) {
-                $account = $accounts[$i % count($accounts)];
-                $assignments[$account->id][] = $chunk;
+                $assignments[] = $accounts[$i % count($accounts)];
             }
             for ($i = 0; $i < count($assignments); $i++) {
                 foreach ($chunks as $j => $chunk) {
                     $queueName = 'DigiShop_' . $j . '_' . now()->getTimestamp();
-                    dispatch(new CheckCustomers($accounts[$i], $chunk, 500))->onQueue($queueName);
+                    dispatch(new CheckCustomers($assignments[$i], $chunk))->onQueue($queueName);
                     $artisanPath = base_path('artisan');
                     $logPath = storage_path('logs/AsyncWorkers.log');
-                    $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --once --stop-when-empty >> $logPath > /dev/null 2>/dev/null &"; //
+
+                    // C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php
+                    $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --once --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
 
                     // exec($commandString);
                     shell_exec($commandString);
