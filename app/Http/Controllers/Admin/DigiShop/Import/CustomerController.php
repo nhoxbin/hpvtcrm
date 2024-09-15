@@ -46,7 +46,8 @@ class CustomerController extends Controller
                     'user_id' => $request->user()->id
                 ];
             }
-            // DigiShopCustomer::upsert($customers, ['phone_number'], ['created_at', 'updated_at']);
+            DigiShopCustomer::upsert($customers, ['phone_number'], ['created_at', 'updated_at']);
+
             $accounts = $request->user()->digishop_accounts()->where('status', 1)->get();
             $chunks = array_chunk($customers, 2);
 
