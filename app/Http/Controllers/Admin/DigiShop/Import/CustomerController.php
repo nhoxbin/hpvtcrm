@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin\DigiShop\Import;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\CheckCustomers;
 use App\Models\DigiShopCustomer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Symfony\Component\Process\Process;
 
 class CustomerController extends Controller
 {
@@ -34,7 +36,7 @@ class CustomerController extends Controller
                 // bỏ qua ô đầu
                 if ($key == 0) continue;
                 if (substr($row[0], 0, 1) == '0') {
-                    $row[0] = substr($row[0], 1, strlen($row[0])-1);
+                    $row[0] = substr($row[0], 1, strlen($row[0]) - 1);
                 }
                 $phone = str_pad($row[0], 11, '84', STR_PAD_LEFT);
                 $customers[] = [
@@ -44,9 +46,33 @@ class CustomerController extends Controller
                     'user_id' => $request->user()->id
                 ];
             }
-            DigiShopCustomer::upsert($customers, ['phone_number'], ['created_at', 'updated_at']);
+            // DigiShopCustomer::upsert($customers, ['phone_number'], ['created_at', 'updated_at']);
+            $accounts = $request->user()->digishop_accounts()->where('status', 1)->get();
+            $chunks = array_chunk($customers, 2);
+
+            $assignments = [];
+            foreach ($chunks as $i => $chunk) {
+                $account = $accounts[$i % count($accounts)];
+                $assignments[$account->id][] = $chunk;
+            }
+            $commands = [];
+            for ($i = 0; $i < count($assignments); $i++) {
+                foreach ($chunks as $j => $chunk) {
+                    $queueName = 'DigiShop'; // . $j . '_' . now()->getTimestamp();
+                    dispatch(new CheckCustomers($accounts[$i], $chunk, 500))->onQueue($queueName);
+                    $artisanPath = base_path('artisan');
+                    $logPath = storage_path('logs/AsyncWorkers.log');
+                    $commandString = "C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php $artisanPath queue:work --queue=$queueName --sleep=0 --once --stop-when-empty >> $logPath > /dev/null 2>/dev/null &"; // /usr/local/bin/ea-php81
+
+                    // exec($commandString);
+                    shell_exec($commandString);
+                }
+            }
+            // $process = new Process([$commands]);
+            // $process->start();
+            die;
             return redirect()->route('admin.digishop.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             Log::error($e);
             return redirect()->route('admin.digishop.customers.index')->withError('Lỗi!!! Vui lòng liên hệ Admin.');
         }

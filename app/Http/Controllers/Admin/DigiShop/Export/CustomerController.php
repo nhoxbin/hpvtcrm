@@ -65,14 +65,21 @@ class CustomerController extends Controller
                 $sheet->setCellValue('C' . $x, $customer->long_period ? implode(',', $customer->long_period) : '');
                 if (!empty($customer->packages)) {
                     $startChar = ord('D');
+                    $char = null;
                     foreach ($customer->packages as $package) {
-                        $sheet->setCellValue(chr($startChar) . '1', 'Gói cước sử dụng');
-                        $sheet->setCellValue(chr($startChar + 1) . '1', 'Ngày hết hạn');
+                        if ($startChar > 90 || $startChar + 1 > 90) {
+                            $startChar = ord('A');
+                            $char = chr(ord('A'));
+                        }
+                        $charData = chr($startChar);
+                        $charExp = chr($startChar + 1);
+                        $sheet->setCellValue($char . $charData . '1', 'Gói cước sử dụng');
+                        $sheet->setCellValue($char . $charExp . '1', 'Ngày hết hạn');
 
-                        $sheet->setCellValue(chr($startChar) . $x, $package['service_name']);
+                        $sheet->setCellValue($char . $charData . $x, $package['service_name']);
                         if (!empty($package['expired_at'])) {
                             $carbon = Carbon::createFromFormat('d/m/Y', $package['expired_at']);
-                            $sheet->setCellValue(chr($startChar + 1) . $x, $carbon->format('m/d/Y'));
+                            $sheet->setCellValue($char . $charExp . $x, $carbon->format('m/d/Y'));
                         }
                         $startChar += 2;
                     }

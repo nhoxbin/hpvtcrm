@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Events\OneBssUnauth;
 use App\Http\Mixins\HttpMixin;
-use App\Jobs\OneBssClearAuth;
 use App\Models\OneBssAccount;
 use App\Models\OneBssCustomer;
 use Generator;
@@ -84,7 +84,7 @@ class OnebssCheckCustomers extends Command
                     } elseif ($info[1]['error_code'] == 'BSS-0000420') {
                         $delete[] = $info[0];
                     } elseif ($info[1]['error_code'] == 'BSS-00000401') {
-                        OneBssClearAuth::dispatch($account);
+                        event(new OneBssUnauth($account));
                     }
                 }
             );

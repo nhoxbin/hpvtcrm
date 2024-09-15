@@ -3,10 +3,10 @@
 namespace App\Jobs;
 
 use App\Http\Mixins\HttpMixin;
+use App\Listeners\DigiShopReAuth;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
 use App\Models\OneBssAccount;
-use App\Models\OneBssCustomer;
 use Generator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,7 +24,7 @@ class CheckCustomers implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private DigiShopAccount|OneBssAccount $account, private DigiShopCustomer|OneBssCustomer $customers)
+    public function __construct(private DigiShopAccount|OneBssAccount $account, private $customers, private $concurrent)
     {
         //
     }
@@ -34,31 +34,21 @@ class CheckCustomers implements ShouldQueue
      */
     public function handle(): void
     {
-        $concurrent = 5000;
-        $usernameCheck = 'hpvt';
-        $user = User::where('username', $usernameCheck)->with([
-            'digishop_accounts' => function ($q) {
-                $q->where('status', true);
-            },
-            'digishop_customers' => function ($q) use ($concurrent) {
-                $q->where('is_request', false)->limit($concurrent);
-            }
-        ])->firstOrFail();
-        $account = $$this->account;
+        $account = $this->account;
         $customers = $this->customers;
         $upsert = [];
         $delete = [];
         Http::mixin(new HttpMixin());
         Http::concurrent(
-            $concurrent,
+            $this->concurrent,
             function (Pool $pool) use ($customers, $account): Generator {
                 foreach ($customers as $customer) {
                     yield $pool
                         ->async()
                         ->withToken($account->access_token)
                         ->withHeaders(['x-api-key' => config('digishop.apiKey')])
-                        ->post(config('digishop.endpoint') . '/customer/get-info?phone_number=' . $customer->phone_number)
-                        ->then(fn($response) => [$customer->phone_number, $response->json()]);
+                        ->post(config('digishop.endpoint') . '/customer/get-info?phone_number=' . $customer['phone_number'])
+                        ->then(fn($response) => [$customer['phone_number'], $response->json()]);
                 }
             },
             function ($resp) use (&$upsert, &$delete, $account) {
@@ -67,10 +57,12 @@ class CheckCustomers implements ShouldQueue
                 if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
                     $data = $info['data'];
                     if ($data['errorCode'] == 0) {
-                        if (!empty($integration) && !empty($long_period) && !empty($data['detail']['packages'])) {
-                            $delete[] = $phone_number;
+                        if ($data['errorCode'] == 401) {
+                            event(new DigiShopReAuth($account));
                         } else {
-                            if (!empty($data['items'])) {
+                            if (empty($data['items'])) {
+                                $delete[] = $phone_number;
+                            } else {
                                 $top_5 = $data['items'][0] ?? []; // top 5
                                 $integration = $data['items'][1] ?? []; // tích hợp
                                 $long_period = $data['items'][2] ?? []; // chu kì dài

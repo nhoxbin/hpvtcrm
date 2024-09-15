@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\DigiShopUnauth;
 use App\Helpers\Facades\VNPTDigiShop;
 use App\Http\Mixins\HttpMixin;
 use App\Models\DigiShopAccount;
@@ -70,6 +71,7 @@ class DigiShopCheckCustomers extends Command
                     $data = $info['data'];
                     if ($data['errorCode'] == 0) {
                         if ($data['errorCode'] == 401) {
+                            event(new DigiShopUnauth($account));
                         } else {
                             $top_5 = $data['items'][0] ?? []; // top 5
                             $integration = $data['items'][1] ?? []; // tích hợp

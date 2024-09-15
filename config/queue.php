@@ -34,6 +34,14 @@ return [
             'driver' => 'sync',
         ],
 
+        'async' => [
+            'driver' => 'async',
+            'table' => 'jobs',
+            'queue' => 'default',
+            // 'expire' => 60,
+            // 'binary' => '/opt/plesk/php/7.3/bin/php',
+        ],
+
         'database' => [
             'driver' => 'database',
             'table' => 'jobs',

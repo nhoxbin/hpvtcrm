@@ -18,6 +18,12 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        'App\Events\DigiShopUnauth' => [
+            'App\Listeners\DigiShopReAuth',
+        ],
+        'App\Events\OneBssUnauth' => [
+            'App\Listeners\OneBssClearAuth',
+        ],
     ];
 
     /**
