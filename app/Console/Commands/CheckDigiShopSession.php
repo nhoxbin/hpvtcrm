@@ -28,7 +28,7 @@ class CheckDigiShopSession extends Command
      */
     public function handle()
     {
-        $accounts = DigiShopAccount::where('status', false)->get();
+        $accounts = DigiShopAccount::all();
         foreach ($accounts as $account) {
             $credentials = ['username' => $account->username, 'password' => $account->password];
             $login = VNPTDigiShop::login($credentials);
