@@ -42,7 +42,7 @@ class CheckDigiShopSession extends Command
                         $account->access_token = $item['access_token'];
                         $account->save();
                         $this->info('Account ' . $account->username . ' has been updated.');
-                        return;
+                        continue;
                     }
                 }
             }
