@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Events\DigiShopUnauth;
 use App\Http\Mixins\HttpMixin;
-use App\Listeners\DigiShopReAuth;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
 use App\Models\OneBssAccount;
@@ -62,7 +62,7 @@ class CheckCustomers implements ShouldQueue
                     $data = $info['data'];
                     if ($data['errorCode'] == 0) {
                         if ($data['errorCode'] == 401) {
-                            event(new DigiShopReAuth($account));
+                            event(new DigiShopUnauth($account));
                         } else {
                             if (empty($data['items'])) {
                                 $delete[] = $phone_number;
