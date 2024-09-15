@@ -44,7 +44,7 @@ class AccountController extends Controller
                 $item = $data['item'];
                 if (!empty($item) && $item['access_token']) {
                     $is_login = true;
-                    DigiShopAccount::updateOrCreate(['username' => $item['username']], ['password' => $validated['password'], 'access_token' => $item['access_token'], 'user_id' => Auth::id()]);
+                    DigiShopAccount::updateOrCreate(['username' => $item['username']], ['password' => $validated['password'], 'access_token' => $item['access_token'], 'status' => true, 'user_id' => Auth::id()]);
                 }
             }
         }

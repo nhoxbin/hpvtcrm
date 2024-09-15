@@ -28,31 +28,29 @@ class CheckDigiShopSession extends Command
      */
     public function handle()
     {
-        $accounts = DigiShopAccount::where('status', true)->get();
+        $accounts = DigiShopAccount::where('status', false)->get();
         foreach ($accounts as $account) {
-            if (!empty($account) && $account->status) {
-                $is_login = VNPTDigiShop::checkSession($account->access_token);
-                if (!$is_login) {
-                    $credentials = ['username' => $account->username, 'password' => $account->password];
-                    $login = VNPTDigiShop::login($credentials);
-                    // Log::error($login);
-                    if (!empty($login) && $login['success'] && $login['statusCode'] == 200) {
-                        $data = $login['data'];
-                        if ($data['errorCode'] == 0) {
-                            $item = $data['item'];
-                            if (!empty($item) && $item['access_token']) {
-                                $account->status = true;
-                                $account->access_token = $item['access_token'];
-                                $account->save();
-                                return;
-                            }
+            $is_login = VNPTDigiShop::checkSession($account->access_token);
+            if (!$is_login) {
+                $credentials = ['username' => $account->username, 'password' => $account->password];
+                $login = VNPTDigiShop::login($credentials);
+                // Log::error($login);
+                if (!empty($login) && $login['success'] && $login['statusCode'] == 200) {
+                    $data = $login['data'];
+                    if ($data['errorCode'] == 0) {
+                        $item = $data['item'];
+                        if (!empty($item) && $item['access_token']) {
+                            $account->status = true;
+                            $account->access_token = $item['access_token'];
+                            $account->save();
+                            return;
                         }
                     }
-                    $account->status = false;
-                    $account->access_token = NULL;
-                    $account->save();
-                    $this->info('Account ' . $account->username . ' has been updated.');
                 }
+                $account->status = false;
+                $account->access_token = NULL;
+                $account->save();
+                $this->info('Account ' . $account->username . ' has been updated.');
             }
         }
     }
