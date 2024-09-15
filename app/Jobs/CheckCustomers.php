@@ -116,7 +116,7 @@ class CheckCustomers implements ShouldQueue
         );
         DigiShopCustomer::upsert($upsert, ['phone_number'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
         if (!empty($delete)) {
-            DigiShopCustomer::where('user_id', $account->user_id)->whereIn('phone_number', $delete)->delete();
+            $account->customers()->whereIn('phone_number', $delete)->delete();
         }
     }
 
