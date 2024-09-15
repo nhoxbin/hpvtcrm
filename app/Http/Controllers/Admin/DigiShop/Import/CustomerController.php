@@ -64,7 +64,7 @@ class CustomerController extends Controller
                     $logPath = storage_path('logs/AsyncWorkers.log');
 
                     // C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php
-                    $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --once --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
+                    $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
 
                     // exec($commandString);
                     shell_exec($commandString);
