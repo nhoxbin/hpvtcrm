@@ -70,7 +70,6 @@ class CustomerController extends Controller
             }
             // $process = new Process([$commands]);
             // $process->start();
-            die;
             return redirect()->route('admin.digishop.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch (\Exception $e) {
             Log::error($e);
