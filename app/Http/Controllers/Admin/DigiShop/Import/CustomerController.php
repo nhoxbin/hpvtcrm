@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\CheckCustomers;
 use App\Models\DigiShopCustomer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\Process\Process;
@@ -43,10 +44,10 @@ class CustomerController extends Controller
                     'phone_number' => $phone,
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'user_id' => $request->user()->id
+                    'user_id' => Auth::id()
                 ];
             }
-            DigiShopCustomer::upsert($customers, ['phone_number'], ['created_at', 'updated_at']);
+            DigiShopCustomer::upsert($customers, ['phone_number', 'user_id'], ['created_at', 'updated_at']);
 
             $accounts = $request->user()->digishop_accounts()->where('status', 1)->get();
             $chunks = array_chunk($customers, 2);
