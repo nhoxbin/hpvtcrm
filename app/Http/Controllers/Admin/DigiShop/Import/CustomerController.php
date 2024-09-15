@@ -62,7 +62,7 @@ class CustomerController extends Controller
                     dispatch(new CheckCustomers($accounts[$i], $chunk, 500))->onQueue($queueName);
                     $artisanPath = base_path('artisan');
                     $logPath = storage_path('logs/AsyncWorkers.log');
-                    $commandString = "C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php $artisanPath queue:work --queue=$queueName --sleep=0 --once --stop-when-empty >> $logPath > /dev/null 2>/dev/null &"; // /usr/local/bin/ea-php81
+                    $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --once --stop-when-empty >> $logPath > /dev/null 2>/dev/null &"; //
 
                     // exec($commandString);
                     shell_exec($commandString);
