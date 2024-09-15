@@ -49,7 +49,7 @@ class CheckDigiShopSession extends Command
             $account->status = false;
             $account->access_token = NULL;
             $account->save();
-            $this->info('Account ' . $account->username . ' has been updated.');
+            $this->info('Account ' . $account->username . ' has been updated with no auth.');
         }
     }
 }
