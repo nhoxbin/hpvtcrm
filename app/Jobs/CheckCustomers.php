@@ -7,6 +7,7 @@ use App\Listeners\DigiShopReAuth;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
 use App\Models\OneBssAccount;
+use Exception;
 use Generator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -117,5 +118,10 @@ class CheckCustomers implements ShouldQueue
         if (!empty($delete)) {
             DigiShopCustomer::where('user_id', $account->user_id)->whereIn('phone_number', $delete)->delete();
         }
+    }
+
+    public function failed(Exception $exception)
+    {
+        Log::channel('digishop')->error('digishop job failed ' . $exception->getMessage());
     }
 }
