@@ -52,6 +52,7 @@ class CheckCustomers implements ShouldQueue
                 }
             },
             function ($resp) use (&$upsert, &$delete, $account) {
+                Log::info($account->username);
                 $phone_number = $resp[0];
                 $info = $resp[1];
                 if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')

@@ -57,7 +57,6 @@ class CustomerController extends Controller
                 $account = $accounts[$i % count($accounts)];
                 $assignments[$account->id][] = $chunk;
             }
-            $commands = [];
             for ($i = 0; $i < count($assignments); $i++) {
                 foreach ($chunks as $j => $chunk) {
                     $queueName = 'DigiShop_' . $j . '_' . now()->getTimestamp();
@@ -70,8 +69,6 @@ class CustomerController extends Controller
                     shell_exec($commandString);
                 }
             }
-            // $process = new Process([$commands]);
-            // $process->start();
             return redirect()->route('admin.digishop.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch (\Exception $e) {
             Log::error($e);
