@@ -55,7 +55,7 @@ class CheckCustomers implements ShouldQueue
                         ->then(fn($response) => [$customer['phone_number'], $response->json()]);
                 }
             },
-            function ($resp) use (&$upsert, &$delete, $account) {
+            function ($resp) use (&$upsert, &$delete, &$account) {
                 $phone_number = $resp[0];
                 $info = $resp[1];
                 if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
@@ -63,7 +63,7 @@ class CheckCustomers implements ShouldQueue
                     if ($data['errorCode'] == 0) {
                         if ($data['errorCode'] == 401) {
                             event(new DigiShopUnauth($account));
-                            $this->account = DigiShopAccount::find($account->id);
+                            $account = DigiShopAccount::find($account->id);
                         } else {
                             if (empty($data['items'])) {
                                 $delete[] = $phone_number;
