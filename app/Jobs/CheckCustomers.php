@@ -74,6 +74,7 @@ class CheckCustomers implements ShouldQueue
                                 'is_request' => true,
                             ];
                             if (empty($data['items'])) {
+                                $delete[] = $phone_number;
                             } else {
                                 $top_5 = $data['items'][0] ?? []; // top 5
                                 $integration = $data['items'][1] ?? []; // tích hợp
@@ -115,9 +116,9 @@ class CheckCustomers implements ShouldQueue
             }
         );
         DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
-        /* if (!empty($delete)) {
+        if (!empty($delete)) {
             $account->customers()->whereIn('phone_number', $delete)->delete();
-        } */
+        }
     }
 
     public function failed(Exception $exception)
