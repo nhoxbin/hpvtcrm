@@ -36,9 +36,6 @@ class CheckCustomers implements ShouldQueue
     public function handle(): void
     {
         $account = $this->account;
-        Log::info(
-            $account->username
-        );
         $customers = $this->customers;
         $upsert = [];
         $delete = [];

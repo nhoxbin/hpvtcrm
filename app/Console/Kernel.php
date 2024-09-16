@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:check-digishop-session')->everySixHours();
         // $schedule->command('app:onebss-check-customers')->everyMinute()->shouldSkipDueToOverlapping();
         // $schedule->command('app:digishop-check-customers')->everyMinute()->shouldSkipDueToOverlapping();
-        $schedule->command('queue:work --queue=DigiShop --stop-when-empty --sleep=0 --tries=1 --stop-when-empty')->everyMinute()->withoutOverlapping();
+        $schedule->command('queue:work --queue=DigiShop --stop-when-empty --sleep=0 --stop-when-empty')->everyMinute()->withoutOverlapping();
     }
 
     /**
