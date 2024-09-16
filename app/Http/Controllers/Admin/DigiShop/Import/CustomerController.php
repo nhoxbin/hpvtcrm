@@ -55,15 +55,15 @@ class CustomerController extends Controller
 
             // $commands = [];
             foreach ($chunks as $i => $chunk) {
-                // $queueName = 'DigiShop'; // . $i . '_' . now()->getTimestamp();
+                $queueName = 'DigiShop'; // . $i . '_' . now()->getTimestamp();
                 dispatch(new CheckCustomers($accounts[$i % count($accounts)], $chunk))->onQueue('DigiShop');
-                // $artisanPath = base_path('artisan');
-                // $logPath = storage_path('logs/AsyncWorkers.log');
+                $artisanPath = base_path('artisan');
+                $logPath = storage_path('logs/AsyncWorkers.log');
 
                 // C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php
                 // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
-                // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
-                // exec($commandString);
+                $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --tries=3 --stop-when-empty > $logPath 2>&1 &";
+                exec($commandString);
             }
             /* $processes = Process::concurrently(function (Pool $pool) use ($commands) {
                 foreach ($commands as $command) {
