@@ -63,22 +63,21 @@ class CheckCustomers implements ShouldQueue
                             $account = DigiShopAccount::find($account->id);
                             Log::info("Unauth");
                         } else {
+                            $insert = [
+                                'phone_number' => $phone_number,
+                                'tkc' => 0,
+                                'user_id' => $account->user_id,
+                                'first_product_name' => null,
+                                'packages' => null,
+                                'integration' => null,
+                                'long_period' => null,
+                                'is_request' => true,
+                            ];
                             if (empty($data['items'])) {
-                                $delete[] = $phone_number;
                             } else {
                                 $top_5 = $data['items'][0] ?? []; // top 5
                                 $integration = $data['items'][1] ?? []; // tích hợp
                                 $long_period = $data['items'][2] ?? []; // chu kì dài
-                                $insert = [
-                                    'phone_number' => $phone_number,
-                                    'tkc' => 0,
-                                    'user_id' => $account->user_id,
-                                    'first_product_name' => null,
-                                    'packages' => null,
-                                    'integration' => null,
-                                    'long_period' => null,
-                                    'is_request' => true,
-                                ];
                                 if (!empty($integration)) {
                                     $insert['integration'] = json_encode(array_column($integration['list_product'], 'name'));
                                 }
@@ -115,10 +114,10 @@ class CheckCustomers implements ShouldQueue
                 // $this->call('app:check-digishop-session');
             }
         );
-        DigiShopCustomer::upsert($upsert, ['phone_number'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
-        if (!empty($delete)) {
+        DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
+        /* if (!empty($delete)) {
             $account->customers()->whereIn('phone_number', $delete)->delete();
-        }
+        } */
     }
 
     public function failed(Exception $exception)
