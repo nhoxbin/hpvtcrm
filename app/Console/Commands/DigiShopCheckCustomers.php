@@ -13,6 +13,7 @@ use Generator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\Pool;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class DigiShopCheckCustomers extends Command
@@ -36,8 +37,7 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-
-        $concurrent = 5000;
+        /* $concurrent = 5000;
         $usernameCheck = 'hpvt';
         $user = User::where('username', $usernameCheck)->with([
             'digishop_accounts' => function ($q) {
@@ -105,10 +105,10 @@ class DigiShopCheckCustomers extends Command
                         }
                     } else {
                         if ($data['errorCode'] == 3) {
-                            /* array (
-                                'errorCode' => 3,
-                                'errorMessage' => 'Bạn đã vượt quá số lần tra cứu gói cước của thuê bao trong ngày. Vui lòng thực hiện tra cứu vào ngày mai. Xin cảm ơn.',
-                            ), */
+                            // array (
+                            //     'errorCode' => 3,
+                            //     'errorMessage' => 'Bạn đã vượt quá số lần tra cứu gói cước của thuê bao trong ngày. Vui lòng thực hiện tra cứu vào ngày mai. Xin cảm ơn.',
+                            // ),
                         } else {
                             Log::info($info);
                         }
@@ -120,6 +120,14 @@ class DigiShopCheckCustomers extends Command
             }
         );
         DigiShopCustomer::upsert($upsert, ['phone_number'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
-        $this->info('Success');
+        $this->info('Success'); */
+
+        $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(20)->get();
+        foreach ($jobs as $job) {
+            $artisanPath = base_path('artisan');
+            $logPath = storage_path('logs/AsyncWorkers.log');
+            $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$job->queue} --memory=2048 --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
+            exec($commandString);
+        }
     }
 }

@@ -51,20 +51,20 @@ class CustomerController extends Controller
             DigiShopCustomer::upsert($customers, ['phone_number', 'user_id'], ['created_at', 'updated_at']);
 
             $accounts = $request->user()->digishop_accounts()->where('status', 1)->get();
-            $chunks = array_chunk($customers, 500);
+            $chunks = array_chunk($customers, 50);
 
-            $commands = [];
+            // $commands = [];
             foreach ($chunks as $i => $chunk) {
                 $queueName = 'DigiShop_' . $i . '_' . now()->getTimestamp();
                 dispatch(new CheckCustomers($accounts[$i % count($accounts)], $chunk))->onQueue($queueName);
-                $artisanPath = base_path('artisan');
-                $logPath = storage_path('logs/AsyncWorkers.log');
+                // $artisanPath = base_path('artisan');
+                // $logPath = storage_path('logs/AsyncWorkers.log');
 
                 // C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php
                 // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
                 // $command[] = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
-                $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --memory=2048 --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
-                exec($commandString);
+                // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --memory=2048 --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
+                // exec($commandString);
             }
             /* $processes = Process::concurrently(function (Pool $pool) use ($commands) {
                 foreach ($commands as $command) {
