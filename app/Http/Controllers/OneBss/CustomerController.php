@@ -115,9 +115,9 @@ class CustomerController extends Controller
 
     public function reload_balance(OneBssCustomer $customer)
     {
-        $account = OneBssAccount::getToken()->first();
-        if ($account) {
-            $balance = VNPTOneBss::getBalance($customer->phone, $account->access_token);
+        $account = OneBssAccount::getToken()->firstOrFail();
+        $balance = VNPTOneBss::getBalance($customer->phone, $account->access_token);
+        if ($balance) {
             if ($balance['error_code'] == 'BSS-00000000') {
                 $data = $balance['data'];
                 $key = array_search('1', array_column($data, 'ID'));

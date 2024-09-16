@@ -35,7 +35,8 @@ class AccountController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $is_login = true;
+        $is_login = false;
+        $msg = null;
         $validated = $request->validated();
         $digishop = VNPTDigiShop::login($validated);
         if ($digishop['success'] && $digishop['statusCode'] == 200) {
@@ -46,9 +47,11 @@ class AccountController extends Controller
                     $is_login = true;
                     DigiShopAccount::updateOrCreate(['username' => $item['username']], ['password' => $validated['password'], 'access_token' => $item['access_token'], 'status' => true, 'user_id' => Auth::id()]);
                 }
+            } else {
+                $msg = $data['errorMessage'];
             }
         }
-        return Redirect::route('admin.digishop.accounts.create')->with('status', ($is_login ? 'Đăng nhập thành công!' : 'Đăng nhập không thành công!'));
+        return Redirect::route('admin.digishop.accounts.create')->with('status', ($is_login ? 'Đăng nhập thành công!' : 'Đăng nhập không thành công! Lỗi: ' . $msg));
     }
 
     /**
