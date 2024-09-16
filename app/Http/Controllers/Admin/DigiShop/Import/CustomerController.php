@@ -51,7 +51,7 @@ class CustomerController extends Controller
             DigiShopCustomer::upsert($customers, ['phone_number', 'user_id'], ['created_at', 'updated_at']);
 
             $accounts = $request->user()->digishop_accounts()->where('status', 1)->get();
-            $chunks = array_chunk($customers, 1000);
+            $chunks = array_chunk($customers, 500);
 
             $commands = [];
             foreach ($chunks as $i => $chunk) {
