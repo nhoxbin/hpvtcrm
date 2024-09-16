@@ -104,12 +104,12 @@ class CheckCustomers implements ShouldQueue
                                 'errorMessage' => 'Bạn đã vượt quá số lần tra cứu gói cước của thuê bao trong ngày. Vui lòng thực hiện tra cứu vào ngày mai. Xin cảm ơn.',
                             ), */
                         } else {
-                            Log::info('CheckCustomers Job');
+                            Log::info('CheckCustomers Job: data');
                             Log::info($data);
                         }
                     }
                 } else {
-                    Log::info('CheckCustomers Job');
+                    Log::info('CheckCustomers Job: info');
                     Log::info($info);
                 }
                 // $this->call('app:check-digishop-session');

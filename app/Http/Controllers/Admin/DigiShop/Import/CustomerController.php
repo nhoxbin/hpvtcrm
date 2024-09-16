@@ -62,15 +62,15 @@ class CustomerController extends Controller
 
                 // C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php
                 // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
-                $command[] = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
-                // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
-                // exec($commandString);
+                // $command[] = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
+                $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --memory=2048 --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
+                exec($commandString);
             }
-            $processes = Process::concurrently(function (Pool $pool) use ($commands) {
+            /* $processes = Process::concurrently(function (Pool $pool) use ($commands) {
                 foreach ($commands as $command) {
                     $pool->command($command);
                 }
-            });
+            }); */
             /* foreach ($processes as $process) {
                 Log::info('CustomerController');
                 Log::info($process->output());
