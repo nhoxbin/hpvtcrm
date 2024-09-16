@@ -61,9 +61,8 @@ class CustomerController extends Controller
                 // C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php
                 $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
 
-                // exec($commandString);
-                $shell = shell_exec($commandString);
-                Log::info($shell);
+                exec($commandString, $output);
+                Log::info($output);
             }
             return redirect()->route('admin.digishop.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch (\Exception $e) {
