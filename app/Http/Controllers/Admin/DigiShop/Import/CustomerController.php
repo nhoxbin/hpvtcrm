@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Jobs\CheckCustomers;
 use App\Models\DigiShopCustomer;
 use Illuminate\Http\Request;
+use Illuminate\Process\Pool;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Symfony\Component\Process\Process;
 
 class CustomerController extends Controller
 {
@@ -52,6 +53,7 @@ class CustomerController extends Controller
             $accounts = $request->user()->digishop_accounts()->where('status', 1)->get();
             $chunks = array_chunk($customers, 1000);
 
+            $commands = [];
             foreach ($chunks as $i => $chunk) {
                 $queueName = 'DigiShop_' . $i . '_' . now()->getTimestamp();
                 dispatch(new CheckCustomers($accounts[$i % count($accounts)], $chunk))->onQueue($queueName);
@@ -59,10 +61,18 @@ class CustomerController extends Controller
                 $logPath = storage_path('logs/AsyncWorkers.log');
 
                 // C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php
-                $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
-
-                exec($commandString, $output);
-                Log::info($output);
+                // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
+                $commands[] = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
+                // exec($commandString, $output);
+                // Log::info($output);
+            }
+            $processes = Process::concurrently(function (Pool $pool) use ($commands) {
+                foreach ($commands as $command) {
+                    $pool->command($command);
+                }
+            });
+            foreach ($processes as $process) {
+                Log::info($process);
             }
             return redirect()->route('admin.digishop.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch (\Exception $e) {
