@@ -63,6 +63,7 @@ class CheckCustomers implements ShouldQueue
                     if ($data['errorCode'] == 0) {
                         if ($data['errorCode'] == 401) {
                             event(new DigiShopUnauth($account));
+                            $this->account = DigiShopAccount::find($account->id);
                         } else {
                             if (empty($data['items'])) {
                                 $delete[] = $phone_number;
