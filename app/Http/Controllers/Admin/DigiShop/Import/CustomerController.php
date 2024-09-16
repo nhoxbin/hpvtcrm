@@ -55,18 +55,18 @@ class CustomerController extends Controller
 
             $commands = [];
             foreach ($chunks as $i => $chunk) {
-                $queueName = 'DigiShop_' . $i . '_' . now()->getTimestamp();
+                $queueName = 'DigiShop'; // . $i . '_' . now()->getTimestamp();
                 dispatch(new CheckCustomers($accounts[$i % count($accounts)], $chunk))->onQueue($queueName);
                 $artisanPath = base_path('artisan');
                 $logPath = storage_path('logs/AsyncWorkers.log');
 
                 // C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64/php
                 // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
-                $commands[] = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
-                // exec($commandString, $output);
-                // Log::info($output);
+                $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue=$queueName --sleep=0 --tries=3 --stop-when-empty >> $logPath > /dev/null 2>/dev/null &";
+                exec($commandString, $output);
+                Log::info($output);
             }
-            $processes = Process::concurrently(function (Pool $pool) use ($commands) {
+            /* $processes = Process::concurrently(function (Pool $pool) use ($commands) {
                 foreach ($commands as $command) {
                     $pool->command($command);
                 }
@@ -74,7 +74,7 @@ class CustomerController extends Controller
             foreach ($processes as $process) {
                 Log::info('CustomerController');
                 Log::info($process->output());
-            }
+            } */
             return redirect()->route('admin.digishop.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
         } catch (\Exception $e) {
             Log::error($e);
