@@ -58,6 +58,10 @@ class CustomerController extends Controller
             }
             for ($i = 0; $i < count($assignments); $i++) {
                 foreach ($chunks as $j => $chunk) {
+                    echo '<pre>';
+                    print_r($assignments[$i]);
+                    echo '</pre>';
+                    continue;
                     $queueName = 'DigiShop_' . $i . '_' . $j . '_' . now()->getTimestamp();
                     dispatch(new CheckCustomers($assignments[$i], $chunk))->onQueue($queueName);
                     $artisanPath = base_path('artisan');
