@@ -53,7 +53,7 @@ class CustomerController extends Controller
         $sheet->setCellValue('C1', 'Chu kỳ dài');
         $sheet->setCellValue('D1', 'Gói DATA');
 
-        $query = $request->user()->digishop_customers()->where('is_request', true);
+        $query = $request->user()->digishop_customers();
         $customers = $query->get();
         // Add data
         $endChar = 0;
@@ -90,7 +90,11 @@ class CustomerController extends Controller
                     // $pack = array_combine(array_column($customer->packages, 'expired_at'), array_column($customer->packages, 'service_name'));
                     $str = '';
                     foreach ($customer->packages as $key => $package) {
-                        $str .= $package['service_name'] . ',' . $package['expired_at'];
+                        $str .= $package['service_name'] . ',';
+                        if (!empty($package['expired_at'])) {
+                            $carbon = Carbon::createFromFormat('d/m/Y', $package['expired_at']);
+                            $str .= $carbon->format('m/d/Y');
+                        }
                         if ($key + 1 < count($customer->packages)) {
                             $str .= ',';
                         }
