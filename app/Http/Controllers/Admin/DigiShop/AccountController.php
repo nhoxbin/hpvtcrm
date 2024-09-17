@@ -9,6 +9,7 @@ use App\Models\DigiShopAccount;
 use App\Models\OneBssAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -23,10 +24,11 @@ class AccountController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         return Inertia::render('Admin/DigiShop/Login', [
             'status' => session('status'),
+            'process_customers' => DB::select("call process_customers('digishop', {$request->user()->id})")[0],
             'accounts' => DigiShopAccount::paginate(),
         ]);
     }
