@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('app:sync-products')->hourly();
+        // $schedule->command('app:sync-products')->hourly();
         $schedule->command('app:check-digishop-session')->everySixHours();
         // $schedule->command('app:onebss-check-customers')->everyMinute()->shouldSkipDueToOverlapping();
         $schedule->command('app:digishop-check-customers')->everyMinute()->shouldSkipDueToOverlapping();
