@@ -51,6 +51,7 @@ class CustomerController extends Controller
         $sheet->setCellValue('A1', 'Số điện thoại');
         $sheet->setCellValue('B1', 'Tích hợp');
         $sheet->setCellValue('C1', 'Chu kỳ dài');
+        $sheet->setCellValue('D1', 'Gói DATA');
 
         $query = $request->user()->digishop_customers()->where('is_request', true);
         $customers = $query->get();
@@ -64,7 +65,7 @@ class CustomerController extends Controller
                 $sheet->setCellValue('B' . $x, $customer->integration ? implode(',', $customer->integration) : '');
                 $sheet->setCellValue('C' . $x, $customer->long_period ? implode(',', $customer->long_period) : '');
                 if (!empty($customer->packages)) {
-                    $startChar = ord('D');
+                    /* $startChar = ord('D');
                     $char = null;
                     foreach ($customer->packages as $package) {
                         if ($startChar > 90 || $startChar + 1 > 90) {
@@ -85,14 +86,24 @@ class CustomerController extends Controller
                     }
                     if ($startChar > $endChar) {
                         $endChar = $startChar;
+                    } */
+                    // $pack = array_combine(array_column($customer->packages, 'expired_at'), array_column($customer->packages, 'service_name'));
+                    $str = '';
+                    foreach ($customer->packages as $key => $package) {
+                        $str .= $package['service_name'] . ',' . $package['expired_at'];
+                        if ($key + 1 < count($customer->packages)) {
+                            $str .= ',';
+                        }
+                        // $sheet->setCellValue('E' . $x, $customer->packages ? implode(',', array_column($customer->packages, 'expired_at')) : '');
                     }
+                    $sheet->setCellValue('D' . $x, $str);
                 }
                 $x++;
             }
         }
-        $spreadsheet->getActiveSheet()->getStyle('A1:' . chr($endChar) . '1')->applyFromArray($styleArray);
+        $spreadsheet->getActiveSheet()->getStyle('A1:D1')->applyFromArray($styleArray);
         // auto fit column to content
-        foreach (range('A', chr($endChar)) as $columnID) {
+        foreach (range('A', 'D') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
         }
         //Create file excel.xlsx

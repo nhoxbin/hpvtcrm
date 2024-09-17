@@ -1,21 +1,26 @@
 <template>
-  <Head title="Khách hàng"/>
+  <Head title="Khách hàng" />
 
   <AuthenticatedLayout>
-    <template #header>
-      Khách hàng
-    </template>
+    <template #header> Khách hàng </template>
 
     <div class="p-4 bg-white rounded-lg shadow-xs">
       <div class="mb-4 w-full">
-        <SecondaryButton @click="actions.isUploadCustomer = true">Import</SecondaryButton>
-        <PrimaryButton @click="exportExcel(route('admin.digishop.customers.export'))">Export</PrimaryButton>
+        <SecondaryButton @click="actions.isUploadCustomer = true"
+          >Import</SecondaryButton
+        >
+        <PrimaryButton
+          @click="exportExcel(route('admin.digishop.customers.export'))"
+          >Export</PrimaryButton
+        >
       </div>
       <div class="mb-4 w-full">
-        <label for="auth_status">{{ auth_status }}</label>
-      </div>
-      <div class="mb-4 w-full">
-        <!-- <label for="process">Đã chạy: {{ process_customers['processing'] + '/' + process_customers['total'] }}</label> -->
+        <label for="process"
+          >Đã chạy:
+          {{
+            process_customers["processing"] + "/" + process_customers["total"]
+          }}</label
+        >
       </div>
 
       <!-- <div class="relative mb-4 flex flex-wrap items-stretch">
@@ -51,16 +56,24 @@
         <div class="overflow-x-auto w-full">
           <table class="w-full whitespace-no-wrap">
             <thead>
-              <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase bg-gray-50 border-b">
+              <tr
+                class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase bg-gray-50 border-b"
+              >
                 <th class="px-4 py-3">Số điện thoại</th>
                 <th class="px-4 py-3">Trạng thái</th>
                 <!-- <th class="px-4 py-3">Thao tác</th> -->
               </tr>
             </thead>
             <tbody class="bg-white divide-y">
-              <tr v-for="customer in customers.data" :key="customer.id" class="text-gray-700">
+              <tr
+                v-for="customer in customers.data"
+                :key="customer.id"
+                class="text-gray-700"
+              >
                 <td class="px-4 py-3 text-sm">{{ customer.phone_number }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.is_request ? 'Đã xong' : 'Chưa xong' }}</td>
+                <td class="px-4 py-3 text-sm">
+                  {{ customer.is_request ? "Đã xong" : "Chưa xong" }}
+                </td>
                 <!-- <td>
                   <div class="btn-group">
                     <button class="btn btn-info" @click="isEditUser = true">Sửa</button>
@@ -79,47 +92,53 @@
                 </td> -->
               </tr>
               <tr v-if="!customers.data.length">
-                <td class="px-4 py-3 text-sm text-center" colspan="9">Không có dữ liệu</td>
+                <td class="px-4 py-3 text-sm text-center" colspan="9">
+                  Không có dữ liệu
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div
-          class="px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase bg-gray-50 border-t sm:grid-cols-9">
+          class="px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase bg-gray-50 border-t sm:grid-cols-9"
+        >
           <pagination :links="customers.links" />
         </div>
       </div>
     </div>
 
     <!-- <EditCustomerForm v-if="actions.isEditCustomer" :isEditCustomer="actions.isEditCustomer" :customer="currentCustomer" @closeForm="onCloseForm" /> -->
-    <UploadCustomerForm :isUploadCustomer="actions.isUploadCustomer" @closeForm="onCloseForm" />
+    <UploadCustomerForm
+      :isUploadCustomer="actions.isUploadCustomer"
+      @closeForm="onCloseForm"
+    />
     <!-- <DeleteCustomerForm :isDeleteCustomer="actions.isDeleteCustomer" @closeForm="onCloseForm" /> -->
     <!-- <DistributeCustomerForm :users="users" :isDistributeCustomer="actions.isDistributeCustomer" @closeForm="onCloseForm" /> -->
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayout.vue';
-import Pagination from '@/Components/Admin/Pagination.vue';
-import { reactive, ref } from 'vue';
-import SecondaryButton from '@/Components/Admin/SecondaryButton.vue';
-import EditCustomerForm from './Partials/EditCustomerForm.vue';
-import UploadCustomerForm from './Partials/UploadCustomerForm.vue';
-import DeleteCustomerForm from './Partials/DeleteCustomerForm.vue';
-import 'element-plus/es/components/message/style/css';
-import 'element-plus/es/components/message-box/style/css';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import DangerButton from '@/Components/DangerButton.vue';
-import { Head, router, useForm, usePage } from '@inertiajs/vue3';
-import DistributeCustomerForm from './Partials/DistributeCustomerForm.vue';
-import PrimaryButton from '@/Components/Admin/PrimaryButton.vue';
-import _ from 'lodash';
-import Vue3TagsInput from 'vue3-tags-input';
-import { defineComponent } from 'vue';
+import AuthenticatedLayout from "@/Layouts/Admin/AuthenticatedLayout.vue";
+import Pagination from "@/Components/Admin/Pagination.vue";
+import { reactive, ref } from "vue";
+import SecondaryButton from "@/Components/Admin/SecondaryButton.vue";
+import EditCustomerForm from "./Partials/EditCustomerForm.vue";
+import UploadCustomerForm from "./Partials/UploadCustomerForm.vue";
+import DeleteCustomerForm from "./Partials/DeleteCustomerForm.vue";
+import "element-plus/es/components/message/style/css";
+import "element-plus/es/components/message-box/style/css";
+import { ElMessage, ElMessageBox } from "element-plus";
+import DangerButton from "@/Components/DangerButton.vue";
+import { Head, router, useForm, usePage } from "@inertiajs/vue3";
+import DistributeCustomerForm from "./Partials/DistributeCustomerForm.vue";
+import PrimaryButton from "@/Components/Admin/PrimaryButton.vue";
+import _ from "lodash";
+import Vue3TagsInput from "vue3-tags-input";
+import { defineComponent } from "vue";
 
 defineComponent({
   components: {
-    Vue3TagsInput
+    Vue3TagsInput,
   },
 });
 
@@ -135,13 +154,13 @@ const props = defineProps({
 
 if (props.msg) {
   ElMessage({
-    type: 'info',
+    type: "info",
     message: props.msg,
   });
 }
 if (props.error) {
   ElMessage({
-    type: 'info',
+    type: "info",
     message: props.error,
   });
 }
@@ -225,6 +244,6 @@ const del = (customer) => {
 } */
 
 const exportExcel = (url) => {
-  document.location = url
+  document.location = url;
 };
 </script>

@@ -43,6 +43,7 @@ class DigiShopCheckCustomers extends Command
             $logPath = storage_path('logs/AsyncWorkers.log');
             $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$job->queue} --memory=2048 --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
             exec($commandString);
+            sleep(1);
         }
     }
 }

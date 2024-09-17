@@ -27,9 +27,13 @@ class CreateProcedure extends Command
     public function handle()
     {
         $procedure = "
-            CREATE PROCEDURE `process_customers`()
+            CREATE PROCEDURE `process_customers`(IN vnptTable varchar(64), IN userId INT)
             BEGIN
-                SELECT (SELECT COUNT(*) FROM one_bss_customers) total, (SELECT COUNT(*) FROM one_bss_customers WHERE is_request=1) processing;
+                IF     vnptTable = \"onebss\" THEN
+                    (SELECT (SELECT COUNT(*) FROM one_bss_customers WHERE user_id=userId) total, (SELECT COUNT(*) FROM one_bss_customers WHERE user_id=userId and is_request=1) processing);
+                ELSEIF vnptTable = \"digishop\" THEN
+                    (SELECT (SELECT COUNT(*) FROM digi_shop_customers WHERE user_id=userId) total, (SELECT COUNT(*) FROM digi_shop_customers WHERE user_id=userId and is_request=1) processing);
+                END IF;
             END
         ";
 

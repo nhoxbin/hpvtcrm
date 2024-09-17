@@ -26,7 +26,8 @@ class AccountController extends Controller
     public function create()
     {
         return Inertia::render('Admin/DigiShop/Login', [
-            'status' => session('status')
+            'status' => session('status'),
+            'accounts' => DigiShopAccount::paginate(),
         ]);
     }
 

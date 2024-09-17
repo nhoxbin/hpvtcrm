@@ -31,7 +31,7 @@ class CustomerController extends Controller
         return Inertia::render('Admin/OneBss/Customer/Index', [
             'users' => $request->user()->created_users()->role(['OneBss Admin', 'OneBss Sales'])->get(),
             'customers' => $customers->search($request)->paginate()->withQueryString(),
-            'process_customers' => DB::select('call process_customers()')[0],
+            'process_customers' => DB::select("call process_customers('onebss', {$request->user()->id})")[0],
             'auth_status' => $session ? 'Phiên làm việc OneBss đến: ' . $session->updated_at->addSeconds($session->expires_in)->format('d/m/Y \l\ú\c H:i:s') : 'Phiên làm việc OneBss đã hết hiệu lực, Vui lòng đăng nhập!',
             'msg' => session('msg'),
             'error' => session('error'),
@@ -73,10 +73,7 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ?OneBssCustomer $customer)
-    {
-
-    }
+    public function update(Request $request, ?OneBssCustomer $customer) {}
 
     /**
      * Remove the specified resource from storage.
@@ -99,12 +96,12 @@ class CustomerController extends Controller
                 $customer->search($request)->delete();
                 break;
             case 'sales_state':
-                $customer->search($request)->where(function($q) {
+                $customer->search($request)->where(function ($q) {
                     $q->orWhereNotNull('sales_state')->orWhereNotNull('sales_note')->orWhereNotNull('admin_note');
                 })->update(['sales_state' => null, 'sales_note' => null, 'admin_note' => null]);
                 // OneBssCustomer::whereNotNull('sales_state')->update(['sales_state' => null]);
                 break;
-            /* case 'sales_state':
+                /* case 'sales_state':
                 $request->validate([
                     'sales_state' => 'required|in:'.implode(',', SalesStateEnum::values())
                 ]);

@@ -103,8 +103,8 @@ class CheckCustomers implements ShouldQueue
                                         $insert['packages'] = json_encode($data['detail']['packages']);
                                     }
                                 }
-                                $upsert[$phone_number] = $insert;
                             }
+                            $upsert[$phone_number] = $insert;
                         }
                     } else {
                         if ($data['errorCode'] == 3) {
@@ -179,9 +179,13 @@ class CheckCustomers implements ShouldQueue
                 }
             }
         );
+
         $numberOfAttempts = 5;
         DB::transaction(function () use ($upsert, $delete, $account) {
             DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
+        }, $numberOfAttempts);
+
+        DB::transaction(function () use ($upsert, $delete, $account) {
             if (!empty($delete)) {
                 $account->customers()->whereIn('phone_number', $delete)->delete();
             }
