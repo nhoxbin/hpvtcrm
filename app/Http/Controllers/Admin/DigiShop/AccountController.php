@@ -39,7 +39,7 @@ class AccountController extends Controller
         $msg = null;
         $validated = $request->validated();
         $digishop = VNPTDigiShop::login($validated);
-        if ($digishop['success'] && $digishop['statusCode'] == 200) {
+        if ($digishop && $digishop['success'] && $digishop['statusCode'] == 200) {
             $data = $digishop['data'];
             if ($data['errorCode'] == 0) {
                 $item = $data['item'];

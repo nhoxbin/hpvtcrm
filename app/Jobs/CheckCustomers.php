@@ -16,6 +16,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -35,6 +36,13 @@ class CheckCustomers implements ShouldQueue
      * Execute the job.
      */
     public function handle(): void
+    {
+        if ($this->account instanceof DigiShopAccount) {
+            $this->handleDigishop();
+        }
+    }
+
+    private function handleDigishop()
     {
         $account = $this->account;
         $customers = $this->customers;
@@ -171,10 +179,13 @@ class CheckCustomers implements ShouldQueue
                 }
             }
         );
-        DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
-        if (!empty($delete)) {
-            $account->customers()->whereIn('phone_number', $delete)->delete();
-        }
+        $numberOfAttempts = 5;
+        DB::transaction(function () use ($upsert, $delete, $account) {
+            DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
+            if (!empty($delete)) {
+                $account->customers()->whereIn('phone_number', $delete)->delete();
+            }
+        }, $numberOfAttempts);
     }
 
     public function failed(Exception $exception)
