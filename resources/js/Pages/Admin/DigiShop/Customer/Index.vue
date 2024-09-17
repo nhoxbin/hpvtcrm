@@ -148,7 +148,7 @@ const props = defineProps({
   users: Array,
   msg: String,
   error: String,
-  // process_customers: Object,
+  process_customers: Object,
   auth_status: String,
 });
 

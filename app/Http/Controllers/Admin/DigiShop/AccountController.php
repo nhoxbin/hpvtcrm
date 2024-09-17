@@ -24,11 +24,10 @@ class AccountController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create()
     {
         return Inertia::render('Admin/DigiShop/Login', [
             'status' => session('status'),
-            'process_customers' => DB::select("call process_customers('digishop', {$request->user()->id})")[0],
             'accounts' => DigiShopAccount::paginate(),
         ]);
     }

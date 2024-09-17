@@ -144,7 +144,7 @@ import "element-plus/es/components/message-box/style/css";
 // import { ElMessage, ElMessageBox } from 'element-plus';
 // import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from "@/Components/Admin/PrimaryButton.vue";
-import { useForm } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 import { Head } from "@inertiajs/vue3";
 // import { Link } from '@inertiajs/vue3';
 
@@ -153,7 +153,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 
 const props = defineProps({
-  accounts: String,
+  accounts: Object,
   status: String,
 });
 
@@ -196,8 +196,8 @@ async function copyURL(mytext) {
   input.value = mytext;
   document.body.appendChild(input);
   try {
-    await input.focus();
-    await input.select();
+    input.focus();
+    input.select();
     var successful = document.execCommand("copy");
     var msg = successful ? "successful" : "unsuccessful";
     ElMessage({
