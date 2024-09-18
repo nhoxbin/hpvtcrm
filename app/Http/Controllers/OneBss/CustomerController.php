@@ -73,6 +73,7 @@ class CustomerController extends Controller
                 return response()->success('Success', $insert);
             }
         } else {
+            Log::info('OneBss/CustomerController');
             Log::info($info);
         }
         return response()->error('Cannot get info', 422);

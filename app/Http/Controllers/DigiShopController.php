@@ -59,6 +59,7 @@ class DigiShopController extends Controller
                 return response()->success('Success', $insert);
             }
         } else {
+            Log::info('DigiShopController');
             Log::info($info);
         }
         return response()->error('Cannot get info', 422);

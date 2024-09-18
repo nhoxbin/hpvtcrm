@@ -114,6 +114,7 @@ class OnebssCheckCustomers extends Command
                                 unset($upsert[$balance[0]]);
                             }
                         } else {
+                            Log::info('OneBssCheckCustomers command');
                             Log::info($balance);
                         }
                     }
