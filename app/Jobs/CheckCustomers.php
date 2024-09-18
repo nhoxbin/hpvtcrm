@@ -179,7 +179,7 @@ class CheckCustomers implements ShouldQueue
 
         $numberOfAttempts = 5;
         DB::transaction(function () use ($upsert) {
-            DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id', 'is_request'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period']);
+            DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
         }, $numberOfAttempts);
 
         DB::transaction(function () use ($delete, $account) {
