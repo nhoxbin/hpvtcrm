@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DigiShopCheckCustomers extends Command
 {
@@ -30,8 +31,9 @@ class DigiShopCheckCustomers extends Command
         foreach ($jobs as $job) {
             $artisanPath = base_path('artisan');
             $logPath = storage_path('logs/AsyncWorkers.log');
-            $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$job->queue} --memory=2048 --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
-            exec($commandString);
+            $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$job->queue} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
+            exec($commandString, $output);
+            Log::info($output);
             sleep(1);
         }
     }
