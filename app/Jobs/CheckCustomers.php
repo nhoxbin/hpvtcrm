@@ -38,11 +38,11 @@ class CheckCustomers implements ShouldQueue
     public function handle(): void
     {
         if ($this->account instanceof DigiShopAccount) {
-            $this->handleDigishop();
+            $this->digishop();
         }
     }
 
-    private function handleDigishop()
+    private function digishop()
     {
         $account = $this->account;
         $customers = $this->customers;
@@ -175,6 +175,7 @@ class CheckCustomers implements ShouldQueue
                     } else {
                         Log::info('CheckCustomers Job: info');
                         Log::info($phone_number);
+                        Log::info($info);
                     }
                 }
             }

@@ -139,24 +139,29 @@ class CustomerController extends Controller
         if ($account) {
             $info = VNPTOneBss::getInfo($phone, $account->access_token);
             if ($info) {
-                if ($info['error_code'] == 'BSS-00000000') {
-                    $data = $info['data'];
-                    $info = [
-                        'phone' => $data['SO_TB'],
-                        'tra_sau' => (string) $data['TRA_SAU'],
-                        'goi_cuoc_ts' => $data['GOI_CUOC_TS'],
-                        'goi_cuoc' => $data['GOI_CUOC'],
-                        'goi_data' => $data['GOI_DATA'],
-                        'core_balance' => 0,
-                        'is_request' => 1,
-                    ];
-                    $customer = OneBssCustomer::updateOrCreate(['phone' => $info['phone']], $info);
-                    $info['id'] = $customer->id;
-                    return response()->success('', compact('info'));
-                } elseif ($info['error_code'] == 'BSS-00001101' || $info['error_code'] == 'BSS-00000401') {
-                    $account->expires_in = null;
-                    $account->access_token = null;
-                    $account->save();
+                if (!isset($info['error_code'])) {
+                    Log::info('get_direct_phone_data');
+                    Log::info($info);
+                } else {
+                    if ($info['error_code'] == 'BSS-00000000') {
+                        $data = $info['data'];
+                        $info = [
+                            'phone' => $data['SO_TB'],
+                            'tra_sau' => (string) $data['TRA_SAU'],
+                            'goi_cuoc_ts' => $data['GOI_CUOC_TS'],
+                            'goi_cuoc' => $data['GOI_CUOC'],
+                            'goi_data' => $data['GOI_DATA'],
+                            'core_balance' => 0,
+                            'is_request' => 1,
+                        ];
+                        $customer = OneBssCustomer::updateOrCreate(['phone' => $info['phone']], $info);
+                        $info['id'] = $customer->id;
+                        return response()->success('', compact('info'));
+                    } elseif ($info['error_code'] == 'BSS-00001101' || $info['error_code'] == 'BSS-00000401') {
+                        $account->expires_in = null;
+                        $account->access_token = null;
+                        $account->save();
+                    }
                 }
             }
         }
