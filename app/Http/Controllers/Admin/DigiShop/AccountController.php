@@ -28,7 +28,7 @@ class AccountController extends Controller
     {
         return Inertia::render('Admin/DigiShop/Login', [
             'status' => session('status'),
-            'accounts' => DigiShopAccount::paginate(),
+            'accounts' => DigiShopAccount::where('user_id', Auth::id())->paginate(),
         ]);
     }
 
