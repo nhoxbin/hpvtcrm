@@ -161,13 +161,11 @@ class CheckCustomers implements ShouldQueue
                             }
                         } else {
                             if ($data['errorCode'] == 3) {
-                                /* array (
-                                'errorCode' => 3,
-                                'errorMessage' => 'Bạn đã vượt quá số lần tra cứu gói cước của thuê bao trong ngày. Vui lòng thực hiện tra cứu vào ngày mai. Xin cảm ơn.',
-                            ), */
+                                // 'errorMessage' => 'Bạn đã vượt quá số lần tra cứu gói cước của thuê bao trong ngày. Vui lòng thực hiện tra cứu vào ngày mai. Xin cảm ơn.',
+                                Log::info($data['errorMessage']);
                             } else {
-                                // Log::info('CheckCustomers Job: data');
-                                // Log::info($data);
+                                Log::info('CheckCustomers Job: data');
+                                Log::info($data);
                             }
                         }
                     } else {
@@ -181,7 +179,7 @@ class CheckCustomers implements ShouldQueue
 
         $numberOfAttempts = 5;
         DB::transaction(function () use ($upsert) {
-            DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period', 'is_request']);
+            DigiShopCustomer::upsert($upsert, ['phone_number', 'user_id', 'is_request'], ['tkc', 'first_product_name', 'packages', 'integration', 'long_period']);
         }, $numberOfAttempts);
 
         DB::transaction(function () use ($delete, $account) {

@@ -2,19 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Events\DigiShopUnauth;
-use App\Helpers\Facades\VNPTDigiShop;
-use App\Http\Mixins\HttpMixin;
-use App\Models\DigiShopAccount;
-use App\Models\DigiShopCustomer;
-use App\Models\OneBssCustomer;
-use App\Models\User;
-use Generator;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 
 class DigiShopCheckCustomers extends Command
 {
