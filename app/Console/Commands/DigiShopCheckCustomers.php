@@ -29,8 +29,8 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
-
+        $collection = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30);
+        $jobs = $collection->get();
         // $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');
         $jobss = [];
         foreach ($jobs as $job) {
@@ -58,7 +58,7 @@ class DigiShopCheckCustomers extends Command
         AsyncFacade::batchRun(...$jobss);
         // $results = AsyncFacade::wait();
         // Log::info($results);
-        $jobs->delete();
+        // $jobs->delete();
 
 
         /* foreach ($jobs as $job) {
