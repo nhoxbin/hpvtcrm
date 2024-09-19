@@ -58,7 +58,7 @@ class DigiShopCheckCustomers extends Command
         AsyncFacade::batchRun(...$jobss);
         // $results = AsyncFacade::wait();
         // Log::info($results);
-        // $jobs->delete();
+        $jobs->delete();
 
 
         /* foreach ($jobs as $job) {
