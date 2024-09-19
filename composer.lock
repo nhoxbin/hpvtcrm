@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d11d0341a8e6d8f26d0141430a53434",
+    "content-hash": "6c6203591e69925ebd2503fb10fc948e",
     "packages": [
         {
             "name": "brick/math",
@@ -3722,6 +3722,73 @@
             "time": "2024-04-27T21:32:50+00:00"
         },
         {
+            "name": "spatie/async",
+            "version": "1.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/async.git",
+                "reference": "c270e692f6eabafb4312e1ecd44e062032785635"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/async/zipball/c270e692f6eabafb4312e1ecd44e062032785635",
+                "reference": "c270e692f6eabafb4312e1ecd44e062032785635",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/serializable-closure": "^1.0",
+                "php": "^7.4|^8.0",
+                "symfony/process": "^3.3 || ^4.0 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "require-dev": {
+                "larapack/dd": "^1.1",
+                "phpunit/phpunit": "^7.5 || ^8.5.21 || ^9.0 || ^10.0",
+                "symfony/stopwatch": "^4.0 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "suggest": {
+                "ext-pcntl": "Required to use async processes",
+                "ext-posix": "Required to use async processes"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Spatie\\Async\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brent Roose",
+                    "email": "brent@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Asynchronous and parallel PHP with the PCNTL extension",
+            "homepage": "https://github.com/spatie/async",
+            "keywords": [
+                "async",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/async/issues",
+                "source": "https://github.com/spatie/async/tree/1.6.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-12-14T13:21:46+00:00"
+        },
+        {
             "name": "spatie/laravel-permission",
             "version": "6.9.0",
             "source": {
@@ -6313,6 +6380,67 @@
                 }
             ],
             "time": "2022-03-08T17:03:00+00:00"
+        },
+        {
+            "name": "vxm/laravel-async",
+            "version": "v5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vuongxuongminh/laravel-async.git",
+                "reference": "cdb0762f21fd7c322632f57a016012f1a3abae91"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vuongxuongminh/laravel-async/zipball/cdb0762f21fd7c322632f57a016012f1a3abae91",
+                "reference": "cdb0762f21fd7c322632f57a016012f1a3abae91",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^10.0|^11.0",
+                "php": "^8.1",
+                "spatie/async": "^1.6"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^8.0|^9.0",
+                "symplify/easy-coding-standard": "^11.2|^12.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Async": "VXM\\Async\\AsyncFacade"
+                    },
+                    "providers": [
+                        "VXM\\Async\\AsyncServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "VXM\\Async\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vuong Xuong Minh",
+                    "email": "vuongxuongminh@gmail.com"
+                }
+            ],
+            "description": "Provide an easy way to run code asynchronously for Laravel",
+            "homepage": "https://github.com/vuongxuongminh/laravel-async",
+            "keywords": [
+                "laravel-async",
+                "vxm"
+            ],
+            "support": {
+                "issues": "https://github.com/vuongxuongminh/laravel-async/issues",
+                "source": "https://github.com/vuongxuongminh/laravel-async/tree/v5.0.0"
+            },
+            "time": "2024-06-27T14:48:58+00:00"
         },
         {
             "name": "webmozart/assert",

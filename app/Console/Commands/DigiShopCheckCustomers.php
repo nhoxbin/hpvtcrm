@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use VXM\Async\AsyncFacade as Async;
 
 class DigiShopCheckCustomers extends Command
 {
@@ -27,14 +29,26 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
-        foreach ($jobs as $job) {
+        DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'desc')->chunk(30, function ($jobs) {
+            foreach ($jobs as $job) {
+                Async::run(function () use ($job) {
+                    Artisan::call('queue:work', [
+                        '--queue' => $job->queue,
+                        '--once' => true,
+                        '--tries' => 3,
+                        '--stop-when-empty' => true
+                    ]);
+                    return Artisan::output();
+                });
+            }
+            Log::info(implode("\n", Async::wait()));
+        });
+        /* foreach ($jobs as $job) {
             $artisanPath = base_path('artisan');
             $logPath = storage_path('logs/AsyncWorkers.log');
-            $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$job->queue} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
-            exec($commandString, $output);
-            Log::info($output);
+            $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work  --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
+            exec($commandString);
             sleep(1);
-        }
+        } */
     }
 }
