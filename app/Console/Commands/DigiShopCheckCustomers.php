@@ -36,7 +36,7 @@ class DigiShopCheckCustomers extends Command
                     Artisan::call('queue:work', [
                         '--queue' => $job->queue,
                         '--once' => true,
-                        '--tries' => 3,
+                        '--tries' => 5,
                         '--stop-when-empty' => true
                     ]);
                     return Artisan::output();
