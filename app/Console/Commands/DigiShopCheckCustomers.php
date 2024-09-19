@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\AsyncJobs\DigiShopJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -30,8 +31,8 @@ class DigiShopCheckCustomers extends Command
     public function handle()
     {
         $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
-        /* foreach ($jobs as $job) {
-            Async::run(function () use ($job) {
+        foreach ($jobs as $job) {
+            /* Async::run(function () use ($job) {
                 Artisan::call('queue:work', [
                     '--queue' => $job->queue,
                     '--once' => true,
@@ -46,17 +47,18 @@ class DigiShopCheckCustomers extends Command
                 'error' => function (\Throwable $exception) {
                     Log::info($exception->getMessage());
                 },
-            ]);
+            ]); */
+            Async::run(new DigiShopJob($job->queue));
         }
         $results = Async::wait();
-        Log::info($results); */
+        Log::info($results);
 
-        foreach ($jobs as $job) {
+        /* foreach ($jobs as $job) {
             $artisanPath = base_path('artisan');
             $logPath = storage_path('logs/AsyncWorkers.log');
             $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$job->queue} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
             exec($commandString);
             sleep(1);
-        }
+        } */
     }
 }

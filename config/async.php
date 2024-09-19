@@ -4,12 +4,12 @@ return [
     /*
      * The PHP binary will be use in async processes.
      */
-    'withBinary' => '/usr/local/bin/ea-php81', // PHP_BINARY
+    'withBinary' => 'C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64\php', // PHP_BINARY
 
     /*
      * Maximum concurrency async processes.
      */
-    'concurrency' => 20,
+    'concurrency' => 30,
 
     /*
      * Async process timeout.
