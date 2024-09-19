@@ -26,7 +26,7 @@ class DigiShopJob
      *
      * @return void
      */
-    public function __construct(private DigiShopAccount $account, private $customers) {}
+    public function __construct(private string $job) {}
 
     // public function configure() {}
 
@@ -37,20 +37,20 @@ class DigiShopJob
      */
     public function handle()
     {
-        /* Artisan::call('queue:work', [
+        Artisan::call('queue:work', [
             '--queue' => $this->job,
             '--once' => true,
             '--tries' => 3,
             '--stop-when-empty' => true
         ]);
-        $artisanPath = '/home/hpvtnetb/public_html/artisan'; // base_path('artisan');
-        $logPath = '/home/hpvtnetb/public_html/storage/logs/AsyncWorkers.log'; // storage_path('logs/AsyncWorkers.log');
-        $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$this->job} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
-        exec($commandString); */
+        // $artisanPath = '/home/hpvtnetb/public_html/artisan'; // base_path('artisan');
+        // $logPath = '/home/hpvtnetb/public_html/storage/logs/AsyncWorkers.log'; // storage_path('logs/AsyncWorkers.log');
+        // $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$this->job} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
+        // exec($commandString);
 
         // return Artisan::output();
 
-        $account = $this->account;
+        /* $account = $this->account;
         $customers = $this->customers;
         $upsert = [];
         $delete = [];
@@ -197,6 +197,6 @@ class DigiShopJob
             if (!empty($delete)) {
                 $account->customers()->whereIn('phone_number', $delete)->delete();
             }
-        }, $numberOfAttempts);
+        }, $numberOfAttempts); */
     }
 }
