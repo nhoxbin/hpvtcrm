@@ -44,7 +44,7 @@ class DigiShopCheckCustomers extends Command
                         Log::info($output);
                     },
                     'error' => function (\Throwable $exception) {
-                        Log::info($exception);
+                        Log::info($exception->getMessage());
                     },
                 ]);
             }
