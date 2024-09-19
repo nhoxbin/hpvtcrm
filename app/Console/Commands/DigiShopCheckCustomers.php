@@ -30,7 +30,7 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'desc')->chunk(10, function ($jobs) {
+        DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'desc')->chunk(config('async.concurrency'), function ($jobs) {
             foreach ($jobs as $job) {
                 Async::run(function () use ($job) {
                     Artisan::call('queue:work', [
@@ -42,10 +42,10 @@ class DigiShopCheckCustomers extends Command
                     return Artisan::output();
                 }, [
                     'success' => function ($output) {
-                        Log::info($output);
+                        // Log::info($output);
                     },
                     'error' => function (\Throwable $exception) {
-                        Log::info($exception->getMessage());
+                        // Log::info($exception->getMessage());
                     },
                 ]);
             }
