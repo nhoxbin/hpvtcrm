@@ -30,7 +30,7 @@ class DigiShopJob extends Task
         ]); */
         $artisanPath = base_path('artisan');
         $logPath = storage_path('logs/AsyncWorkers.log');
-        $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$job->queue} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
+        $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$this->job} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
         exec($commandString);
 
         // return Artisan::output();
