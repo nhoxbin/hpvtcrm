@@ -8,10 +8,6 @@ use VXM\Async\Invocation;
 
 class DigiShopJob
 {
-
-    use Invocation;
-    use SerializesModels;
-
     /**
      * Create a new job instance.
      *
