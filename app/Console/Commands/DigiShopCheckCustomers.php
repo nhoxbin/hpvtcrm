@@ -30,7 +30,7 @@ class DigiShopCheckCustomers extends Command
     public function handle()
     {
         DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'desc')->chunk(30, function ($jobs) {
-            $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');;
+            /* $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');;
             foreach ($jobs as $job) {
                 $pool[] = async(function () use ($job) {
                     Artisan::call('queue:work', [
@@ -46,7 +46,7 @@ class DigiShopCheckCustomers extends Command
                     Log::info($exception);
                 });
             }
-            await($pool);
+            await($pool); */
         });
         /* foreach ($jobs as $job) {
             $artisanPath = base_path('artisan');
