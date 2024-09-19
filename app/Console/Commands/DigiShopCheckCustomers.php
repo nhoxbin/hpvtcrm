@@ -30,7 +30,7 @@ class DigiShopCheckCustomers extends Command
     public function handle()
     {
         $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
-        foreach ($jobs as $job) {
+        /* foreach ($jobs as $job) {
             Async::run(function () use ($job) {
                 Artisan::call('queue:work', [
                     '--queue' => $job->queue,
@@ -49,14 +49,14 @@ class DigiShopCheckCustomers extends Command
             ]);
         }
         $results = Async::wait();
-        Log::info($results);
+        Log::info($results); */
 
-        /* foreach ($jobs as $job) {
+        foreach ($jobs as $job) {
             $artisanPath = base_path('artisan');
             $logPath = storage_path('logs/AsyncWorkers.log');
             $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work  --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
             exec($commandString);
             sleep(1);
-        } */
+        }
     }
 }
