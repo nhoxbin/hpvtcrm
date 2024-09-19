@@ -2,12 +2,13 @@
 
 namespace App\Providers;
 
-use App\AsyncJobs\DigiShopJob;
 use App\Helpers\OneSell;
 use App\Helpers\VNPTDigiShop;
 use App\Helpers\VNPTOneBss;
 use Illuminate\Support\ServiceProvider;
 use VXM\Async\Async;
+use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use VXM\Async\Pool;
 
 class HelperServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,9 @@ class HelperServiceProvider extends ServiceProvider
         });
         $this->app->singleton('VNPTOneBss', function () {
             return new VNPTOneBss();
+        });
+        $this->app->singleton('Async', function () {
+            return new Async(new Pool, new EventDispatcher);
         });
     }
 
