@@ -30,12 +30,6 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        $artisanPath = base_path('artisan');
-        $logPath = storage_path('logs/AsyncWorkers.log');
-        Log::info([
-            $artisanPath,
-            $logPath
-        ]);
         $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
 
         $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');

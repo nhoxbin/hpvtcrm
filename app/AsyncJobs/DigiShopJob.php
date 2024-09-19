@@ -28,8 +28,8 @@ class DigiShopJob extends Task
             '--tries' => 3,
             '--stop-when-empty' => true
         ]); */
-        $artisanPath = base_path('artisan');
-        $logPath = storage_path('logs/AsyncWorkers.log');
+        $artisanPath = '/home/hpvtnetb/public_html/artisan'; // base_path('artisan');
+        $logPath = '/home/hpvtnetb/public_html/storage/logs/AsyncWorkers.log'; // storage_path('logs/AsyncWorkers.log');
         $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$this->job} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
         exec($commandString);
 
