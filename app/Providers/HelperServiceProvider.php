@@ -29,9 +29,6 @@ class HelperServiceProvider extends ServiceProvider
         $this->app->singleton('VNPTOneBss', function () {
             return new VNPTOneBss();
         });
-        $this->app->singleton('Async', function () {
-            return new Async(new Pool, new EventDispatcher);
-        });
     }
 
     /**

@@ -6,7 +6,7 @@ use App\AsyncJobs\DigiShopJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use VXM\Async\AsyncFacade as Async;
+use VXM\Async\AsyncFacade;
 
 class DigiShopCheckCustomers extends Command
 {
@@ -55,8 +55,8 @@ class DigiShopCheckCustomers extends Command
             ]); */
             $jobss[] = new DigiShopJob($account, $customers);
         }
-        Async::batchRun(...$jobss);
-        $results = Async::wait();
+        AsyncFacade::batchRun(...$jobss);
+        $results = AsyncFacade::wait();
         Log::info($results);
         $jobs->delete();
 
