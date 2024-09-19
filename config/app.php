@@ -191,6 +191,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'OneSell' => App\Helpers\Facades\OneSell::class,
+        'Async' => VXM\Async\AsyncFacade::class,
     ])->toArray(),
 
 ];
