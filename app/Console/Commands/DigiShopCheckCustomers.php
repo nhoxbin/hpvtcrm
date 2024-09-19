@@ -59,7 +59,7 @@ class DigiShopCheckCustomers extends Command
         AsyncFacade::batchRun(...$jobss);
         // $results = AsyncFacade::wait();
         // Log::info($results);
-        DB::table('jobs')->whereIn('id', array_column($jobs, 'id'))->delete();
+        DB::table('jobs')->whereIn('id', $ids)->delete();
 
 
         /* foreach ($jobs as $job) {
