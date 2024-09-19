@@ -29,11 +29,13 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get()->toArray();
+        $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
         // $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');
         $jobss = [];
+        $ids = [];
         foreach ($jobs as $job) {
-            $data = unserialize(json_decode($job['payload'], true)['data']['command']);
+            $data = unserialize(json_decode($job->payload, true)['data']['command']);
+            $ids[] = $data->id;
             $account = $data->account;
             $customers = $data->customers;
             /* Async::run(function () use ($job) {
