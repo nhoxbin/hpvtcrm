@@ -24,7 +24,7 @@ class DigiShopJob
      *
      * @return void
      */
-    public function handle()
+    public function run()
     {
         Artisan::call('queue:work', [
             '--queue' => $this->job,

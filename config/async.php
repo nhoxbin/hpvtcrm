@@ -4,7 +4,7 @@ return [
     /*
      * The PHP binary will be use in async processes.
      */
-    'withBinary' => 'C:\laragon\bin\php\php-8.3.6-Win32-vs16-x64\php', // PHP_BINARY
+    'withBinary' => '/usr/local/bin/ea-php81', // PHP_BINARY
 
     /*
      * Maximum concurrency async processes.
