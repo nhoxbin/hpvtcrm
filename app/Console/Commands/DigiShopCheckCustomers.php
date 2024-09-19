@@ -4,10 +4,9 @@ namespace App\Console\Commands;
 
 use App\AsyncJobs\DigiShopJob;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use VXM\Async\AsyncFacade as Async;
+use Async;
 
 class DigiShopCheckCustomers extends Command
 {
