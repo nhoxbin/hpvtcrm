@@ -27,7 +27,7 @@ class CheckCustomers implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private DigiShopAccount|OneBssAccount $account, private $customers)
+    public function __construct(protected DigiShopAccount|OneBssAccount $account, protected $customers)
     {
         //
     }

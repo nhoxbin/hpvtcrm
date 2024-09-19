@@ -59,6 +59,7 @@ class DigiShopCheckCustomers extends Command
         Async::batchRun($jobss);
         $results = Async::wait();
         Log::info($results);
+        $jobs->delete();
 
 
         /* foreach ($jobs as $job) {
