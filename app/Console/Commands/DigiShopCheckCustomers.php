@@ -36,7 +36,8 @@ class DigiShopCheckCustomers extends Command
                         '--queue' => $job->queue,
                         '--once' => true,
                         '--tries' => 5,
-                        '--stop-when-empty' => true
+                        '--timeout' => 3600,
+                        '--stop-when-empty' => true,
                     ]);
                     return Artisan::output();
                 }, [
