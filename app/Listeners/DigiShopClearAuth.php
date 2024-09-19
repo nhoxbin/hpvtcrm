@@ -8,7 +8,7 @@ use App\Models\DigiShopAccount;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class DigiShopReAuth
+class DigiShopClearAuth
 {
     /**
      * Create the event listener.
