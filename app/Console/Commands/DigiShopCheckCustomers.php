@@ -29,28 +29,28 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'desc')->chunk(30, function ($jobs) {
-            foreach ($jobs as $job) {
-                Async::run(function () use ($job) {
-                    Artisan::call('queue:work', [
-                        '--queue' => $job->queue,
-                        '--once' => true,
-                        '--tries' => 3,
-                        '--stop-when-empty' => true
-                    ]);
-                    return Artisan::output();
-                }, [
-                    'success' => function ($output) {
-                        Log::info($output);
-                    },
-                    'error' => function (\Throwable $exception) {
-                        Log::info($exception->getMessage());
-                    },
+        $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
+        foreach ($jobs as $job) {
+            Async::run(function () use ($job) {
+                Artisan::call('queue:work', [
+                    '--queue' => $job->queue,
+                    '--once' => true,
+                    '--tries' => 3,
+                    '--stop-when-empty' => true
                 ]);
-            }
-            $results = Async::wait();
-            Log::info($results);
-        });
+                return Artisan::output();
+            }, [
+                'success' => function ($output) {
+                    Log::info($output);
+                },
+                'error' => function (\Throwable $exception) {
+                    Log::info($exception->getMessage());
+                },
+            ]);
+        }
+        $results = Async::wait();
+        Log::info($results);
+
         /* foreach ($jobs as $job) {
             $artisanPath = base_path('artisan');
             $logPath = storage_path('logs/AsyncWorkers.log');
