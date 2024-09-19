@@ -9,7 +9,7 @@ return [
     /*
      * Maximum concurrency async processes.
      */
-    'concurrency' => 10,
+    'concurrency' => 15,
 
     /*
      * Async process timeout.

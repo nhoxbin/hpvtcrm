@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\AsyncJobs\DigiShopJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -51,13 +50,5 @@ class DigiShopCheckCustomers extends Command
             }
             Async::wait();
         });
-
-        /* foreach ($jobs as $job) {
-            $artisanPath = base_path('artisan');
-            $logPath = storage_path('logs/AsyncWorkers.log');
-            $commandString = "/usr/local/bin/ea-php81 $artisanPath queue:work --queue={$job->queue} --once --tries=3 --stop-when-empty > $logPath 2>&1 &";
-            exec($commandString);
-            sleep(1);
-        } */
     }
 }
