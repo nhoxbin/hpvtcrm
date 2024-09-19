@@ -116,7 +116,7 @@ class CheckCustomers implements ShouldQueue
                         }
                     }
                 } else {
-                    $info = VNPTDigiShop::getInfo($phone_number, $account->access_token);
+                    /* $info = VNPTDigiShop::getInfo($phone_number, $account->access_token);
                     if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
                         $data = $info['data'];
                         if ($data['errorCode'] == 0) {
@@ -169,10 +169,10 @@ class CheckCustomers implements ShouldQueue
                             }
                         }
                     } else {
-                        Log::info('CheckCustomers Job: info');
-                        Log::info($phone_number);
-                        Log::info($info);
-                    }
+                    } */
+                    Log::info('CheckCustomers Job: info');
+                    Log::info($phone_number);
+                    Log::info($info);
                 }
             }
         );
