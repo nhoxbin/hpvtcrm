@@ -30,38 +30,27 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
-        // $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');
-        $jobss = [];
-        $ids = [];
-        foreach ($jobs as $job) {
-            // $data = unserialize(json_decode($job->payload, true)['data']['command']);
-            // $ids[] = $job->id;
-            // $account = $data->account;
-            // $customers = $data->customers;
-            Async::run(function () use ($job) {
-                Artisan::call('queue:work', [
-                    '--queue' => $job->queue,
-                    '--once' => true,
-                    '--tries' => 3,
-                    '--stop-when-empty' => true
+        DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'desc')->chunk(10, function ($jobs) {
+            foreach ($jobs as $job) {
+                Async::run(function () use ($job) {
+                    Artisan::call('queue:work', [
+                        '--queue' => $job->queue,
+                        '--once' => true,
+                        '--tries' => 3,
+                        '--stop-when-empty' => true
+                    ]);
+                    return Artisan::output();
+                }, [
+                    'success' => function ($output) {
+                        Log::info($output);
+                    },
+                    'error' => function (\Throwable $exception) {
+                        Log::info($exception->getMessage());
+                    },
                 ]);
-                return Artisan::output();
-            }, [
-                'success' => function ($output) {
-                    Log::info($output);
-                },
-                'error' => function (\Throwable $exception) {
-                    Log::info($exception->getMessage());
-                },
-            ]);
-            // $jobss[] = new DigiShopJob($account, $customers);
-        }
-        // AsyncFacade::batchRun(...$jobss);
-        $results = Async::wait();
-        Log::info($results);
-        // DB::table('jobs')->whereIn('id', $ids)->delete();
-
+            }
+            Async::wait();
+        });
 
         /* foreach ($jobs as $job) {
             $artisanPath = base_path('artisan');
