@@ -35,7 +35,7 @@ class DigiShopCheckCustomers extends Command
         $ids = [];
         foreach ($jobs as $job) {
             $data = unserialize(json_decode($job->payload, true)['data']['command']);
-            $ids[] = $data->id;
+            $ids[] = $job->id;
             $account = $data->account;
             $customers = $data->customers;
             /* Async::run(function () use ($job) {
