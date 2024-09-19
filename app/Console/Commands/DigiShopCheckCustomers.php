@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Spatie\Async\Pool;
+use Async;
 
 class DigiShopCheckCustomers extends Command
 {
@@ -30,9 +30,8 @@ class DigiShopCheckCustomers extends Command
     public function handle()
     {
         DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'desc')->chunk(30, function ($jobs) {
-            /* $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');;
             foreach ($jobs as $job) {
-                $pool[] = async(function () use ($job) {
+                Async::run(function () use ($job) {
                     Artisan::call('queue:work', [
                         '--queue' => $job->queue,
                         '--once' => true,
@@ -40,13 +39,17 @@ class DigiShopCheckCustomers extends Command
                         '--stop-when-empty' => true
                     ]);
                     return Artisan::output();
-                })->then(function ($output) {
-                    Log::info($output);
-                })->catch(function ($exception) {
-                    Log::info($exception);
-                });
+                }, [
+                    'success' => function ($output) {
+                        Log::info($output);
+                    },
+                    'error' => function (\Throwable $exception) {
+                        Log::info($exception);
+                    },
+                ]);
             }
-            await($pool); */
+            $results = Async::wait();
+            Log::info($results);
         });
         /* foreach ($jobs as $job) {
             $artisanPath = base_path('artisan');
