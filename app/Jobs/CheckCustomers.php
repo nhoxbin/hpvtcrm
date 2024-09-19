@@ -188,9 +188,4 @@ class CheckCustomers implements ShouldQueue
             }
         }, $numberOfAttempts);
     }
-
-    public function failed(Exception $exception)
-    {
-        Log::channel('digishop')->error('digishop job failed ' . $exception->getMessage());
-    }
 }
