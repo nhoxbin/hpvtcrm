@@ -4,7 +4,7 @@ namespace App\AsyncJobs;
 
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Async\Task;
-use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Contracts\Console\Kernel;
 
 class DigiShopJob extends Task
 {
