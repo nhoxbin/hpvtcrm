@@ -2,10 +2,8 @@
 
 namespace App\AsyncJobs;
 
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Async\Task;
-use VXM\Async\Invocation;
 
 class DigiShopJob extends Task
 {
@@ -16,7 +14,13 @@ class DigiShopJob extends Task
      */
     public function __construct(private string $job) {}
 
-    public function configure() {}
+    public function configure()
+    {
+        require __DIR__ . '/../../vendor/autoload.php';
+        $app = require_once __DIR__ . '/../../bootstrap/app.php';
+        $kernel = $app->make(Kernel::class);
+        $kernel->handle(...);
+    }
 
     /**
      * Execute the job.
