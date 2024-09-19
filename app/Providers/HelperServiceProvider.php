@@ -28,9 +28,6 @@ class HelperServiceProvider extends ServiceProvider
         $this->app->singleton('VNPTOneBss', function () {
             return new VNPTOneBss();
         });
-        $this->app->bindMethod(DigiShopJob::class . '@handle', function ($job, $app) {
-            return $job->handle($app->make());
-        });
     }
 
     /**
