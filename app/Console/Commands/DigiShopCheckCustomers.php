@@ -6,7 +6,7 @@ use App\AsyncJobs\DigiShopJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-// use VXM\Async\AsyncFacade as Async;
+use VXM\Async\AsyncFacade as Async;
 use Spatie\Async\Pool;
 
 class DigiShopCheckCustomers extends Command
@@ -32,9 +32,12 @@ class DigiShopCheckCustomers extends Command
     {
         $jobs = DB::table('jobs')->where('queue', 'like', 'DigiShop%')->limit(30)->get();
 
-        $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');
+        // $pool = Pool::create()->withBinary('/usr/local/bin/ea-php81');
+        $jobss = [];
         foreach ($jobs as $job) {
-            $pool->add(new DigiShopJob($job->queue));
+            $data = unserialize(json_decode($job->payload, true)['data']['command']);
+            $account = $data->account;
+            $customers = $data->customers;
             /* Async::run(function () use ($job) {
                 Artisan::call('queue:work', [
                     '--queue' => $job->queue,
@@ -51,9 +54,11 @@ class DigiShopCheckCustomers extends Command
                     Log::info($exception->getMessage());
                 },
             ]); */
-            // Async::run(new DigiShopJob($job->queue));
+            $jobss[] = new DigiShopJob($account, $customers);
         }
-        $pool->wait();
+        Async::batchRun($jobss);
+        $results = Async::wait();
+        Log::info($results);
 
 
         /* foreach ($jobs as $job) {
