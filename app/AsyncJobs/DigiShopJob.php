@@ -2,6 +2,7 @@
 
 namespace App\AsyncJobs;
 
+use App\Http\Kernel;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Async\Task;
 
@@ -19,7 +20,10 @@ class DigiShopJob extends Task
         require __DIR__ . '/../../vendor/autoload.php';
         $app = require_once __DIR__ . '/../../bootstrap/app.php';
         $kernel = $app->make(Kernel::class);
-        $kernel->handle(...);
+        $kernel->handle(
+            new \Symfony\Component\Console\Input\ArgvInput,
+            new \Symfony\Component\Console\Output\NullOutput,
+        );
     }
 
     /**
