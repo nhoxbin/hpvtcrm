@@ -32,7 +32,7 @@ class DigiShopCheckCustomers extends Command
     {
         $artisanPath = base_path('artisan');
         $logPath = storage_path('logs/AsyncWorkers.log');
-        dd([
+        Log::info([
             $artisanPath,
             $logPath
         ]);
