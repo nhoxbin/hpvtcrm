@@ -34,7 +34,7 @@ class DigiShopController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate(['phone_number' => 'required|string|numeric']);
-        $digishop = DigiShopAccount::where('status', true)->whereRelation('user', 'username', 'tymcrm')->latest()->firstOrFail();
+        $digishop = $request->user()->digishop_accounts()->where('status', true)->latest()->firstOrFail();
         $info = VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
         if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
             $data = $info['data'];
@@ -58,10 +58,9 @@ class DigiShopController extends Controller
                 DigiShopCustomer::updateOrCreate(['phone_number' => $validated['phone_number']], $insert);
                 return response()->success('Success', $insert);
             }
-        } else {
-            Log::info('DigiShopController');
-            Log::info($info);
         }
+        Log::info('DigiShopController');
+        Log::info($info);
         return response()->error('Cannot get info', 422);
     }
 
