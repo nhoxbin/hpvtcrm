@@ -17,6 +17,9 @@ class CustomerController extends Controller
      */
     public function __invoke(Request $request)
     {
+        if ($request->user()->username == 'tymcrm') {
+            return redirect()->route('admin.digishop.customers.index')->withError('Lỗi!!! Vui lòng liên hệ Admin.');
+        }
         try {
             $excel = $request->file('excel');
             $inputFileType = $excel->getClientOriginalExtension();
