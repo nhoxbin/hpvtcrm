@@ -63,10 +63,9 @@ class CustomerController extends Controller
                 DigiShopCustomer::updateOrCreate(['phone_number' => $validated['phone_number']], $insert);
                 return response()->success('Success', $insert);
             }
-        } else {
-            Log::info('DigiShop/CustomerController');
-            Log::info($info);
         }
+        Log::info('DigiShop/CustomerController');
+        Log::info($info);
         return response()->error('Cannot get info', 422);
     }
 
