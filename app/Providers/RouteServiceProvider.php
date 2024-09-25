@@ -38,8 +38,8 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('getOneBssRequest', function (Request $request) {
             return Limit::perMinute(4)->by($request->user()?->id ?: $request->ip())->response(function () {
                 return response()->json([
-                    'response' => 'failed',
-                    'message' => 'Too many request has been made',
+                    'msg' => 'Quá nhiều lượt truy cập.',
+                    'data' => [],
                 ], 429);
             });
         });
