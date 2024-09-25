@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Http\Cache\Limit as CacheLimit;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -37,7 +36,7 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('getOneBssRequest', function (Request $request) {
-            return CacheLimit::perSeconds(15, 1)->by($request->user()?->id ?: $request->ip())->response(function () {
+            return Limit::perMinute(2)->by($request->user()?->id ?: $request->ip())->response(function () {
                 return response()->json([
                     'msg' => 'Quá nhiều lượt truy cập.',
                     'data' => [],
