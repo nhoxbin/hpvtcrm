@@ -35,6 +35,15 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        RateLimiter::for('getOneBssRequest', function (Request $request) {
+            return Limit::perMinute(4)->by($request->user()?->id ?: $request->ip())->response(function () {
+                return response()->json([
+                    'response' => 'failed',
+                    'message' => 'Too many request has been made',
+                ], 429);
+            });
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

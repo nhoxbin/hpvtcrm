@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\{
     Route,
 };
 
-Route::get('artisan/{password}/{command}', function($password, $command) {
+Route::get('artisan/{password}/{command}', function ($password, $command) {
     if ($password === '74ujk6Z2wO') {
         try {
             $exitCode = Artisan::call($command, request()->all());
@@ -52,9 +52,9 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
-	Route::get('dashboard', 'DashboardController@index')->name('dashboard');
+    Route::get('dashboard', 'DashboardController@index')->name('dashboard');
 
-    Route::get('about', fn () => Inertia::render('About'))->name('about');
+    Route::get('about', fn() => Inertia::render('About'))->name('about');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::apiResource('transactions', TransactionController::class)->only(['store', 'update']);
@@ -66,19 +66,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // DigiShop
-    Route::group(['middleware' => 'can:view,App\Models\DigiShopCustomer'], function() {
+    Route::group(['middleware' => 'can:view,App\Models\DigiShopCustomer'], function () {
         Route::get('digishop/export', ExportDigiShopController::class)->name('digishop.export');
         Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store', 'destroy']);
     });
 
     // OneBss
-    Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'can:view,App\Models\OneBssCustomer'], function() {
+    Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'can:view,App\Models\OneBssCustomer'], function () {
         // Route::get('onebss/export', ExportCustomerController::class)->name('OneBss.export');
-        Route::get('customers/{phone}/get-direct-phone-data', 'CustomerController@get_direct_phone_data')->name('customers.get_direct_phone_data');
-        Route::get('customers/{customer}/reload-balance', 'CustomerController@reload_balance')->name('customers.reload_balance');
+        Route::middleware(['throttle:getOneBssRequest'])->group(function () {
+            Route::get('customers/{phone}/get-direct-phone-data', 'CustomerController@get_direct_phone_data')->name('customers.get_direct_phone_data');
+            Route::get('customers/{customer}/reload-balance', 'CustomerController@reload_balance')->name('customers.reload_balance');
+        });
         Route::apiResource('customers', OneBssCustomerController::class)->only(['index', 'update', 'store', 'destroy']);
     });
 });
 
-require __DIR__.'/auth.php';
-require __DIR__.'/admin.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/admin.php';
