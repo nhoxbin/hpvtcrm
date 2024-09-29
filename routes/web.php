@@ -14,6 +14,7 @@ use App\Http\Controllers\Export\DigiShopController as ExportDigiShopController;
 use App\Http\Controllers\Export\OneBssController as ExportOneBssController;
 use App\Http\Controllers\OneBss\CustomerController as OneBssCustomerController;
 use App\Http\Controllers\OneBss\Export\CustomerController as ExportCustomerController;
+use App\Models\DigiShopCustomer;
 use Illuminate\Support\Facades\{
     Artisan,
     Log,
@@ -68,6 +69,7 @@ Route::middleware('auth')->group(function () {
     // DigiShop
     Route::group(['middleware' => 'can:view,App\Models\DigiShopCustomer'], function () {
         Route::get('digishop/export', ExportDigiShopController::class)->name('digishop.export');
+        Route::get('digishop/customers/{phone_number}/get_object', [DigiShopController::class, 'get_object'])->name('digishop.customers.get_object');
         Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store', 'destroy']);
     });
 

@@ -116,60 +116,6 @@ class CheckCustomers implements ShouldQueue
                         }
                     }
                 } else {
-                    /* $info = VNPTDigiShop::getInfo($phone_number, $account->access_token);
-                    if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
-                        $data = $info['data'];
-                        if ($data['errorCode'] == 0) {
-                            if ($data['errorCode'] == 401) {
-                                event(new DigiShopUnauth($account));
-                                $account = DigiShopAccount::find($account->id);
-                                Log::info("Unauth");
-                            } else {
-                                $insert = [
-                                    'phone_number' => $phone_number,
-                                    'tkc' => 0,
-                                    'user_id' => $account->user_id,
-                                    'first_product_name' => null,
-                                    'packages' => null,
-                                    'integration' => null,
-                                    'long_period' => null,
-                                    'is_request' => true,
-                                ];
-                                if (empty($data['items'])) {
-                                    $delete[] = $phone_number;
-                                } else {
-                                    $top_5 = $data['items'][0] ?? []; // top 5
-                                    $integration = $data['items'][1] ?? []; // tích hợp
-                                    $long_period = $data['items'][2] ?? []; // chu kì dài
-                                    if (!empty($integration)) {
-                                        $insert['integration'] = json_encode(array_column($integration['list_product'], 'name'));
-                                    }
-                                    if (!empty($long_period)) {
-                                        $insert['long_period'] = json_encode(array_column($long_period['list_product'], 'name'));
-                                    }
-                                    if (isset($top_5['list_product'])) {
-                                        $insert['first_product_name'] = $top_5['list_product'][0]['name'];
-                                    }
-                                    if (!empty($data['detail'])) {
-                                        $insert['tkc'] = $data['detail']['tkc'];
-                                        if (!empty($data['detail']['packages'])) {
-                                            $insert['packages'] = json_encode($data['detail']['packages']);
-                                        }
-                                    }
-                                }
-                                $upsert[$phone_number] = $insert;
-                            }
-                        } else {
-                            if ($data['errorCode'] == 3) {
-                                // 'errorMessage' => 'Bạn đã vượt quá số lần tra cứu gói cước của thuê bao trong ngày. Vui lòng thực hiện tra cứu vào ngày mai. Xin cảm ơn.',
-                                Log::info($data['errorMessage']);
-                            } else {
-                                Log::info('CheckCustomers Job: data');
-                                Log::info($data);
-                            }
-                        }
-                    } else {
-                    } */
                     Log::info('CheckCustomers Job: info');
                     Log::info($phone_number);
                     Log::info($info);

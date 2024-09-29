@@ -178,6 +178,7 @@
                   >
                     <th class="px-4 py-3">Số điện thoại</th>
                     <th class="px-4 py-3">Tài khoản chính</th>
+                    <th class="px-4 py-3">Tích hợp</th>
                     <th class="px-4 py-3">Loại thuê bao</th>
                     <th class="px-4 py-3">Gói cước TS</th>
                     <th class="px-4 py-3">Gói cước</th>
@@ -195,6 +196,14 @@
                         class="font-medium text-blue-600 dark:text-blue-500"
                       >
                         {{ vnd_format(customerInfo.core_balance) }}
+                      </button>
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                      <button
+                        @click="get_digishop_integrate(customerInfo)"
+                        class="font-medium text-blue-600 dark:text-blue-500"
+                      >
+                        {{ customerInfo.integrate }}
                       </button>
                     </td>
                     <td class="px-4 py-3 text-sm">
@@ -362,8 +371,10 @@ const reload_balance = (customer) => {
       }
     });
 };
+
 const customerInfo = reactive({
   core_balance: 0,
+  integration: [],
   goi_cuoc: [],
   goi_cuoc_ts: [],
   goi_data: [],
@@ -371,6 +382,25 @@ const customerInfo = reactive({
   tra_sau: null,
   is_request: 0,
 });
+const get_digishop_integrate = (customer) => {
+  axios
+    .get(route("digishop.customers.get_object", customer.phone))
+    .then(({ data }) => {
+      console.log(data);
+      // let resp = data.data.data;
+      // if (resp.length) {
+      //   customer.integration = resp[index]["REMAIN"];
+      // }
+    })
+    .catch(({ response }) => {
+      if (response) {
+        ElMessage({
+          type: "error",
+          message: response.data.msg,
+        });
+      }
+    });
+};
 const getDirectPhoneData = () => {
   if (search.direct.phone.length == 11) {
     axios

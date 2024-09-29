@@ -26,8 +26,10 @@ class OneBssClearAuth implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->account->expires_in = null;
-        $this->account->access_token = null;
-        $this->account->save();
+        if ($this->account->updated_at->addSeconds($this->account->expires_in) < now()) {
+            $this->account->expires_in = null;
+            $this->account->access_token = null;
+            $this->account->save();
+        }
     }
 }
