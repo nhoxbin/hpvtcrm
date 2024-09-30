@@ -67,9 +67,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // DigiShop
+    Route::get('digishop/customers/{phone_number}/get_object', [DigiShopController::class, 'get_object'])->name('digishop.customers.get_object');
     Route::group(['middleware' => 'can:view,App\Models\DigiShopCustomer'], function () {
         Route::get('digishop/export', ExportDigiShopController::class)->name('digishop.export');
-        Route::get('digishop/customers/{phone_number}/get_object', [DigiShopController::class, 'get_object'])->name('digishop.customers.get_object');
         Route::apiResource('digishop', DigiShopController::class)->only(['index', 'store', 'destroy']);
     });
 
