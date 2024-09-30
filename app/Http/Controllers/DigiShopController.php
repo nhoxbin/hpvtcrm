@@ -96,9 +96,9 @@ class DigiShopController extends Controller
         Auth::user()->digishop_customers()->delete();
     }
 
-    public function get_object(Request $request, string $phone)
+    public function get_object(string $phone)
     {
-        $account = DigiShopAccount::where(['status' => true, 'user_id' => $request->user()->created_by_user_id])->latest()->firstOrFail();
+        $account = DigiShopAccount::where(['status' => true, 'user_id' => Auth::user()->created_by_user_id ?? Auth::id()])->latest()->firstOrFail();
         $info = VNPTDigiShop::getInfo($phone, $account->access_token);
         if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
             $data = $info['data'];
