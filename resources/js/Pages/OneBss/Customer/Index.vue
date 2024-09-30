@@ -199,11 +199,16 @@
                       </button>
                     </td>
                     <td class="px-4 py-3 text-sm">
+                      <span
+                        v-if="typeof customerInfo.integration == 'object'"
+                        >{{ get_integration(customerInfo.integration) }}</span
+                      >
                       <button
+                        v-else
                         @click="get_digishop_integrate(customerInfo)"
                         class="font-medium text-blue-600 dark:text-blue-500"
                       >
-                        {{ customerInfo.integrate }}
+                        Click
                       </button>
                     </td>
                     <td class="px-4 py-3 text-sm">
@@ -298,6 +303,9 @@ const vnd_format = (num) => {
     currency: "VND",
   }).format(num);
 };
+const get_integration = (integrate) => {
+  return _.join(integrate, ", ");
+};
 const get_goi_cuoc_trasau = (goi_data) => {
   return _.join(
     _.map(goi_data, function (data) {
@@ -374,7 +382,7 @@ const reload_balance = (customer) => {
 
 const customerInfo = reactive({
   core_balance: 0,
-  integration: [],
+  integration: "",
   goi_cuoc: [],
   goi_cuoc_ts: [],
   goi_data: [],
@@ -386,11 +394,7 @@ const get_digishop_integrate = (customer) => {
   axios
     .get(route("digishop.customers.get_object", customer.phone))
     .then(({ data }) => {
-      console.log(data);
-      // let resp = data.data.data;
-      // if (resp.length) {
-      //   customer.integration = resp[index]["REMAIN"];
-      // }
+      customerInfo.integration = data.data;
     })
     .catch(({ response }) => {
       if (response) {

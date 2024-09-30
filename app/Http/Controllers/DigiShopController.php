@@ -98,14 +98,13 @@ class DigiShopController extends Controller
 
     public function get_object(Request $request, string $phone)
     {
-        $validated = $request->validate(['phone_number' => 'required|string|numeric']);
         $digishop = $request->user()->digishop_accounts()->where('status', true)->latest()->firstOrFail();
-        $info = VNPTDigiShop::getInfo($validated['phone_number'], $digishop->access_token);
+        $info = VNPTDigiShop::getInfo($phone, $digishop->access_token);
         if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
             $data = $info['data'];
             if ($data['errorCode'] == 0) {
                 $integration = [];
-                if (!empty($data['items']) && empty($data['items'][1])) {
+                if (!empty($data['items']) && !empty($data['items'][1])) {
                     $integration = array_column($data['items'][1]['list_product'], 'name'); // tích hợp
                 }
                 return response()->success('Success', $integration);
