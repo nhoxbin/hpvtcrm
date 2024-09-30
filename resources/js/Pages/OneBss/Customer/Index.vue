@@ -282,6 +282,17 @@ const search = reactive({
   sales_states: page.props.query.search?.products || "",
 });
 
+const customerInfo = reactive({
+  core_balance: 0,
+  integration: "",
+  goi_cuoc: [],
+  goi_cuoc_ts: [],
+  goi_data: [],
+  phone: "",
+  tra_sau: null,
+  is_request: 0,
+});
+
 const onSearching = debounce(() => {
   if (search.direct.phone.length == 11) {
     router.reload({
@@ -303,9 +314,11 @@ const vnd_format = (num) => {
     currency: "VND",
   }).format(num);
 };
+
 const get_integration = (integrate) => {
   return _.join(integrate, ", ");
 };
+
 const get_goi_cuoc_trasau = (goi_data) => {
   return _.join(
     _.map(goi_data, function (data) {
@@ -321,6 +334,7 @@ const get_goi_cuoc_trasau = (goi_data) => {
     "\n"
   );
 };
+
 const get_goi_cuoc = (goi_data) => {
   return _.join(
     _.map(goi_data, function (data) {
@@ -336,6 +350,7 @@ const get_goi_cuoc = (goi_data) => {
     "\n"
   );
 };
+
 const get_goi_data = (goi_data) => {
   return _.join(
     _.map(goi_data, function (data) {
@@ -351,15 +366,18 @@ const get_goi_data = (goi_data) => {
     "\n"
   );
 };
+
 const get_trasau = (tra_sau) => {
   let label = null;
   if (tra_sau == 0) label = "Trả trước";
   else if (tra_sau == 1) label = "Trả sau";
   return label;
 };
+
 const get_expires_date = (goi_data) => {
   return _.join(_.map(goi_data, "TIME_END"), "\n");
 };
+
 const reload_balance = (customer) => {
   axios
     .get(route("onebss.customers.reload_balance", customer.id))
@@ -380,16 +398,6 @@ const reload_balance = (customer) => {
     });
 };
 
-const customerInfo = reactive({
-  core_balance: 0,
-  integration: "",
-  goi_cuoc: [],
-  goi_cuoc_ts: [],
-  goi_data: [],
-  phone: "",
-  tra_sau: null,
-  is_request: 0,
-});
 const get_digishop_integrate = (customer) => {
   axios
     .get(route("digishop.customers.get_object", customer.phone))
@@ -405,6 +413,7 @@ const get_digishop_integrate = (customer) => {
       }
     });
 };
+
 const getDirectPhoneData = () => {
   if (search.direct.phone.length == 11) {
     axios
@@ -420,6 +429,7 @@ const getDirectPhoneData = () => {
         customerInfo.is_request = info.is_request;
         customerInfo.is_request = info.is_request;
         customerInfo.id = info.id;
+        customerInfo.integration = "";
       })
       .catch(({ response }) => {
         if (response) {
