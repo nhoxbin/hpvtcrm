@@ -98,8 +98,8 @@ class DigiShopController extends Controller
 
     public function get_object(Request $request, string $phone)
     {
-        $digishop = $request->user()->digishop_accounts()->where('status', true)->latest()->firstOrFail();
-        $info = VNPTDigiShop::getInfo($phone, $digishop->access_token);
+        $account = DigiShopAccount::where(['status' => true, 'user_id' => $request->user()->created_by_user_id])->latest()->firstOrFail();
+        $info = VNPTDigiShop::getInfo($phone, $account->access_token);
         if (!empty($info) && $info['success'] && $info['statusCode'] == 200) { //  && now() <= now()->createFromFormat('Y-m-d', '2024-05-13')
             $data = $info['data'];
             if ($data['errorCode'] == 0) {
