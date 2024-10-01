@@ -53,6 +53,8 @@
                     <th class="px-4 py-3">Số điện thoại</th>
                     <th class="px-4 py-3">Tài khoản chính</th>
                     <th class="px-4 py-3">Loại thuê bao</th>
+                    <th class="px-4 py-3">Gói cước TS</th>
+                    <th class="px-4 py-3">Gói cước</th>
                     <th class="px-4 py-3">Gói data</th>
                     <th class="px-4 py-3">Ngày hết hạn</th>
                     <th class="px-4 py-3">Trạng thái</th>
@@ -82,7 +84,13 @@
                       {{ get_trasau(customer.tra_sau) }}
                     </td>
                     <td class="px-4 py-3 text-sm">
-                      {{ get_goidata(customer.goi_data) }}
+                      {{ get_goi_data_to_string(customerInfo.goi_cuoc_ts) }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                      {{ get_goi_data_to_string(customerInfo.goi_cuoc) }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                      {{ get_goi_data_to_string(customer.goi_data) }}
                     </td>
                     <td class="px-4 py-3 text-sm">
                       {{ get_expires_date(customer.goi_data) }}
@@ -215,13 +223,13 @@
                       {{ get_trasau(customerInfo.tra_sau) }}
                     </td>
                     <td class="px-4 py-3 text-sm">
-                      {{ get_goi_cuoc_trasau(customerInfo.goi_cuoc_ts) }}
+                      {{ get_goi_data_to_string(customerInfo.goi_cuoc_ts) }}
                     </td>
                     <td class="px-4 py-3 text-sm">
-                      {{ get_goi_cuoc(customerInfo.goi_cuoc) }}
+                      {{ get_goi_data_to_string(customerInfo.goi_cuoc) }}
                     </td>
                     <td class="px-4 py-3 text-sm">
-                      {{ get_goi_data(customerInfo.goi_data) }}
+                      {{ get_goi_data_to_string(customerInfo.goi_data) }}
                     </td>
                   </tr>
                   <tr class="text-gray-700" v-else>
@@ -319,39 +327,7 @@ const get_integration = (integrate) => {
   return _.join(integrate, ", ");
 };
 
-const get_goi_cuoc_trasau = (goi_data) => {
-  return _.join(
-    _.map(goi_data, function (data) {
-      return (
-        "Tên gói: " +
-        data["PACKAGE_NAME"] +
-        ", dịch vụ: " +
-        data["SERVICES"] +
-        ", Ngày hết hạn: " +
-        data["TIME_END"]
-      );
-    }),
-    "\n"
-  );
-};
-
-const get_goi_cuoc = (goi_data) => {
-  return _.join(
-    _.map(goi_data, function (data) {
-      return (
-        "Tên gói: " +
-        data["PACKAGE_NAME"] +
-        ", dịch vụ: " +
-        data["SERVICES"] +
-        ", Ngày hết hạn: " +
-        data["TIME_END"]
-      );
-    }),
-    "\n"
-  );
-};
-
-const get_goi_data = (goi_data) => {
+const get_goi_data_to_string = (goi_data) => {
   return _.join(
     _.map(goi_data, function (data) {
       return (

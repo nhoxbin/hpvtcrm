@@ -78,9 +78,9 @@ class OnebssCheckCustomers extends Command
                                 'core_balance' => 0,
                                 'is_request' => 1,
                             ];
-                        } else {
-                            $delete[] = $info[0];
+                            return;
                         }
+                        $delete[] = $info[0];
                     } elseif ($info[1]['error_code'] == 'BSS-0000420') {
                         $delete[] = $info[0];
                     } elseif ($info[1]['error_code'] == 'BSS-00000401') {
@@ -88,8 +88,12 @@ class OnebssCheckCustomers extends Command
                     }
                 }
             );
+            OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
+            if (!empty($delete)) {
+                OneBssCustomer::whereIn('phone', $delete)->forceDelete();
+            }
 
-            if ($account->access_token && !empty($upsert)) {
+            /* if ($account->access_token && !empty($upsert)) {
                 Http::concurrent(
                     $concurrent,
                     function (Pool $pool) use ($customers, $token): Generator {
@@ -121,10 +125,8 @@ class OnebssCheckCustomers extends Command
                 );
                 $this->info(microtime(true) - $start);
                 OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
-            }
-            if (!empty($delete)) {
-                OneBssCustomer::whereIn('phone', $delete)->forceDelete();
-            }
+            } */
+
             $this->info('DONE');
         } else {
             $this->info('Access Token Expired!');
