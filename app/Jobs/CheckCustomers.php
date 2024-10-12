@@ -83,7 +83,8 @@ class CheckCustomers implements ShouldQueue
                                 'is_request' => true,
                             ];
                             if (empty($data['items'])) {
-                                $delete[] = $phone_number;
+                                // $delete[] = $phone_number;
+                                Log::info($phone_number);
                             } else {
                                 $top_5 = $data['items'][0] ?? []; // top 5
                                 $integration = $data['items'][1] ?? []; // tích hợp
