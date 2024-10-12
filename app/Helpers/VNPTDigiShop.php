@@ -27,14 +27,15 @@ class VNPTDigiShop
 
     public function getInfo(string $phone_number, string $access_token)
     {
-        return Curl::to(config('digishop.endpoint') . '/customer/get-info?' . http_build_query(['phone_number' => $phone_number]))
+        return Curl::to(config('digishop.endpoint') . '/customer/get-info?phone_number=' . $phone_number)
             ->withHeaders(['x-api-key' => config('digishop.apiKey')])
             ->withBearer($access_token)
             ->asJson(true)
             ->post();
     }
 
-    public function checkSession(string $access_token) {
+    public function checkSession(string $access_token)
+    {
         $notifications = Curl::to(config('digishop.endpoint') . '/notification/count-notification')
             ->withHeaders(['x-api-key' => config('digishop.apiKey')])
             ->withBearer($access_token)
