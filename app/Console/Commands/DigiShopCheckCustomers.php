@@ -31,14 +31,14 @@ class DigiShopCheckCustomers extends Command
     {
         DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'asc')->chunk(config('async.concurrency'), function ($jobs) {
             foreach ($jobs as $job) {
-                Async::run(function () use ($job) {
-                    Artisan::call('queue:work', [
-                        '--queue' => $job->queue,
-                        '--once' => true,
-                        '--tries' => 5,
-                        '--timeout' => 3600,
-                        '--stop-when-empty' => true,
-                    ]);
+                Artisan::call('queue:work', [
+                    '--queue' => $job->queue,
+                    '--once' => true,
+                    '--tries' => 5,
+                    '--timeout' => 3600,
+                    '--stop-when-empty' => true,
+                ]);
+                /* Async::run(function () use ($job) {
                     return Artisan::output();
                 }, [
                     'success' => function ($output) {
@@ -47,7 +47,7 @@ class DigiShopCheckCustomers extends Command
                     'error' => function (\Throwable $exception) {
                         // Log::info($exception->getMessage());
                     },
-                ]);
+                ]); */
             }
             Async::wait();
         });
