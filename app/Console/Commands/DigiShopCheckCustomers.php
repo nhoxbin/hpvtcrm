@@ -49,7 +49,7 @@ class DigiShopCheckCustomers extends Command
                     },
                 ]); */
             }
-            Async::wait();
+            // Async::wait();
         });
     }
 }
