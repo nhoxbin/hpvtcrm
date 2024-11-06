@@ -20,6 +20,8 @@ class OneBssCustomer extends Model
     protected $fillable = ['phone', 'tra_sau', 'core_balance', 'is_request', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'user_id', 'sales_state', 'sales_note', 'admin_note'];
 
     protected $casts = [
+        'goi_cuoc_ts' => 'json',
+        'goi_cuoc' => 'json',
         'goi_data' => 'json',
         'sales_state' => OneBssSalesStateEnum::class,
     ];
