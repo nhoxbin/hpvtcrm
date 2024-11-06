@@ -88,7 +88,7 @@ class OnebssCheckCustomers extends Command
                     }
                 }
             );
-            OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_data', 'core_balance', 'is_request']);
+            OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'core_balance', 'is_request']);
             if (!empty($delete)) {
                 OneBssCustomer::whereIn('phone', $delete)->forceDelete();
             }
