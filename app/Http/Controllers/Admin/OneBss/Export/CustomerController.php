@@ -55,7 +55,9 @@ class CustomerController extends Controller
         $sheet->setCellValue('A1', 'Số điện thoại');
         $sheet->setCellValue('B1', 'Tài khoản chính');
         $sheet->setCellValue('C1', 'Loại thuê bao');
-        $sheet->setCellValue('D1', 'Gói data');
+        $sheet->setCellValue('D1', 'Gói cước');
+        $sheet->setCellValue('E1', 'Gói cước TS');
+        $sheet->setCellValue('F1', 'Gói data');
 
         $customers = OneBssCustomer::where('is_request', 1)->get();
         // Add data
@@ -64,11 +66,23 @@ class CustomerController extends Controller
             $sheet->setCellValue('A' . $x, $customer->phone);
             $sheet->setCellValue('B' . $x, $customer->core_balance);
             $sheet->setCellValue('C' . $x, $customer->tra_sau ? 'Trả sau' : 'Trả trước');
+            if (!empty($customer->goi_cuoc)) {
+                $strData = implode("\n", array_map(function ($goi) {
+                    return 'Tên gói: ' . $goi['PACKAGE_NAME'] . ', dịch vụ: ' . $goi['SERVICES'] . ', Ngày hết hạn: ' . $goi['TIME_END'];
+                }, $customer->goi_cuoc));
+                $sheet->setCellValue('D' . $x, $strData);
+            }
+            if (!empty($customer->goi_cuoc_ts)) {
+                $strData = implode("\n", array_map(function ($goi) {
+                    return 'Tên gói: ' . $goi['PACKAGE_NAME'] . ', dịch vụ: ' . $goi['SERVICES'] . ', Ngày hết hạn: ' . $goi['TIME_END'];
+                }, $customer->goi_cuoc_ts));
+                $sheet->setCellValue('E' . $x, $strData);
+            }
             if (!empty($customer->goi_data)) {
                 $strData = implode("\n", array_map(function ($goi) {
                     return 'Tên gói: ' . $goi['PACKAGE_NAME'] . ', dịch vụ: ' . $goi['SERVICES'] . ', Ngày hết hạn: ' . $goi['TIME_END'];
                 }, $customer->goi_data));
-                $sheet->setCellValue('D' . $x, $strData);
+                $sheet->setCellValue('F' . $x, $strData);
             }
             $x++;
         }
