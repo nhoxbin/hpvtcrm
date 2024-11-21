@@ -64,7 +64,7 @@ class CustomerController extends Controller
             }
             OneBssCustomer::upsert($customers, ['phone'], ['created_at', 'updated_at']);
 
-            $accounts = $request->user()->onebss_accounts()->where('status', 1)->get();
+            $accounts = $request->user()->onebss_accounts()->whereNotNull('access_token')->get();
             $chunks = array_chunk($customers, 4);
 
             foreach ($chunks as $i => $chunk) {
