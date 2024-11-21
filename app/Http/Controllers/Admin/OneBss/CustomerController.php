@@ -22,9 +22,9 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         if (Auth::user()->is_super_admin) {
-            $session = OneBssAccount::getToken()->first();
+            $session = OneBssAccount::getActiveToken()->first();
         } else {
-            $session = $request->user()->onebss_account()->getToken()->first();
+            $session = $request->user()->onebss_accounts()->latest()->getActiveToken()->first();
         }
 
         $customers = new OneBssCustomer();

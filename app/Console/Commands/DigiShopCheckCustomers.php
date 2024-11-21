@@ -29,7 +29,7 @@ class DigiShopCheckCustomers extends Command
      */
     public function handle()
     {
-        DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orderBy('id', 'asc')->chunk(config('async.concurrency'), function ($jobs) {
+        DB::table('jobs')->where('queue', 'like', 'DigiShop%')->orWhere('queue', 'like', 'OneBss%')->orderBy('id', 'asc')->chunk(config('async.concurrency'), function ($jobs) {
             foreach ($jobs as $job) {
                 Artisan::call('queue:work', [
                     '--queue' => $job->queue,

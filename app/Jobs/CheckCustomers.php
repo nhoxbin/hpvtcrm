@@ -3,11 +3,13 @@
 namespace App\Jobs;
 
 use App\Events\DigiShopUnauth;
+use App\Events\OneBssUnauth;
 use App\Helpers\Facades\VNPTDigiShop;
 use App\Http\Mixins\HttpMixin;
 use App\Models\DigiShopAccount;
 use App\Models\DigiShopCustomer;
 use App\Models\OneBssAccount;
+use App\Models\OneBssCustomer;
 use Exception;
 use Generator;
 use Illuminate\Bus\Queueable;
@@ -39,6 +41,8 @@ class CheckCustomers implements ShouldQueue
     {
         if ($this->account instanceof DigiShopAccount) {
             $this->digishop();
+        } elseif ($this->account instanceof OneBssAccount) {
+            $this->onebss();
         }
     }
 
@@ -197,5 +201,55 @@ class CheckCustomers implements ShouldQueue
             }
         }, $numberOfAttempts); */
         Log::info($delete);
+    }
+
+    private function onebss()
+    {
+        $account = $this->account;
+        $token = $account->access_token;
+        $concurrent = 20;
+        // $customers = OneBssCustomer::withTrashed()->where('is_request', 0)->limit(6)->get();
+        $customers = $this->customers;
+        $upsert = [];
+        $delete = [];
+
+        Http::mixin(new HttpMixin());
+        Http::concurrent(
+            $concurrent,
+            function (Pool $pool) use ($customers, $token): Generator {
+                foreach ($customers as $customer) {
+                    sleep(5);
+                    yield $pool->async()->withToken($token)->post(config('onebss.endpoint') . '/ccbs/oneBss/app_tb_tc_thongtin', ['so_tb' => $customer['phone'], 'service' => 'SIM4G'])->then(fn($response) => [$customer['phone'], $response->json()]);
+                }
+            },
+            function ($info) use (&$upsert, &$delete, $account) {
+                if ($account->access_token == null) return;
+                if ($info[1]['error_code'] == 'BSS-00000000') {
+                    $data = $info[1]['data'];
+                    if (!empty($data['GOI_CUOC_TS']) || !empty($data['GOI_CUOC']) || !empty($data['GOI_DATA'])) {
+                        $upsert[$data['SO_TB']] = [
+                            'phone' => $data['SO_TB'],
+                            'tra_sau' => (string) $data['TRA_SAU'],
+                            'goi_cuoc_ts' => json_encode($data['GOI_CUOC_TS']),
+                            'goi_cuoc' => json_encode($data['GOI_CUOC']),
+                            'goi_data' => json_encode($data['GOI_DATA']),
+                            'core_balance' => 0,
+                            'is_request' => 1,
+                        ];
+                        return;
+                    }
+                    $delete[] = $info[0];
+                } elseif ($info[1]['error_code'] == 'BSS-00000500') { // gọi quá nhiều
+                } elseif ($info[1]['error_code'] == 'BSS-0000420') {
+                    $delete[] = $info[0];
+                } elseif ($info[1]['error_code'] == 'BSS-00000401') {
+                    event(new OneBssUnauth($account));
+                }
+            }
+        );
+        OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'core_balance', 'is_request']);
+        if (!empty($delete)) {
+            OneBssCustomer::whereIn('phone', $delete)->forceDelete();
+        }
     }
 }

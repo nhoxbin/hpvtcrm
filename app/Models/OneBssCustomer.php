@@ -17,7 +17,7 @@ class OneBssCustomer extends Model
     use SoftDeletes;
     use HasFactory;
 
-    protected $fillable = ['phone', 'tra_sau', 'core_balance', 'is_request', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'user_id', 'sales_state', 'sales_note', 'admin_note'];
+    protected $fillable = ['phone', 'tra_sau', 'core_balance', 'is_request', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'user_id', 'checked_by_user_id', 'sales_state', 'sales_note', 'admin_note'];
 
     protected $casts = [
         'goi_cuoc_ts' => 'json',
@@ -38,6 +38,11 @@ class OneBssCustomer extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function checked_by()
+    {
+        return $this->belongsTo(User::class, 'checked_by_user_id');
     }
 
     public function search(Request $request): Builder
@@ -63,7 +68,7 @@ class OneBssCustomer extends Model
                     $query->where('tra_sau', $search);
                 }
             })
-            ->with(['user'])
+            ->with(['user', 'checked_by'])
             ->orderBy('id', 'asc');
     }
 }

@@ -49,12 +49,12 @@ class CustomerController extends Controller
                     'user_id' => Auth::id()
                 ];
             }
+            DigiShopCustomer::upsert($customers, ['phone_number', 'user_id'], ['created_at', 'updated_at']);
 
             $accounts = $request->user()->digishop_accounts()->where('status', 1)->get();
             $chunks = array_chunk($customers, 50);
 
             foreach ($chunks as $i => $chunk) {
-                DigiShopCustomer::upsert($chunk, ['phone_number', 'user_id'], ['created_at', 'updated_at']);
                 $queueName = 'DigiShop_' . $i . '_' . now()->getTimestamp();
                 dispatch(new CheckCustomers($accounts[$i % count($accounts)], $chunk))->onQueue($queueName);
             }

@@ -13,7 +13,7 @@ class OneBssAccount extends Model
 
     protected $fillable = ['username', 'expires_in', 'access_token', 'user_id'];
 
-    public function scopeGetToken($query)
+    public function scopeGetActiveToken($query)
     {
         return $query->whereNotNull('access_token')->latest();
     }

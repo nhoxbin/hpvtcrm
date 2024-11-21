@@ -116,7 +116,7 @@ class CustomerController extends Controller
 
     public function reload_balance(OneBssCustomer $customer)
     {
-        $account = OneBssAccount::getToken()->firstOrFail();
+        $account = OneBssAccount::getActiveToken()->firstOrFail();
         $balance = VNPTOneBss::getBalance($customer->phone, $account->access_token);
         if ($balance) {
             if ($balance['error_code'] == 'BSS-00000000') {
@@ -136,7 +136,7 @@ class CustomerController extends Controller
 
     public function get_direct_phone_data(string $phone)
     {
-        $account = OneBssAccount::getToken()->first();
+        $account = OneBssAccount::getActiveToken()->first();
         if ($account) {
             $info = VNPTOneBss::getInfo($phone, $account->access_token);
             if ($info) {
@@ -154,6 +154,7 @@ class CustomerController extends Controller
                             'goi_data' => $data['GOI_DATA'],
                             'core_balance' => 0,
                             'is_request' => 1,
+                            'checked_by_user_id' => Auth::id(),
                         ];
                         $customer = OneBssCustomer::updateOrCreate(['phone' => $info['phone']], $info);
                         $info['id'] = $customer->id;

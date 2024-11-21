@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\OneBss\Import;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\CheckCustomers;
 use App\Models\OneBssCustomer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -49,23 +50,30 @@ class CustomerController extends Controller
                 // bỏ qua ô đầu
                 if ($key == 0) continue;
                 if (substr($row[0], 0, 1) == '0') {
-                    $row[0] = substr($row[0], 1, strlen($row[0])-1);
+                    $row[0] = substr($row[0], 1, strlen($row[0]) - 1);
                 }
                 $phone = str_pad($row[0], 11, '84', STR_PAD_LEFT);
                 if (!in_array($phone, $phones)) {
                     $phones[] = $phone;
                     $customers[] = [
                         'phone' => $phone,
-                        'is_request' => 0,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
                 }
             }
             OneBssCustomer::upsert($customers, ['phone'], ['created_at', 'updated_at']);
+
+            $accounts = $request->user()->onebss_accounts()->where('status', 1)->get();
+            $chunks = array_chunk($customers, 4);
+
+            foreach ($chunks as $i => $chunk) {
+                $queueName = 'OneBss_' . $i . '_' . now()->getTimestamp();
+                dispatch(new CheckCustomers($accounts[$i % count($accounts)], $chunk))->delay(now()->addSeconds($i * 60 * 2))->onQueue($queueName);
+            }
             DB::commit();
             return redirect()->route('admin.onebss.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
             return redirect()->route('admin.onebss.customers.index')->withError('Lỗi!!! Vui lòng liên hệ Admin.');
