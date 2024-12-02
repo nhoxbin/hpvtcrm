@@ -114,6 +114,8 @@
                 <th class="px-4 py-3">Gói cước</th>
                 <th class="px-4 py-3">Gói data</th>
                 <th class="px-4 py-3">Gói</th>
+                <th class="px-4 py-3">Ngày hết hạn</th>
+                <th class="px-4 py-3">TÍch hợp</th>
                 <th class="px-4 py-3">Người làm việc</th>
                 <th class="px-4 py-3">Người check</th>
                 <th class="px-4 py-3">Trạng thái</th>
@@ -145,6 +147,8 @@
                   {{ get_goi_data_to_string(customer.goi_data) }}
                 </td>
                 <td class="px-4 py-3 text-sm">{{ customer.goi }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.expired_at }}</td>
+                <td class="px-4 py-3 text-sm">{{ customer.integration }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
                 <td class="px-4 py-3 text-sm">
                   {{ customer.checked_by?.name }}
