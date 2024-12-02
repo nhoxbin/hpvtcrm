@@ -50,7 +50,7 @@ class CustomerController extends Controller
                         'goi' => !empty($row[3]) ? $row[3] : null,
                         'expired_at' => !empty($row[4]) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[4])->format('Y-m-d') : null,
                         'integration' => !empty($row[5]) ? $row[5] : null,
-                        'is_request' => 1,
+                        'is_request' => !empty($row[3]) ? 1 : 0,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
