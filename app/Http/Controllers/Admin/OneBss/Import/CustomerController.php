@@ -17,18 +17,6 @@ class CustomerController extends Controller
      */
     public function __invoke(Request $request)
     {
-        /* if (in_array('all', $request->user_id)) {
-            // chia đều tất cả user
-            if ($request->user()->is_admin) {
-                $users = User::all();
-            } else {
-                $users = $request->user()->created_users;
-            }
-        } else {
-            // chọn nhiều user
-            $users = User::whereIn('id', $request->user_id)->get();
-        } */
-
         DB::beginTransaction();
         try {
             $excel = $request->file('excel');
@@ -57,12 +45,18 @@ class CustomerController extends Controller
                     $phones[] = $phone;
                     $customers[] = [
                         'phone' => $phone,
+                        'core_balance' => $row[1],
+                        'tra_sau' => $row[2],
+                        'goi' => !empty($row[3]) ? $row[3] : null,
+                        'expired_at' => !empty($row[4]) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[4])->format('Y-m-d') : null,
+                        'integration' => !empty($row[5]) ? $row[5] : null,
+                        'is_request' => 1,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
                 }
             }
-            OneBssCustomer::upsert($customers, ['phone'], ['created_at', 'updated_at']);
+            OneBssCustomer::upsert($customers, ['phone'], ['tra_sau', 'goi', 'expired_at', 'integration', 'is_request', 'created_at', 'updated_at']);
 
             $accounts = $request->user()->onebss_accounts()->whereNotNull('access_token')->get();
             $chunks = array_chunk($customers, 4);

@@ -56,6 +56,7 @@
                     <th class="px-4 py-3">Gói cước TS</th>
                     <th class="px-4 py-3">Gói cước</th>
                     <th class="px-4 py-3">Gói data</th>
+                    <th class="px-4 py-3">Gói</th>
                     <th class="px-4 py-3">Ngày hết hạn</th>
                     <th class="px-4 py-3">Trạng thái</th>
                     <th class="px-4 py-3">Sales Ghi chú</th>
@@ -95,6 +96,7 @@
                     <td class="px-4 py-3 text-sm">
                       {{ get_expires_date(customer.goi_data) }}
                     </td>
+                    <td class="px-4 py-3 text-sm">{{ customer.goi }}</td>
                     <td class="px-4 py-3 text-sm">{{ customer.state }}</td>
                     <td class="px-4 py-3 text-sm">{{ customer.sales_note }}</td>
                     <td class="px-4 py-3 text-sm">{{ customer.admin_note }}</td>
