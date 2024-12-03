@@ -56,6 +56,7 @@
                     <th class="px-4 py-3">Gói cước TS</th>
                     <th class="px-4 py-3">Gói cước</th>
                     <th class="px-4 py-3">Gói data</th>
+                    <th class="px-4 py-3">Ngày hết hạn gói data</th>
                     <th class="px-4 py-3">Gói</th>
                     <th class="px-4 py-3">Ngày hết hạn</th>
                     <th class="px-4 py-3">Tích hợp</th>
