@@ -59,9 +59,9 @@ class CustomerController extends Controller
             OneBssCustomer::upsert($customers, ['phone'], ['tra_sau', 'goi', 'expired_at', 'integration', 'is_request', 'created_at', 'updated_at']);
 
             $accounts = $request->user()->onebss_accounts()->whereNotNull('access_token')->get();
-            $chunks = array_chunk(array_map(function ($customer) {
-                return $customer['is_request'] == 1;
-            }, $customers), 4);
+            $chunks = array_chunk(array_filter($customers, function ($k, $v) {
+                return $k == 'is_request' && $v == 1;
+            }, ARRAY_FILTER_USE_BOTH), 4);
 
             foreach ($chunks as $i => $chunk) {
                 $queueName = 'OneBss_' . $i . '_' . now()->getTimestamp();
