@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\OneBss;
 
+use App\Enums\SalesStateEnum;
 use App\Http\Controllers\Controller;
 use App\Models\OneBssAccount;
 use App\Models\OneBssCustomer;
@@ -32,6 +33,7 @@ class CustomerController extends Controller
             'users' => $request->user()->created_users()->role(['OneBss Admin', 'OneBss Sales'])->get(),
             'customers' => $customers->search($request)->paginate()->withQueryString(),
             'process_customers' => DB::select("call process_customers('onebss', {$request->user()->id})")[0],
+            'sales_states' => SalesStateEnum::trans(),
             'auth_status' => $session ? 'Phiên làm việc OneBss đến: ' . $session->updated_at->addSeconds($session->expires_in)->format('d/m/Y \l\ú\c H:i:s') : 'Phiên làm việc OneBss đã hết hiệu lực, Vui lòng đăng nhập!',
             'msg' => session('msg'),
             'error' => session('error'),

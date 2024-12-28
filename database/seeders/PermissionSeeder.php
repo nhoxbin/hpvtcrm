@@ -34,6 +34,7 @@ class PermissionSeeder extends Seeder
             'Export Excel OneBss',
             'View Customer OneBss',
             'Delete Customer OneBss',
+            'Check OneBss',
         ];
         $insertPermissions = [];
         foreach ($permissions as $permission) {
@@ -44,7 +45,7 @@ class PermissionSeeder extends Seeder
                 'updated_at' => now(),
             ];
         }
-    	DB::table('permissions')->insert($insertPermissions);
+        DB::table('permissions')->insert($insertPermissions);
 
         $roles = [
             'Super Admin',
@@ -59,7 +60,7 @@ class PermissionSeeder extends Seeder
                 'name' => $role,
             ];
         }
-    	DB::table('roles')->insert($insertRoles);
+        DB::table('roles')->insert($insertRoles);
         // roles
         Role::firstWhere('name', 'OneBss Admin')->givePermissionTo(['Login OneBss', 'Import Excel OneBss', 'Export Excel OneBss', 'View Customer OneBss', 'Delete Customer OneBss']);
         Role::firstWhere('name', 'OneBss Sales')->givePermissionTo(['View Customer OneBss']);
@@ -69,7 +70,7 @@ class PermissionSeeder extends Seeder
         User::firstWhere('username', 'tymcrm')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
         User::firstWhere('username', 'nhoxbin')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
 
-        User::firstWhere('username', 'hpvt')->syncRoles(['Admin', 'OneBss Admin']);
+        User::firstWhere('username', 'hpvt')->syncRoles(['Super Admin', 'Admin', 'OneBss Admin']);
         User::firstWhere('username', 'hpvt')->givePermissionTo(['Read DigiShop', 'Write DigiShop', 'Edit DigiShop', 'Delete DigiShop']);
         User::firstWhere('username', 'nhoxbin')->syncRoles(['Super Admin', 'Admin', 'OneBss Admin']);
     }

@@ -32,7 +32,6 @@ class CustomerController extends Controller
             $worksheet = $spreadsheet->getSheet(0)->toArray();
 
             $customers = [];
-            $phones = [];
             foreach ($worksheet as $key => $row) {
                 if (empty($row[0])) break;
                 // bỏ qua ô đầu
@@ -41,31 +40,29 @@ class CustomerController extends Controller
                     $row[0] = substr($row[0], 1, strlen($row[0]) - 1);
                 }
                 $phone = str_pad($row[0], 11, '84', STR_PAD_LEFT);
-                if (!in_array($phone, $phones)) {
-                    $phones[] = $phone;
-                    $customers[] = [
-                        'phone' => $phone,
-                        'core_balance' => $row[1],
-                        'tra_sau' => $row[2],
-                        'goi' => !empty($row[3]) ? $row[3] : null,
-                        'expired_at' => !empty($row[4]) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[4])->format('Y-m-d') : null,
-                        'integration' => !empty($row[5]) ? $row[5] : null,
-                        'is_request' => !empty($row[3]) ? 1 : 0,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
-                }
+                $customers[] = [
+                    'phone' => $phone,
+                    'core_balance' => $row[1],
+                    'tra_sau' => $row[2],
+                    'goi' => !empty($row[3]) ? $row[3] : null,
+                    'expired_at' => !empty($row[4]) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[4])->format('Y-m-d') : null,
+                    'integration' => !empty($row[5]) ? $row[5] : null,
+                    'is_request' => !empty($row[3]) ? 1 : 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
             OneBssCustomer::upsert($customers, ['phone'], ['tra_sau', 'goi', 'expired_at', 'integration', 'is_request', 'created_at', 'updated_at']);
 
             $accounts = $request->user()->onebss_accounts()->whereNotNull('access_token')->get();
-            $chunks = array_chunk(array_filter($customers, function ($k, $v) {
-                return $k == 'is_request' && $v == 1;
-            }, ARRAY_FILTER_USE_BOTH), 4);
+            $chunks = array_chunk(array_filter($customers, function ($customer) {
+                return $customer['is_request'] == 0;
+            }), 4);
 
             foreach ($chunks as $i => $chunk) {
                 $queueName = 'OneBss_' . $i . '_' . now()->getTimestamp();
-                dispatch(new CheckCustomers($accounts[$i % count($accounts)], $chunk))->delay(now()->addSeconds($i * 60 * 2))->onQueue($queueName);
+                // 1 tài khoản check 4 thuê bao
+                dispatch(new CheckCustomers($accounts[$i % count($accounts)], $chunk))->delay(now()->addSeconds(($i * 60 * 2) / count($accounts)))->onQueue($queueName);
             }
             DB::commit();
             return redirect()->route('admin.onebss.customers.index')->with('msg', 'Đã tải dữ liệu khách hàng lên hệ thống.');

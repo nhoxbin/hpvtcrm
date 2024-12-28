@@ -50,6 +50,9 @@ class OneBssCustomer extends Model
         $goi_data = !empty($request->only('goi_data')) ? $request->only('goi_data')['goi_data'] : null;
         $expires_in = !empty($request->only('expires_in')) ? $request->only('expires_in')['expires_in'] : null;
         $tra_sau = !empty($request->only('tra_sau')) ? $request->only('tra_sau')['tra_sau'] : null;
+        $worked_user = !empty($request->only('worked_user')) ? $request->only('worked_user')['worked_user'] : null;
+        $checked_by_user = !empty($request->only('checked_by_user')) ? $request->only('checked_by_user')['checked_by_user'] : null;
+        $phone = !empty($request->only('phone')) ? $request->only('phone')['phone'] : null;
         return $this->query()
             ->when($goi_data, function ($query, $search) {
                 foreach ($search as $goi_data) {
@@ -67,6 +70,15 @@ class OneBssCustomer extends Model
                 if (count($search) == 1) {
                     $query->where('tra_sau', $search);
                 }
+            })
+            ->when($worked_user, function ($query, $search) {
+                $query->where('user_id', $search);
+            })
+            ->when($checked_by_user, function ($query, $search) {
+                $query->where('checked_by_user_id', $search);
+            })
+            ->when($phone, function ($query, $search) {
+                $query->where('phone', $search);
             })
             ->with(['user', 'checked_by'])
             ->orderBy('id', 'asc');

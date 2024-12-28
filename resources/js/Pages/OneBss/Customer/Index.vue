@@ -11,7 +11,7 @@
     <div class="py-12">
       <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
         <div class="p-4 bg-white rounded-lg shadow-xs">
-          <div class="relative mb-4 flex flex-wrap items-stretch">
+          <!-- <div class="relative mb-4 flex flex-wrap items-stretch">
             <input
               type="text"
               class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
@@ -42,7 +42,111 @@
                 <line x1="21" y1="21" x2="15" y2="15" />
               </svg>
             </button>
-          </div>
+          </div> -->
+          <form @submit.prevent="onSearching()">
+            <div class="grid gap-6 mb-6 md:grid-cols-4">
+              <div>
+                <label
+                  for="phone"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Số điện thoại</label
+                >
+                <input
+                  type="text"
+                  id="last_name"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  v-model="search.phone"
+                  placeholder="VD: 849xxxxxxxx"
+                />
+              </div>
+              <div>
+                <label
+                  for="expires_in"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Trước ngày hết hạn</label
+                >
+                <input
+                  type="text"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Trước ngày hết hạn"
+                  aria-label="Trước ngày hết hạn"
+                  v-model="search.expires_in"
+                />
+              </div>
+              <div>
+                <label
+                  for="sales_state"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Trạng thái</label
+                >
+                <select
+                  id="sales_state"
+                  v-model="search.sales_state"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                >
+                  <option value="0">Chọn trạng thái</option>
+                  <option
+                    v-for="(state, key) in sales_states"
+                    :key="key"
+                    :value="key"
+                  >
+                    {{ state }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="sales_note"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >Sales ghi chú</label
+                >
+                <input
+                  type="text"
+                  id="last_name"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  v-model="search.sales_note"
+                />
+              </div>
+            </div>
+            <div class="mb-6">
+              <label
+                for="goi_data"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Gói</label
+              >
+              <vue3-tags-input
+                :tags="search.goi_data"
+                @on-tags-changed="(newTags) => (search.goi_data = newTags)"
+              />
+            </div>
+            <!-- <button
+              class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
+              data-te-ripple-init
+              type="submit"
+            >
+              <svg
+                class="h-8 w-8 text-red-500"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <circle cx="10" cy="10" r="7" />
+                <line x1="21" y1="21" x2="15" y2="15" />
+              </svg>
+            </button> -->
+            <button
+              type="submit"
+              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Tìm kiếm
+            </button>
+          </form>
           <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
             <div class="overflow-x-auto w-full">
               <table class="w-full whitespace-no-wrap">
@@ -134,7 +238,7 @@
                     </td>
                   </tr>
                   <tr v-if="!customers.total">
-                    <td class="px-4 py-3 text-sm text-center" colspan="9">
+                    <td class="px-4 py-3 text-sm text-center" colspan="14">
                       Không có dữ liệu
                     </td>
                   </tr>
@@ -159,7 +263,7 @@
               class="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
               placeholder="Tìm kiếm"
               aria-label="Tìm kiếm"
-              v-model="search.direct.phone"
+              v-model="directSearch.phone"
               @input="getDirectPhoneData()"
             />
             <button
@@ -270,6 +374,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Pagination from "@/Components/Admin/Pagination.vue";
 import EditCustomerForm from "./Partials/EditCustomerForm.vue";
+import Vue3TagsInput from "vue3-tags-input";
 import { Head, router, useForm, usePage } from "@inertiajs/vue3";
 import { reactive, ref } from "vue";
 import "element-plus/es/components/message/style/css";
@@ -291,11 +396,14 @@ const props = defineProps({
 const page = usePage();
 
 const search = reactive({
-  direct: {
-    phone: page.props.query.search?.direct?.phone || "",
-  },
   phone: page.props.query.search?.phone || "",
-  sales_states: page.props.query.search?.products || "",
+  sales_state: page.props.query.search?.sales_state || 0,
+  sales_note: page.props.query.search?.sales_note || "",
+  goi_data: page.props.query.search?.goi_data || [],
+});
+
+const directSearch = reactive({
+  phone: page.props.query.search?.direct?.phone || "",
 });
 
 const customerInfo = reactive({
@@ -310,18 +418,14 @@ const customerInfo = reactive({
 });
 
 const onSearching = debounce(() => {
-  if (search.direct.phone.length == 11) {
-    router.reload({
-      preserveState: true,
-      preserveScroll: true,
-      only: ["customers"],
-      data: {
-        search: {
-          phone: search.direct.phone,
-        },
-      },
-    });
-  }
+  router.reload({
+    preserveState: true,
+    preserveScroll: true,
+    only: ["customers"],
+    data: {
+      search,
+    },
+  });
 }, 500);
 
 const vnd_format = (num) => {
@@ -399,9 +503,9 @@ const get_digishop_integrate = (customer) => {
 };
 
 const getDirectPhoneData = () => {
-  if (search.direct.phone.length == 11) {
+  if (directSearch.phone.length == 11) {
     axios
-      .get(route("onebss.customers.get_direct_phone_data", search.direct.phone))
+      .get(route("onebss.customers.get_direct_phone_data", directSearch.phone))
       .then(({ data }) => {
         let info = data.data.info;
         customerInfo.core_balance = info.core_balance;

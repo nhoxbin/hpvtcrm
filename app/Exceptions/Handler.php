@@ -64,7 +64,9 @@ class Handler extends ExceptionHandler
             $response['exception'] = get_class($e); // Reflection might be better here
             $response['message'] = $e->getMessage();
             $response['trace'] = $e->getTraceAsString();
-            Log::error($response);
+            if (!$e instanceof HttpResponseException) {
+                Log::error($response);
+            }
 
             if ($this->shouldReturnJson($request, $e)) {
                 if (config('app.debug')) {

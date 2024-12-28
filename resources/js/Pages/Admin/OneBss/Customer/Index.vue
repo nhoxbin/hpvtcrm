@@ -33,55 +33,146 @@
           }}</label
         >
       </div>
-
-      <div class="relative mb-4 flex flex-wrap items-stretch">
-        <div class="m-2">
-          <div class="flex items-center mb-4">
-            <input
-              id="default-checkbox"
-              type="checkbox"
-              :value="0"
-              v-model="formSearch.tra_sau"
-              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-            />
+      <!-- <div class="relative mb-4 flex flex-wrap items-stretch"> -->
+      <form @submit.prevent="onSearching()">
+        <div class="grid gap-6 mb-6 md:grid-cols-3">
+          <div>
             <label
-              for="default-checkbox"
-              class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >Trả trước</label
+              for="tra_sau"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Loại thuê bao</label
             >
+            <div class="m-2">
+              <div class="flex items-center mb-4">
+                <input
+                  id="tra_truoc"
+                  type="checkbox"
+                  value="0"
+                  v-model="formSearch.tra_sau"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  for="tra_truoc"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Trả trước</label
+                >
+              </div>
+              <div class="flex items-center">
+                <input
+                  id="tra_sau"
+                  type="checkbox"
+                  value="1"
+                  v-model="formSearch.tra_sau"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  for="tra_sau"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Trả sau</label
+                >
+              </div>
+            </div>
           </div>
-          <div class="flex items-center">
-            <input
-              id="checked-checkbox"
-              type="checkbox"
-              :value="1"
-              v-model="formSearch.tra_sau"
-              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-            />
+          <div>
             <label
-              for="checked-checkbox"
-              class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >Trả sau</label
+              for="phone"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Số điện thoại</label
             >
+            <input
+              type="text"
+              id="phone"
+              placeholder="VD: 849xxxxxxxx"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              v-model="formSearch.phone"
+            />
+          </div>
+          <div>
+            <label
+              for="expires_in"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Trước ngày hết hạn</label
+            >
+            <input
+              type="text"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Trước ngày hết hạn"
+              aria-label="Trước ngày hết hạn"
+              v-model="formSearch.expires_in"
+            />
+          </div>
+
+          <div>
+            <label
+              for="checked_by_user"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Người làm việc</label
+            >
+            <select
+              id="checked_by_user"
+              v-model="formSearch.checked_by_user"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option value="0">Chọn thành viên</option>
+              <option v-for="user in users" :key="user.id">
+                {{ user.name }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="email"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Người check</label
+            >
+            <select
+              id="checked_by_user"
+              v-model="formSearch.checked_by_user"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option value="0">Chọn thành viên</option>
+              <option v-for="user in users" :key="user.id">
+                {{ user.name }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="state"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Trạng thái</label
+            >
+            <select
+              id="sales_state"
+              v-model="formSearch.sales_state"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option value="0">Chọn thành viên</option>
+              <option
+                v-for="(state, key) in sales_states"
+                :key="key"
+                :value="key"
+              >
+                {{ state }}
+              </option>
+            </select>
           </div>
         </div>
-        <vue3-tags-input
-          :tags="formSearch.goi_data"
-          @on-tags-changed="(newTags) => (formSearch.goi_data = newTags)"
-        />
-        <input
-          type="text"
-          class="relative m-1 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-black dark:placeholder:text-neutral-200 dark:focus:border-primary"
-          placeholder="Trước ngày hết hạn"
-          aria-label="Trước ngày hết hạn"
-          v-model="formSearch.expires_in"
-          @input="onSearching()"
-        />
-        <button
+        <div class="mb-6">
+          <label
+            for="email"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >Gói</label
+          >
+          <vue3-tags-input
+            :tags="formSearch.goi_data"
+            @on-tags-changed="(newTags) => (formSearch.goi_data = newTags)"
+          />
+        </div>
+        <!-- <button
           class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
           data-te-ripple-init
-          type="button"
-          @click="onSearching()"
+          type="submit"
         >
           <svg
             class="h-8 w-8 text-red-500"
@@ -98,14 +189,21 @@
             <circle cx="10" cy="10" r="7" />
             <line x1="21" y1="21" x2="15" y2="15" />
           </svg>
+        </button> -->
+        <button
+          type="submit"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Tìm kiếm
         </button>
-      </div>
+      </form>
+      <!-- </div> -->
       <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
-        <div class="overflow-x-auto w-full">
-          <table class="w-full whitespace-no-wrap">
+        <div class="relative overflow-x-auto">
+          <table class="w-full table-fixed">
             <thead>
               <tr
-                class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase bg-gray-50 border-b"
+                class="text-xs font-semibold text-left text-gray-500 uppercase bg-gray-50 border-b"
               >
                 <th class="px-4 py-3">Số điện thoại</th>
                 <th class="px-4 py-3">Tài khoản chính</th>
@@ -128,7 +226,7 @@
               <tr
                 v-for="customer in customers.data"
                 :key="customer.id"
-                class="text-gray-700"
+                class="text-gray-700 break-words"
               >
                 <td class="px-4 py-3 text-sm">{{ customer.phone }}</td>
                 <td class="px-4 py-3 text-sm">
@@ -148,7 +246,9 @@
                 </td>
                 <td class="px-4 py-3 text-sm">{{ customer.goi }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.expired_at }}</td>
-                <td class="px-4 py-3 text-sm">{{ customer.integration }}</td>
+                <td class="px-4 py-3 text-sm">
+                  {{ customer.integration }}
+                </td>
                 <td class="px-4 py-3 text-sm">{{ customer.user?.name }}</td>
                 <td class="px-4 py-3 text-sm">
                   {{ customer.checked_by?.name }}
@@ -288,6 +388,10 @@ const props = defineProps({
   error: String,
   process_customers: Object,
   auth_status: String,
+  sales_states: {
+    type: Object,
+    required: true,
+  },
 });
 
 if (props.msg) {
@@ -307,6 +411,10 @@ const page = usePage();
 const tra_sau = ref(page.props.query.tra_sau || []);
 const formSearch = useForm({
   tra_sau: tra_sau,
+  worked_user: 0,
+  checked_by_user: 0,
+  sales_state: 0,
+  phone: page.props.query.phone || "",
   goi_data: page.props.query.goi_data || [],
   expires_in: page.props.query.expires_in || "",
 });
