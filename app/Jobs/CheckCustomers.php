@@ -239,7 +239,7 @@ class CheckCustomers implements ShouldQueue
                     }
                     $delete[] = $info[0];
                 } elseif ($info[1]['error_code'] == 'BSS-00000500') { // gọi quá nhiều
-                    Log::info('Gọi quá nhiều: ' . $data['SO_TB']);
+                    Log::info('Gọi quá nhiều: ' . $info[0]);
                 } elseif ($info[1]['error_code'] == 'BSS-0000420') {
                     $delete[] = $info[0];
                 } elseif ($info[1]['error_code'] == 'BSS-00000401') {
