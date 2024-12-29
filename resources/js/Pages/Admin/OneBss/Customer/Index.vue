@@ -104,24 +104,24 @@
 
           <div>
             <label
-              for="checked_by_user"
+              for="worked_user"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Người làm việc</label
             >
             <select
-              id="checked_by_user"
-              v-model="formSearch.checked_by_user"
+              id="worked_user"
+              v-model="formSearch.worked_user"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               <option value="0">Chọn thành viên</option>
-              <option v-for="user in users" :key="user.id">
+              <option v-for="user in users" :key="user.id" :value="user.id">
                 {{ user.name }}
               </option>
             </select>
           </div>
           <div>
             <label
-              for="email"
+              for="checked_by_user"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Người check</label
             >
@@ -131,14 +131,14 @@
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               <option value="0">Chọn thành viên</option>
-              <option v-for="user in users" :key="user.id">
+              <option v-for="user in users" :key="user.id" :value="user.id">
                 {{ user.name }}
               </option>
             </select>
           </div>
           <div>
             <label
-              for="state"
+              for="sales_state"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Trạng thái</label
             >

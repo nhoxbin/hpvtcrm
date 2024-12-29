@@ -508,18 +508,26 @@ const getDirectPhoneData = () => {
       .get(route("onebss.customers.get_direct_phone_data", directSearch.phone))
       .then(({ data }) => {
         let info = data.data.info;
-        customerInfo.core_balance = info.core_balance;
-        customerInfo.goi_cuoc = info.goi_cuoc;
-        customerInfo.goi_cuoc_ts = info.goi_cuoc_ts;
-        customerInfo.goi_data = info.goi_data;
-        customerInfo.phone = info.phone;
-        customerInfo.tra_sau = info.tra_sau;
-        customerInfo.is_request = info.is_request;
-        customerInfo.is_request = info.is_request;
-        customerInfo.id = info.id;
-        customerInfo.integration = "";
+        if (info["error_code"] != "BSS-00000500") {
+          customerInfo.core_balance = info.core_balance;
+          customerInfo.goi_cuoc = info.goi_cuoc;
+          customerInfo.goi_cuoc_ts = info.goi_cuoc_ts;
+          customerInfo.goi_data = info.goi_data;
+          customerInfo.phone = info.phone;
+          customerInfo.tra_sau = info.tra_sau;
+          customerInfo.is_request = info.is_request;
+          customerInfo.is_request = info.is_request;
+          customerInfo.id = info.id;
+          customerInfo.integration = "";
+        } else {
+          ElMessage({
+            type: "error",
+            message: info["message"],
+          });
+        }
       })
       .catch(({ response }) => {
+        console.log(response);
         if (response) {
           ElMessage({
             type: "error",

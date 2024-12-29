@@ -6,6 +6,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -67,12 +68,19 @@ class Handler extends ExceptionHandler
             if (!$e instanceof HttpResponseException) {
                 Log::error($response);
             }
-
             if ($this->shouldReturnJson($request, $e)) {
                 if (config('app.debug')) {
-                    return response()->error($e->getMessage());
+                    if ($e instanceof HttpResponseException) {
+                        return response()->error($e->getResponse()?->original);
+                    } else {
+                        return response()->error($e->getMessage());
+                    }
                 } else {
-                    return response()->error('Có lỗi xảy ra!');
+                    if ($e instanceof HttpResponseException) {
+                        return response()->error($e->getResponse()?->original);
+                    } else {
+                        return response()->error('Có lỗi xảy ra!');
+                    }
                 }
             }
         }
