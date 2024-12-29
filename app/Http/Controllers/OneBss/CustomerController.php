@@ -117,7 +117,7 @@ class CustomerController extends Controller
     public function reload_balance(OneBssCustomer $customer)
     {
         $accounts = OneBssAccount::getActiveToken()->get();
-        $balanceData = [];
+        $balance = [];
         foreach ($accounts as $account) {
             $balance = VNPTOneBss::getBalance($customer->phone, $account->access_token);
             if ($balance) {
@@ -134,8 +134,8 @@ class CustomerController extends Controller
                 }
             }
         }
-        if (!empty($balanceData)) {
-            return response()->success('', $balanceData);
+        if (!empty($balance)) {
+            return response()->success('', $balance);
         }
         return response()->error('Authenticate Error...');
     }
@@ -145,14 +145,14 @@ class CustomerController extends Controller
         $accounts = OneBssAccount::getActiveToken()->get();
         $info = [];
         foreach ($accounts as $account) {
-            $info = VNPTOneBss::getInfo($phone, $account->access_token);
-            if ($info) {
-                if (!isset($info['error_code'])) {
+            $infoData = VNPTOneBss::getInfo($phone, $account->access_token);
+            if ($infoData) {
+                if (!isset($infoData['error_code'])) {
                     Log::info('get_direct_phone_data');
-                    Log::info($info);
+                    Log::info($infoData);
                 } else {
-                    if ($info['error_code'] == 'BSS-00000000') {
-                        $data = $info['data'];
+                    if ($infoData['error_code'] == 'BSS-00000000') {
+                        $data = $infoData['data'];
                         $info = [
                             'phone' => $data['SO_TB'],
                             'tra_sau' => (string) $data['TRA_SAU'],
@@ -166,7 +166,7 @@ class CustomerController extends Controller
                         $customer = OneBssCustomer::updateOrCreate(['phone' => $info['phone']], $info);
                         $info['id'] = $customer->id;
                         break;
-                    } elseif ($info['error_code'] == 'BSS-00001101' || $info['error_code'] == 'BSS-00000401') {
+                    } elseif ($infoData['error_code'] == 'BSS-00001101' || $infoData['error_code'] == 'BSS-00000401') {
                         $account->expires_in = null;
                         $account->access_token = null;
                         $account->save();
