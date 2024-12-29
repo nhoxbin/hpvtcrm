@@ -53,6 +53,7 @@ class OneBssCustomer extends Model
         $worked_user = !empty($request->only('worked_user')) ? $request->only('worked_user')['worked_user'] : null;
         $checked_by_user = !empty($request->only('checked_by_user')) ? $request->only('checked_by_user')['checked_by_user'] : null;
         $phone = !empty($request->only('phone')) ? $request->only('phone')['phone'] : null;
+        $sales_state = !empty($request->only('sales_state')) ? $request->only('sales_state')['sales_state'] : null;
         return $this->query()
             ->when($goi_data, function ($query, $search) {
                 foreach ($search as $goi_data) {
@@ -79,6 +80,9 @@ class OneBssCustomer extends Model
             })
             ->when($phone, function ($query, $search) {
                 $query->where('phone', $search);
+            })
+            ->when($sales_state, function ($query, $search) {
+                $query->where('sales_state', $search);
             })
             ->with(['user', 'checked_by'])
             ->orderBy('id', 'asc');

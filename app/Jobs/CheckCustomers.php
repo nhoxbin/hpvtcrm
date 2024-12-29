@@ -208,7 +208,6 @@ class CheckCustomers implements ShouldQueue
         $account = $this->account;
         $token = $account->access_token;
         $concurrent = 20;
-        // $customers = OneBssCustomer::withTrashed()->where('is_request', 0)->limit(6)->get();
         $customers = $this->customers;
         $upsert = [];
         $delete = [];
