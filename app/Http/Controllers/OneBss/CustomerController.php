@@ -119,15 +119,15 @@ class CustomerController extends Controller
         $accounts = OneBssAccount::getActiveToken()->get();
         $balanceData = [];
         foreach ($accounts as $account) {
-            $balanceData = VNPTOneBss::getBalance($customer->phone, $account->access_token);
-            if ($balanceData) {
-                if ($balanceData['error_code'] == 'BSS-00000000') {
-                    $balanceData = $balanceData['data'];
+            $balance = VNPTOneBss::getBalance($customer->phone, $account->access_token);
+            if ($balance) {
+                if ($balance['error_code'] == 'BSS-00000000') {
+                    $balanceData = $balance['data'];
                     $key = array_search('1', array_column($balanceData, 'ID'));
                     $customer->core_balance = $balanceData[$key]['REMAIN'];
                     $customer->save();
                     break;
-                } elseif ($balanceData['error_code'] == 'BSS-00001101' || $balanceData['error_code'] == 'BSS-00000401') {
+                } elseif ($balance['error_code'] == 'BSS-00001101' || $balance['error_code'] == 'BSS-00000401') {
                     $account->expires_in = null;
                     $account->access_token = null;
                     $account->save();
