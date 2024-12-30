@@ -345,6 +345,7 @@
     />
     <DeleteCustomerForm
       :isDeleteCustomer="actions.isDeleteCustomer"
+      :formSearch="formSearch"
       @closeForm="onCloseForm"
     />
     <DistributeCustomerForm
@@ -410,10 +411,11 @@ const page = usePage();
 
 const tra_sau = ref(page.props.query.tra_sau || []);
 const formSearch = useForm({
+  command: "",
   tra_sau: tra_sau,
-  worked_user: 0,
-  checked_by_user: 0,
-  sales_state: 0,
+  worked_user: page.props.query.worked_user || 0,
+  checked_by_user: page.props.query.checked_by_user || 0,
+  sales_state: page.props.query.sales_state || 0,
   phone: page.props.query.phone || "",
   goi_data: page.props.query.goi_data || [],
   expires_in: page.props.query.expires_in || "",
