@@ -70,17 +70,9 @@ class Handler extends ExceptionHandler
             }
             if ($this->shouldReturnJson($request, $e)) {
                 if (config('app.debug')) {
-                    if ($e instanceof HttpResponseException) {
-                        return response()->error($e->getResponse()?->original);
-                    } else {
-                        return response()->error($e->getMessage());
-                    }
+                    return response()->error($e->getMessage());
                 } else {
-                    if ($e instanceof HttpResponseException) {
-                        return response()->error($e->getResponse()?->original);
-                    } else {
-                        return response()->error('Có lỗi xảy ra!');
-                    }
+                    return response()->error('Có lỗi xảy ra!');
                 }
             }
         }
