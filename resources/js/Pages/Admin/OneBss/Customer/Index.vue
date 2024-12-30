@@ -351,6 +351,7 @@
     <DistributeCustomerForm
       :users="users"
       :isDistributeCustomer="actions.isDistributeCustomer"
+      :formSearch="formSearch"
       @closeForm="onCloseForm"
     />
   </AuthenticatedLayout>
@@ -411,7 +412,8 @@ const page = usePage();
 
 const tra_sau = ref(page.props.query.tra_sau || []);
 const formSearch = useForm({
-  command: "",
+  command: "", // delete
+  user_id: ["all"], // distribute
   tra_sau: tra_sau,
   worked_user: page.props.query.worked_user || 0,
   checked_by_user: page.props.query.checked_by_user || 0,
