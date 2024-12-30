@@ -60,7 +60,7 @@ class DistributeController extends Controller
             }
             DB::commit();
             return redirect()->route('admin.onebss.customers.index', $request->all('goi_data', 'expires_in'))->with('msg', 'Đã phân phối dữ liệu đến sales.');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);
             return redirect()->route('admin.onebss.customers.index', $request->all('goi_data', 'expires_in'))->withError('Lỗi rồi!');

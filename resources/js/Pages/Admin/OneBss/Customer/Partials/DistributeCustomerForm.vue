@@ -74,14 +74,12 @@ const emit = defineEmits(["closeForm"]);
 
 const closeModal = () => {
   emit("closeForm", "isDistributeCustomer");
-
-  form.reset();
-
+  props.formSearch.reset();
   router.reload({ only: ["customers"] });
 };
 
 const submit = () => {
-  form.put(route("admin.onebss.customers.distribute"), {
+  props.formSearch.put(route("admin.onebss.customers.distribute"), {
     preserveScroll: true,
     onSuccess: () => closeModal(),
   });
