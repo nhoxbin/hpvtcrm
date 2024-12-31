@@ -154,7 +154,6 @@ class CustomerController extends Controller
                     if ($infoData['error_code'] == 'BSS-00000000') {
                         $data = $infoData['data'];
                         $info = [
-                            'phone' => $data['SO_TB'],
                             'tra_sau' => (string) $data['TRA_SAU'],
                             'goi_cuoc_ts' => $data['GOI_CUOC_TS'],
                             'goi_cuoc' => $data['GOI_CUOC'],
@@ -163,7 +162,7 @@ class CustomerController extends Controller
                             'is_request' => 1,
                             'checked_by_user_id' => Auth::id(),
                         ];
-                        $customer = OneBssCustomer::updateOrCreate(['phone' => $info['phone']], $info);
+                        $customer = OneBssCustomer::updateOrCreate(['phone' => $data['SO_TB']], $info);
                         $info['id'] = $customer->id;
                         break;
                     } elseif ($infoData['error_code'] == 'BSS-00001101' || $infoData['error_code'] == 'BSS-00000401') {
