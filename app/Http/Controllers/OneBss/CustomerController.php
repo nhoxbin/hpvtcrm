@@ -162,9 +162,15 @@ class CustomerController extends Controller
                             'is_request' => 1,
                             'checked_by_user_id' => Auth::id(),
                         ];
-                        $customer = OneBssCustomer::firstOrCreate(['phone' => $data['SO_TB']]);
-                        $customer->fill($info);
-                        $customer->save();
+                        $customer = OneBssCustomer::where('phone', $data['SO_TB'])->first();
+                        echo '<pre>';
+                        print_r($customer);
+                        echo '</pre>';
+                        die;
+                        if ($customer) {
+                            $customer->fill($info);
+                            $customer->save();
+                        }
                         $info['id'] = $customer->id;
                         break;
                     } elseif ($infoData['error_code'] == 'BSS-00001101' || $infoData['error_code'] == 'BSS-00000401') {
