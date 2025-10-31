@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             User::factory()->create([
                 'name' => $user['name'],
                 'username' => $user['username'],
-            ])->assignRole('Super Admin');
+            ]);
         }
     }
 }

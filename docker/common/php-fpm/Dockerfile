@@ -7,7 +7,6 @@ FROM php:8.2-fpm AS builder
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
-    libpng-dev \
     libpq-dev \
     libonig-dev \
     libssl-dev \
@@ -15,6 +14,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libicu-dev \
     libzip-dev \
+    libfreetype-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
     && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     pdo_pgsql \
@@ -61,6 +63,7 @@ FROM php:8.2-fpm AS production
 # Install only runtime libraries needed in production
 # libfcgi-bin and procps are required for the php-fpm-healthcheck script
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpng-dev \
     libpq-dev \
     libicu-dev \
     libzip-dev \
@@ -161,7 +164,6 @@ RUN if getent group ${GID}; then \
 # Dynamically update php-fpm to use the new user and group
 RUN sed -i "s/user = www-data/user = www/g" /usr/local/etc/php-fpm.d/www.conf && \
     sed -i "s/group = www-data/group = $group_name/g" /usr/local/etc/php-fpm.d/www.conf
-
 
 # Set the working directory
 WORKDIR /var/www

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+# set -e # Disabled for debugging
 
 # Check if $UID and $GID are set, else fallback to default (1000:1000)
 USER_ID=${UID:-1000}
