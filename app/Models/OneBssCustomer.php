@@ -17,12 +17,13 @@ class OneBssCustomer extends Model
     use SoftDeletes;
     use HasFactory;
 
-    protected $fillable = ['phone', 'tra_sau', 'core_balance', 'is_request', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'user_id', 'checked_by_user_id', 'sales_state', 'sales_note', 'admin_note'];
+    protected $fillable = ['phone', 'tra_sau', 'core_balance', 'is_request', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'goi_ir', 'user_id', 'checked_by_user_id', 'sales_state', 'sales_note', 'admin_note'];
 
     protected $casts = [
         'goi_cuoc_ts' => 'json',
         'goi_cuoc' => 'json',
         'goi_data' => 'json',
+        'goi_ir' => 'json',
         'sales_state' => OneBssSalesStateEnum::class,
     ];
 

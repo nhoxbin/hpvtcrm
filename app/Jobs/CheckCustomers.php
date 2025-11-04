@@ -232,6 +232,7 @@ class CheckCustomers implements ShouldQueue
                             'goi_cuoc_ts' => json_encode($data['GOI_CUOC_TS']),
                             'goi_cuoc' => json_encode($data['GOI_CUOC']),
                             'goi_data' => json_encode($data['GOI_DATA']),
+                            'goi_ir' => json_encode($data['GOI_ROAMING']),
                             'is_request' => 1,
                         ];
                         return;
@@ -246,7 +247,7 @@ class CheckCustomers implements ShouldQueue
                 }
             }
         );
-        OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'is_request']);
+        OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'goi_ir', 'is_request']);
         if (!empty($delete)) {
             OneBssCustomer::whereIn('phone', $delete)->forceDelete();
         }

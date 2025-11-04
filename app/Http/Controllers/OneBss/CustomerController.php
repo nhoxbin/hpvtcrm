@@ -159,6 +159,7 @@ class CustomerController extends Controller
                             'goi_cuoc_ts' => $data['GOI_CUOC_TS'],
                             'goi_cuoc' => $data['GOI_CUOC'],
                             'goi_data' => $data['GOI_DATA'],
+                            'goi_ir' => $data['GOI_ROAMING'],
                             'core_balance' => 0,
                             'is_request' => 1,
                             'checked_by_user_id' => Auth::id(),

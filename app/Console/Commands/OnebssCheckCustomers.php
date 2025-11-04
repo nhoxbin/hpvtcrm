@@ -75,6 +75,7 @@ class OnebssCheckCustomers extends Command
                                 'goi_cuoc_ts' => json_encode($data['GOI_CUOC_TS']),
                                 'goi_cuoc' => json_encode($data['GOI_CUOC']),
                                 'goi_data' => json_encode($data['GOI_DATA']),
+                                'goi_ir' => json_encode($data['GOI_ROAMING']),
                                 'core_balance' => 0,
                                 'is_request' => 1,
                             ];
@@ -88,7 +89,7 @@ class OnebssCheckCustomers extends Command
                     }
                 }
             );
-            OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'core_balance', 'is_request']);
+            OneBssCustomer::upsert($upsert, ['phone'], ['tra_sau', 'goi_cuoc_ts', 'goi_cuoc', 'goi_data', 'goi_ir', 'core_balance', 'is_request']);
             if (!empty($delete)) {
                 OneBssCustomer::whereIn('phone', $delete)->forceDelete();
             }

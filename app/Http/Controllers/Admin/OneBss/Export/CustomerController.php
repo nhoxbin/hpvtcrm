@@ -48,7 +48,7 @@ class CustomerController extends Controller
         );
         $spreadsheet->getActiveSheet()->getStyle('A1:I1')->applyFromArray($styleArray);
         // auto fit column to content
-        foreach (range('A', 'G') as $columnID) {
+        foreach (range('A', 'H') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
         }
         // set the names of header cells
@@ -59,6 +59,7 @@ class CustomerController extends Controller
         $sheet->setCellValue('E1', 'Gói cước');
         $sheet->setCellValue('F1', 'Gói cước TS');
         $sheet->setCellValue('G1', 'Gói data');
+        $sheet->setCellValue('H1', 'Gói IR');
 
         $customers = OneBssCustomer::with(['checked_by'])->where('is_request', 1)->get();
         // Add data
@@ -85,6 +86,12 @@ class CustomerController extends Controller
                     return 'Tên gói: ' . $goi['PACKAGE_NAME'] . ', dịch vụ: ' . $goi['SERVICES'] . ', Ngày hết hạn: ' . $goi['TIME_END'];
                 }, $customer->goi_data));
                 $sheet->setCellValue('G' . $x, $strData);
+            }
+            if (!empty($customer->goi_ir)) {
+                $strData = implode("\n", array_map(function ($goi) {
+                    return 'Tên gói: ' . $goi['PACKAGE_NAME'] . ', dịch vụ: ' . $goi['SERVICES'] . ', Ngày hết hạn: ' . $goi['TIME_END'];
+                }, $customer->goi_ir));
+                $sheet->setCellValue('H' . $x, $strData);
             }
             $x++;
         }

@@ -67,4 +67,6 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ## RUN COMMAND
 
-docker compose -f compose.dev.yml up -d
+1st build: docker compose -f compose.dev.yml up -d --build
+2st access bash: docker compose -f compose.dev.yaml exec workspace bash
+3st run: composer install && php artisan migrate --seed && php artisan app:create-procedure && npm install && npm run dev

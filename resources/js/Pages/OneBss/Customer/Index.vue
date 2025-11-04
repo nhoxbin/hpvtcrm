@@ -160,6 +160,7 @@
                     <th class="px-4 py-3">Gói cước TS</th>
                     <th class="px-4 py-3">Gói cước</th>
                     <th class="px-4 py-3">Gói data</th>
+                    <th class="px-4 py-3">Gói IR</th>
                     <th class="px-4 py-3">Ngày hết hạn gói data</th>
                     <th class="px-4 py-3">Gói</th>
                     <th class="px-4 py-3">Ngày hết hạn</th>
@@ -198,6 +199,9 @@
                     </td>
                     <td class="px-4 py-3 text-sm">
                       {{ get_goi_data_to_string(customer.goi_data) }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                      {{ get_goi_data_to_string(customer.goi_ir) }}
                     </td>
                     <td class="px-4 py-3 text-sm">
                       {{ get_expires_date(customer.goi_data) }}
@@ -343,6 +347,9 @@
                     <td class="px-4 py-3 text-sm">
                       {{ get_goi_data_to_string(customerInfo.goi_data) }}
                     </td>
+                    <td class="px-4 py-3 text-sm">
+                      {{ get_goi_data_to_string(customerInfo.goi_ir) }}
+                    </td>
                   </tr>
                   <tr class="text-gray-700" v-else>
                     <td class="px-4 py-3 text-sm text-center" colspan="9">
@@ -412,6 +419,7 @@ const customerInfo = reactive({
   goi_cuoc: [],
   goi_cuoc_ts: [],
   goi_data: [],
+  goi_ir: [],
   phone: "",
   tra_sau: null,
   is_request: 0,
@@ -513,6 +521,7 @@ const getDirectPhoneData = () => {
           customerInfo.goi_cuoc = info.goi_cuoc;
           customerInfo.goi_cuoc_ts = info.goi_cuoc_ts;
           customerInfo.goi_data = info.goi_data;
+          customerInfo.goi_ir = info.goi_ir;
           customerInfo.phone = info.phone;
           customerInfo.tra_sau = info.tra_sau;
           customerInfo.is_request = info.is_request;

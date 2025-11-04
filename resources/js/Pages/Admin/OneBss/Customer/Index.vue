@@ -4,7 +4,7 @@
   <AuthenticatedLayout>
     <template #header> Khách hàng </template>
 
-    <div class="p-4 bg-white rounded-lg shadow-xs">
+    <div class="p-4 bg-white rounded-lg shadow-xs min-w-0">
       <div class="mb-4 w-full">
         <SecondaryButton @click="actions.isUploadCustomer = true"
           >Upload</SecondaryButton
@@ -169,6 +169,17 @@
             @on-tags-changed="(newTags) => (formSearch.goi_data = newTags)"
           />
         </div>
+        <div class="mb-6">
+          <label
+            for="email"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >Gói IR</label
+          >
+          <vue3-tags-input
+            :tags="formSearch.goi_ir"
+            @on-tags-changed="(newTags) => (formSearch.goi_ir = newTags)"
+          />
+        </div>
         <!-- <button
           class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
           data-te-ripple-init
@@ -198,9 +209,9 @@
         </button>
       </form>
       <!-- </div> -->
-      <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
-        <div class="relative overflow-x-auto">
-          <table class="w-full table-fixed">
+      <div class="mb-8 w-full rounded-lg border shadow-xs">
+        <div class="overflow-x-auto">
+          <table class="w-full whitespace-nowrap">
             <thead>
               <tr
                 class="text-xs font-semibold text-left text-gray-500 uppercase bg-gray-50 border-b"
@@ -211,6 +222,7 @@
                 <th class="px-4 py-3">Gói cước TS</th>
                 <th class="px-4 py-3">Gói cước</th>
                 <th class="px-4 py-3">Gói data</th>
+                <th class="px-4 py-3">Gói IR</th>
                 <th class="px-4 py-3">Gói</th>
                 <th class="px-4 py-3">Ngày hết hạn</th>
                 <th class="px-4 py-3">TÍch hợp</th>
@@ -226,7 +238,7 @@
               <tr
                 v-for="customer in customers.data"
                 :key="customer.id"
-                class="text-gray-700 break-words"
+                class="text-gray-700"
               >
                 <td class="px-4 py-3 text-sm">{{ customer.phone }}</td>
                 <td class="px-4 py-3 text-sm">
@@ -243,6 +255,9 @@
                 </td>
                 <td class="px-4 py-3 text-sm">
                   {{ get_goi_data_to_string(customer.goi_data) }}
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  {{ get_goi_data_to_string(customer.goi_ir) }}
                 </td>
                 <td class="px-4 py-3 text-sm">{{ customer.goi }}</td>
                 <td class="px-4 py-3 text-sm">{{ customer.expired_at }}</td>
@@ -318,7 +333,7 @@
                 </td>
               </tr>
               <tr v-if="!customers.data.length">
-                <td class="px-4 py-3 text-sm text-center" colspan="9">
+                <td class="px-4 py-3 text-sm text-center" colspan="14">
                   Không có dữ liệu
                 </td>
               </tr>
@@ -420,6 +435,7 @@ const formSearch = useForm({
   sales_state: page.props.query.sales_state || 0,
   phone: page.props.query.phone || "",
   goi_data: page.props.query.goi_data || [],
+  goi_ir: page.props.query.goi_ir || [],
   expires_in: page.props.query.expires_in || "",
 });
 
