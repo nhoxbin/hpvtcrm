@@ -173,6 +173,8 @@ class CustomerController extends Controller
                         $account->expires_in = null;
                         $account->access_token = null;
                         $account->save();
+                    } elseif ($infoData['error_code'] == 'BSS-0000420') {
+                        return response()->error($infoData['message']);
                     }
                 }
             }

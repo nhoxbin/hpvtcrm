@@ -307,6 +307,7 @@
                     <th class="px-4 py-3">Gói cước TS</th>
                     <th class="px-4 py-3">Gói cước</th>
                     <th class="px-4 py-3">Gói data</th>
+                    <th class="px-4 py-3">Gói IR</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y">

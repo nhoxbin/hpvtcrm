@@ -5,20 +5,20 @@
     <template #header> Khách hàng </template>
 
     <div class="p-4 bg-white rounded-lg shadow-xs min-w-0">
-      <div class="mb-4 w-full">
-        <SecondaryButton @click="actions.isUploadCustomer = true"
-          >Upload</SecondaryButton
-        >
-        <PrimaryButton @click="actions.isDistributeCustomer = true"
-          >Phân phối</PrimaryButton
-        >
-        <PrimaryButton
-          @click="exportExcel(route('admin.onebss.customers.export'))"
-          >Export</PrimaryButton
-        >
-        <DangerButton
-          class="float-right"
-          @click="actions.isDeleteCustomer = true"
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex space-x-2">
+          <SecondaryButton @click="actions.isUploadCustomer = true"
+            >Upload</SecondaryButton
+          >
+          <PrimaryButton @click="actions.isDistributeCustomer = true"
+            >Phân phối</PrimaryButton
+          >
+          <PrimaryButton
+            @click="exportExcel(route('admin.onebss.customers.export'))"
+            >Export</PrimaryButton
+          >
+        </div>
+        <DangerButton @click="actions.isDeleteCustomer = true"
           >Delete</DangerButton
         >
       </div>
@@ -35,15 +35,15 @@
       </div>
       <!-- <div class="relative mb-4 flex flex-wrap items-stretch"> -->
       <form @submit.prevent="onSearching()">
-        <div class="grid gap-6 mb-6 md:grid-cols-3">
+        <div class="grid gap-6 mb-6 md:grid-cols-2 lg:grid-cols-3">
           <div>
             <label
               for="tra_sau"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              class="block mb-2 text-sm font-medium text-gray-900"
               >Loại thuê bao</label
             >
-            <div class="m-2">
-              <div class="flex items-center mb-4">
+            <div class="flex items-center space-x-4 mt-2">
+              <div class="flex items-center">
                 <input
                   id="tra_truoc"
                   type="checkbox"
@@ -76,26 +76,26 @@
           <div>
             <label
               for="phone"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              class="block mb-2 text-sm font-medium text-gray-900"
               >Số điện thoại</label
             >
             <input
               type="text"
               id="phone"
               placeholder="VD: 849xxxxxxxx"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               v-model="formSearch.phone"
             />
           </div>
           <div>
             <label
               for="expires_in"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              class="block mb-2 text-sm font-medium text-gray-900"
               >Trước ngày hết hạn</label
             >
             <input
               type="text"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Trước ngày hết hạn"
               aria-label="Trước ngày hết hạn"
               v-model="formSearch.expires_in"
@@ -105,13 +105,13 @@
           <div>
             <label
               for="worked_user"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              class="block mb-2 text-sm font-medium text-gray-900"
               >Người làm việc</label
             >
             <select
               id="worked_user"
               v-model="formSearch.worked_user"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               <option value="0">Chọn thành viên</option>
               <option v-for="user in users" :key="user.id" :value="user.id">
@@ -122,13 +122,13 @@
           <div>
             <label
               for="checked_by_user"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              class="block mb-2 text-sm font-medium text-gray-900"
               >Người check</label
             >
             <select
               id="checked_by_user"
               v-model="formSearch.checked_by_user"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               <option value="0">Chọn thành viên</option>
               <option v-for="user in users" :key="user.id" :value="user.id">
@@ -139,13 +139,13 @@
           <div>
             <label
               for="sales_state"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              class="block mb-2 text-sm font-medium text-gray-900"
               >Trạng thái</label
             >
             <select
               id="sales_state"
               v-model="formSearch.sales_state"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               <option value="0">Chọn thành viên</option>
               <option
@@ -161,7 +161,7 @@
         <div class="mb-6">
           <label
             for="email"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            class="block mb-2 text-sm font-medium text-gray-900"
             >Gói</label
           >
           <vue3-tags-input
@@ -172,7 +172,7 @@
         <div class="mb-6">
           <label
             for="email"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            class="block mb-2 text-sm font-medium text-gray-900"
             >Gói IR</label
           >
           <vue3-tags-input
@@ -180,27 +180,6 @@
             @on-tags-changed="(newTags) => (formSearch.goi_ir = newTags)"
           />
         </div>
-        <!-- <button
-          class="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:z-[3] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
-          data-te-ripple-init
-          type="submit"
-        >
-          <svg
-            class="h-8 w-8 text-red-500"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" />
-            <circle cx="10" cy="10" r="7" />
-            <line x1="21" y1="21" x2="15" y2="15" />
-          </svg>
-        </button> -->
         <button
           type="submit"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -282,7 +261,7 @@
                     <button
                       @click="edit(customer)"
                       type="button"
-                      class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"
+                      class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"
                     >
                       <svg
                         class="h-3 w-3 text-red-500"
@@ -306,7 +285,7 @@
                     <button
                       @click="del(customer.id)"
                       type="button"
-                      class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"
+                      class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"
                     >
                       <svg
                         class="h-3 w-3 text-red-500"
