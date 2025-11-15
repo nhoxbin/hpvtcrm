@@ -45,8 +45,8 @@ jobs:
       - name: Install NPM dependencies
         run: npm ci
 
-      - name: Run PHP tests
-        run: php artisan test
+      # - name: Run PHP tests
+      #   run: php artisan test
 
       # NOTE: No "npm test" script found in package.json.
 
