@@ -20,6 +20,6 @@ echo "REMOTE_DIR: $REMOTE_DIR"
 lftp -d -c "
 set ssl:verify-certificate no;
 open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST;
-mirror -R --verbose --only-newer --parallel=10 --exclude-glob .git* --exclude .git/ --exclude node_modules/ $LOCAL_DIR $REMOTE_DIR;
+mirror -R --verbose --only-newer --parallel=10 --exclude-glob .git* --exclude .git/ --exclude node_modules/ --exclude vendor/ $LOCAL_DIR $REMOTE_DIR;
 bye;
 "
