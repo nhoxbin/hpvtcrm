@@ -14,27 +14,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: Setup PHP
-      #   uses: shivammathur/setup-php@v2
-      #   with:
-      #     php-version: '8.1'
-      #     extensions: mbstring, xml, ctype, fileinfo, curl, pcntl, pdo, pdo_mysql, tokenizer
-      #     coverage: none
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, ctype, fileinfo, curl, pcntl, pdo, pdo_mysql, tokenizer
+          coverage: none
 
-      # - name: Get Composer cache directory
-      #   id: composer-cache
-      #   run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      # - name: Cache Composer dependencies
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ steps.composer-cache.outputs.dir }}
-      #     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-composer-
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
-      # - name: Install Composer dependencies
-      #   run: composer install --no-progress --no-interaction --prefer-dist
+      - name: Install Composer dependencies
+        run: composer install --no-progress --no-interaction --prefer-dist
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -59,6 +59,7 @@ jobs:
           name: production-build
           path: |
             .
+            !/vendor
             !/node_modules
             !/storage/logs/*
             !/storage/framework/cache/data/*
