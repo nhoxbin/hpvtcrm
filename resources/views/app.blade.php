@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+    <meta name="zalo-platform-site-verification" content="POQ_CQAo9HL9hOGBhOC056kcWGk7q5LLEJaq" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -15,14 +16,6 @@
     @routes
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
 
-    {{-- @php
-            try {
-                echo Vite::asset('resources/js/app.js');
-                echo Vite::asset("resources/js/Pages/{$page['component']}.vue");
-            } catch (\Exception $e) {
-                echo "<script>console.error('Vite assets not found. Please run \"npm run dev\" and refresh the page.')</script>";
-            }
-        @endphp --}}
     @inertiaHead
 </head>
 
