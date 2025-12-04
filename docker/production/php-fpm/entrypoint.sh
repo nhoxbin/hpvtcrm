@@ -25,8 +25,10 @@ php artisan migrate --force
 # -----------------------------------------------------------
 # Improves performance by caching config and routes.
 # -----------------------------------------------------------
-php artisan config:cache
-php artisan route:cache
+php artisan optimize:clear
+php artisan optimize
+# php artisan config:cache
+# php artisan route:cache
 
 # Run the default command
 exec "$@"
