@@ -63,6 +63,7 @@ FROM php:8.2-fpm AS production
 # Install only runtime libraries needed in production
 # libfcgi-bin and procps are required for the php-fpm-healthcheck script
 # gosu is used to run commands as www-data user from root entrypoint
+# curl, git, unzip, and nodejs/npm are needed for composer and npm at runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libpq-dev \
@@ -71,6 +72,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfcgi-bin \
     procps \
     gosu \
+    curl \
+    git \
+    unzip \
+    nodejs \
+    npm \
     && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Download and install php-fpm health check script
@@ -90,6 +96,7 @@ COPY ./storage /var/www/storage-init
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/bin/docker-php-ext-* /usr/local/bin/
+COPY --from=builder /usr/local/bin/composer /usr/local/bin/composer
 
 # Use the recommended production PHP configuration
 # -----------------------------------------------------------
