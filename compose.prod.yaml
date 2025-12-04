@@ -47,12 +47,10 @@ services:
       retries: 5
       start_period: 90s
     # The 'depends_on' attribute with 'condition: service_healthy' ensures that
-    # this service will not start until the 'postgres' service passes its health check.
+    # this service will not start until the 'mysql' service passes its health check.
     # This prevents the application from trying to connect to the database before it's ready.
     depends_on:
       mysql:
-        condition: service_started
-      postgres:
         condition: service_healthy
 
   mysql:
@@ -72,6 +70,12 @@ services:
       - mysql-data-production:/var/lib/mysql
     networks:
       - laravel-production
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
 
   postgres:
     image: postgres:16
