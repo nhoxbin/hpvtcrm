@@ -12,7 +12,7 @@ services:
       # The 'php-fpm' service mounts the same volume without ':ro' to allow write operations.
       # -----------------------------------------------------------
       - laravel-storage-production:/var/www/storage:ro
-      - laravel-public-assets:/var/www/public/build:ro
+      - laravel-public:/var/www/public:ro
     networks:
       - laravel-production
     ports:
@@ -34,7 +34,7 @@ services:
       target: production
     restart: unless-stopped
     volumes:
-      - laravel-public-assets:/var/www/public/build # Mount built public assets to ensure the manifest.json and hashed files match between Nginx and PHP-FPM
+      - laravel-public:/var/www/public # Mount public directory
       - laravel-storage-production:/var/www/storage # Mount the storage volume
     env_file:
       - .env
@@ -49,8 +49,28 @@ services:
     # this service will not start until the 'postgres' service passes its health check.
     # This prevents the application from trying to connect to the database before it's ready.
     depends_on:
+      mysql:
+        condition: service_started
       postgres:
         condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    # container_name: mysql
+    restart: unless-stopped
+    ports:
+      - "${MYSQL_EXTERNAL_PORT:-3307}:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - mysql-data-production:/var/lib/mysql
+    networks:
+      - laravel-production
 
   postgres:
     image: postgres:16
@@ -105,4 +125,5 @@ networks:
 volumes:
   postgres-data-production:
   laravel-storage-production:
-  laravel-public-assets:
+  laravel-public:
+  mysql-data-production:

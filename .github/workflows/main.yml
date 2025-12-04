@@ -1,0 +1,27 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy to Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          # key: ${{ secrets.PROD_SSH_KEY }}
+          port: 22
+          script: |
+            cd /var/www/hpvtcrm
+            git pull origin main
+            docker compose -f compose.prod.yaml down
+            docker compose -f compose.prod.yaml up -d --build
