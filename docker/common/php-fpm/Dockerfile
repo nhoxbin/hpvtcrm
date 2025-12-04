@@ -62,6 +62,7 @@ FROM php:8.2-fpm AS production
 
 # Install only runtime libraries needed in production
 # libfcgi-bin and procps are required for the php-fpm-healthcheck script
+# gosu is used to run commands as www-data user from root entrypoint
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libpq-dev \
@@ -69,6 +70,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     libfcgi-bin \
     procps \
+    gosu \
     && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Download and install php-fpm health check script
@@ -76,8 +78,9 @@ RUN curl -o /usr/local/bin/php-fpm-healthcheck \
     https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
     && chmod +x /usr/local/bin/php-fpm-healthcheck
 
-# Copy the initialization script
+# Copy the initialization script and database check script
 COPY ./docker/production/php-fpm/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ./docker/production/php-fpm/check-db.php /usr/local/bin/check-db.php
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Copy the initial storage structure
@@ -111,10 +114,8 @@ WORKDIR /var/www
 # Ensure correct permissions
 RUN chown -R www-data:www-data /var/www
 
-# Switch to the non-privileged user to run the application
-USER www-data
-
 # Change the default command to run the entrypoint script
+# Note: Entrypoint runs as root to handle initialization, then PHP-FPM runs as www-data
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Expose port 9000 and start php-fpm server
