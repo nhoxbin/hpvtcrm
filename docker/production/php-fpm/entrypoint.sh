@@ -63,8 +63,14 @@ done
 
 if [ $attempt -eq $max_attempts ]; then
   echo "WARNING: Could not connect to database after $max_attempts attempts. Continuing anyway..."
+  echo "Clearing any cached config to prevent stale database settings..."
+  gosu www-data php artisan config:clear || true
 else
   echo "Database is ready (connected in $attempt attempts)!"
+
+  # Clear config cache before running migrations to ensure fresh connection
+  echo "Clearing config cache..."
+  gosu www-data php artisan config:clear || true
 
   # Run Laravel migrations
   # -----------------------------------------------------------
@@ -77,10 +83,13 @@ fi
 # Clear and cache configurations
 # -----------------------------------------------------------
 # Improves performance by caching config and routes.
+# Note: Do NOT cache config here if database connection might change
 # -----------------------------------------------------------
 echo "Optimizing application..."
 gosu www-data php artisan optimize:clear || true
-gosu www-data php artisan optimize || true
+# Only cache routes and views, not config (to allow runtime db changes)
+gosu www-data php artisan route:cache || true
+gosu www-data php artisan view:cache || true
 # gosu www-data php artisan config:cache
 # gosu www-data php artisan route:cache
 
