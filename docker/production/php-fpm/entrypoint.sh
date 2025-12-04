@@ -33,7 +33,7 @@ if [ $attempt -eq $max_attempts ]; then
   echo "WARNING: Could not connect to database after $max_attempts attempts. Continuing anyway..."
 else
   echo "Database is ready (connected in $attempt attempts)!"
-  
+
   # Run Laravel migrations
   # -----------------------------------------------------------
   # Ensure the database schema is up to date.
