@@ -41,6 +41,8 @@ services:
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: production
     restart: unless-stopped
+    # Entrypoint runs as root to set permissions, then PHP-FPM workers run as www-data
+    # user: "www-data:www-data" # Commented out to allow entrypoint to run as root
     env_file:
       - .env
     volumes:
@@ -68,6 +70,7 @@ services:
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: production
     restart: unless-stopped
+    user: "www-data:www-data"
     entrypoint: []
     command: >
       sh -c "

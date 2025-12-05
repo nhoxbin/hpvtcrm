@@ -37,6 +37,17 @@ echo "[INIT] Setting directory permissions..."
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 
+# Ensure specific writable subdirectories exist and have correct permissions
+mkdir -p /var/www/storage/framework/cache/data \
+         /var/www/storage/framework/sessions \
+         /var/www/storage/framework/views \
+         /var/www/storage/logs \
+         /var/www/storage/app/public
+
+chown -R www-data:www-data /var/www/storage
+find /var/www/storage -type d -exec chmod 775 {} \;
+find /var/www/storage -type f -exec chmod 664 {} \;
+
 #------------------------------------------------------------------------------
 # 3. Install Composer Dependencies
 #------------------------------------------------------------------------------
