@@ -1,19 +1,37 @@
 #!/bin/sh
-# set -e # Disabled for debugging
+#==============================================================================
+# Development PHP-FPM Entrypoint
+#==============================================================================
+# Lightweight initialization for development environment:
+# - Syncs file permissions with host user
+# - Clears Laravel caches for fresh state
+#==============================================================================
 
-# Check if $UID and $GID are set, else fallback to default (1000:1000)
+# Note: set -e disabled to continue on non-critical errors
+# set -e
+
+#------------------------------------------------------------------------------
+# 1. Sync File Permissions with Host
+#------------------------------------------------------------------------------
+# Match container user with host UID/GID to avoid permission issues
 USER_ID=${UID:-1000}
 GROUP_ID=${GID:-1000}
 
-# Fix file ownership and permissions using the passed UID and GID
-echo "Fixing file permissions with UID=${USER_ID} and GID=${GROUP_ID}..."
-chown -R ${USER_ID}:${GROUP_ID} /var/www || echo "Some files could not be changed"
+echo "[INIT] Setting file ownership (UID=${USER_ID}, GID=${GROUP_ID})..."
+chown -R ${USER_ID}:${GROUP_ID} /var/www || \
+  echo "[WARNING] Some files could not be changed"
 
-# Clear configurations to avoid caching issues in development
-echo "Clearing configurations..."
+#------------------------------------------------------------------------------
+# 2. Clear Laravel Caches
+#------------------------------------------------------------------------------
+# Ensure fresh state for development (no stale cached configs/routes)
+echo "[LARAVEL] Clearing cached configurations..."
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
-# Run the default command (e.g., php-fpm or bash)
+#------------------------------------------------------------------------------
+# 3. Start PHP-FPM
+#------------------------------------------------------------------------------
+echo "[STARTUP] Starting PHP-FPM in development mode..."
 exec "$@"

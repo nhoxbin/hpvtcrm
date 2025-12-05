@@ -1,16 +1,30 @@
-# docker/development/workspace/Dockerfile
-# Use the official PHP CLI image as the base
+#==============================================================================
+# Development Workspace Container
+#==============================================================================
+# Interactive environment for running development commands:
+# - PHP CLI with extensions
+# - Composer for dependency management
+# - Node.js/NPM via NVM for frontend builds
+# - Xdebug for debugging CLI scripts
+#==============================================================================
+
 FROM php:8.2-cli
 
-# Set environment variables for user and group ID
+#------------------------------------------------------------------------------
+# Build Arguments
+#------------------------------------------------------------------------------
 ARG UID=1000
 ARG GID=1000
-ARG NODE_VERSION=22.0.0
+ARG NODE_VERSION=25.0.0
 
-# Install system dependencies and build libraries
+#------------------------------------------------------------------------------
+# Install System Dependencies & PHP Extensions
+#------------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
+    sudo \
+    git \
     libpq-dev \
     libonig-dev \
     libssl-dev \
@@ -21,21 +35,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
-    && docker-php-ext-install -j$(nproc) gd \
-    pdo_mysql \
-    pdo_pgsql \
-    pgsql \
-    opcache \
-    intl \
-    zip \
-    bcmath \
-    soap \
+    && docker-php-ext-install -j$(nproc) \
+        gd \
+        pdo_mysql \
+        pdo_pgsql \
+        pgsql \
+        opcache \
+        intl \
+        zip \
+        bcmath \
+        soap \
     && pecl install redis xdebug \
     && docker-php-ext-enable gd redis xdebug \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && curl -sS https://getcomposer.org/installer | php -- \
+        --install-dir=/usr/local/bin \
+        --filename=composer \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Use ARG to define environment variables passed from the Docker build command or Docker Compose.
+#------------------------------------------------------------------------------
+# Configure Xdebug
+#------------------------------------------------------------------------------
 ARG XDEBUG_ENABLED
 ARG XDEBUG_MODE
 ARG XDEBUG_HOST
@@ -43,48 +64,59 @@ ARG XDEBUG_IDE_KEY
 ARG XDEBUG_LOG
 ARG XDEBUG_LOG_LEVEL
 
-# Configure Xdebug if enabled
 RUN if [ "${XDEBUG_ENABLED}" = "true" ]; then \
-    docker-php-ext-enable xdebug && \
-    echo "xdebug.mode=${XDEBUG_MODE}" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.idekey=${XDEBUG_IDE_KEY}" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.log=${XDEBUG_LOG}" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.log_level=${XDEBUG_LOG_LEVEL}" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.client_host=${XDEBUG_HOST}" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ; \
-    echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ; \
+    docker-php-ext-enable xdebug \
+    && { \
+        echo "xdebug.mode=${XDEBUG_MODE}"; \
+        echo "xdebug.idekey=${XDEBUG_IDE_KEY}"; \
+        echo "xdebug.log=${XDEBUG_LOG}"; \
+        echo "xdebug.log_level=${XDEBUG_LOG_LEVEL}"; \
+        echo "xdebug.client_host=${XDEBUG_HOST}"; \
+        echo "xdebug.start_with_request=yes"; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
     fi
 
-# If the group already exists, use it; otherwise, create the 'www' group
+#------------------------------------------------------------------------------
+# Create Development User
+#------------------------------------------------------------------------------
+# Create user matching host UID/GID to avoid permission issues with volumes
 RUN if getent group ${GID}; then \
     useradd -m -u ${UID} -g ${GID} -s /bin/bash www; \
     else \
-    groupadd -g ${GID} www && \
-    useradd -m -u ${UID} -g www -s /bin/bash www; \
-    fi && \
-    usermod -aG sudo www && \
-    echo 'www ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    groupadd -g ${GID} www \
+    && useradd -m -u ${UID} -g www -s /bin/bash www; \
+    fi \
+    && usermod -aG sudo www \
+    && echo 'www ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# Switch to the non-root user to install NVM and Node.js
+#------------------------------------------------------------------------------
+# Install Node.js via NVM
+#------------------------------------------------------------------------------
+# Switch to non-root user for NVM installation
 USER www
 
-# Install NVM (Node Version Manager) as the www user
-RUN export NVM_DIR="$HOME/.nvm" && \
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash && \
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
-    nvm install ${NODE_VERSION} && \
-    nvm alias default ${NODE_VERSION} && \
-    nvm use default
+# Install NVM and Node.js
+RUN export NVM_DIR="$HOME/.nvm" \
+    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash \
+    && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
+    && nvm install ${NODE_VERSION} \
+    && nvm alias default ${NODE_VERSION} \
+    && nvm use default
 
-# Ensure NVM is available for all future shells
-RUN echo 'export NVM_DIR="$HOME/.nvm"' >> /home/www/.bashrc && \
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/www/.bashrc && \
-    echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> /home/www/.bashrc
+# Configure shell to load NVM automatically
+RUN { \
+        echo 'export NVM_DIR="$HOME/.nvm"'; \
+        echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'; \
+        echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"'; \
+    } >> /home/www/.bashrc
 
-# Set the working directory
+#------------------------------------------------------------------------------
+# Finalize Container Setup
+#------------------------------------------------------------------------------
 WORKDIR /var/www
 
-# Override the entrypoint to avoid the default php entrypoint
+# Override default PHP entrypoint for interactive shell
 ENTRYPOINT []
 
-# Default command to keep the container running
+# Keep container running for interactive commands
 CMD ["bash"]

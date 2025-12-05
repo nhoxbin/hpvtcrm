@@ -1,43 +1,51 @@
+#==============================================================================
+# Production Environment Configuration
+#==============================================================================
+# Optimized Docker Compose setup for Laravel production deployment with:
+# - Nginx with compiled frontend assets
+# - PHP-FPM with health checks
+# - Queue worker for background jobs
+# - MySQL database with health monitoring
+# - Redis cache
+# - Persistent volumes for data storage
+#==============================================================================
+
 services:
+  #----------------------------------------------------------------------------
+  # Nginx Web Server
+  #----------------------------------------------------------------------------
+  # Serves compiled static assets and proxies PHP requests
   web:
     build:
       context: .
       dockerfile: ./docker/production/nginx/Dockerfile
-    restart: unless-stopped # Automatically restart unless the service is explicitly stopped
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-80}:80"
     volumes:
-      # Mount the 'laravel-storage-production' volume to '/var/www/storage' inside the container.
-      # -----------------------------------------------------------
-      # This volume stores persistent data like uploaded files and cache.
-      # The ':ro' option mounts it as read-only in the 'web' service because Nginx only needs to read these files.
-      # The 'php-fpm' service mounts the same volume without ':ro' to allow write operations.
-      # -----------------------------------------------------------
-      - laravel-storage-production:/var/www/storage:ro
-      - laravel-public:/var/www/public:ro
+      - laravel-storage-production:/var/www/storage:ro # Read-only access
+      - laravel-public:/var/www/public:ro # Read-only access
     networks:
       - laravel-production
-    ports:
-      # Map port 80 inside the container to the port specified by 'NGINX_PORT' on the host machine.
-      # -----------------------------------------------------------
-      # This allows external access to the Nginx web server running inside the container.
-      # For example, if 'NGINX_PORT' is set to '8080', accessing 'http://localhost:8080' will reach the application.
-      # -----------------------------------------------------------
-      - "${NGINX_PORT:-80}:80"
     depends_on:
       php-fpm:
-        condition: service_healthy # Wait for php-fpm health check
+        condition: service_healthy
 
+  #----------------------------------------------------------------------------
+  # PHP-FPM Application Server
+  #----------------------------------------------------------------------------
+  # Processes PHP requests with production optimizations
   php-fpm:
-    # For the php-fpm service, we will create a custom image to install the necessary PHP extensions and setup proper permissions.
     build:
       context: .
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: production
     restart: unless-stopped
-    volumes:
-      - laravel-public:/var/www/public # Mount public directory
-      - laravel-storage-production:/var/www/storage # Mount the storage volume
     env_file:
       - .env
+    volumes:
+      - laravel-public:/var/www/public
+      - laravel-storage-production:/var/www/storage
     networks:
       - laravel-production
     healthcheck:
@@ -46,16 +54,42 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
-    # The 'depends_on' attribute with 'condition: service_healthy' ensures that
-    # this service will not start until the 'mysql' service passes its health check.
-    # This prevents the application from trying to connect to the database before it's ready.
     depends_on:
       mysql:
         condition: service_healthy
 
+  #----------------------------------------------------------------------------
+  # Queue Worker
+  #----------------------------------------------------------------------------
+  # Processes background jobs from the queue
+  worker:
+    build:
+      context: .
+      dockerfile: ./docker/common/php-fpm/Dockerfile
+      target: production
+    restart: unless-stopped
+    entrypoint: []
+    command: >
+      sh -c "
+      cd /var/www &&
+      php artisan config:clear &&
+      php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --verbose
+      "
+    env_file:
+      - .env
+    volumes:
+      - laravel-storage-production:/var/www/storage
+    networks:
+      - laravel-production
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  #----------------------------------------------------------------------------
+  # MySQL Database
+  #----------------------------------------------------------------------------
   mysql:
     image: mysql:8.0
-    # container_name: mysql
     restart: unless-stopped
     ports:
       - "${MYSQL_EXTERNAL_PORT:-3307}:3306"
@@ -64,7 +98,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_USER: ${DB_USERNAME}
-      SERVICE_TAGS: dev
+      SERVICE_TAGS: production
       SERVICE_NAME: mysql
     volumes:
       - mysql-data-production:/var/lib/mysql
@@ -77,58 +111,62 @@ services:
       retries: 5
       start_period: 30s
 
-  postgres:
-    image: postgres:16
-    restart: unless-stopped
-    user: postgres
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    environment:
-      - POSTGRES_DB=${POSTGRES_DATABASE:-app}
-      - POSTGRES_USER=${POSTGRES_USERNAME:-laravel}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secret}
-    volumes:
-      - postgres-data-production:/var/lib/postgresql/data
-    networks:
-      - laravel-production
-    # Health check for PostgreSQL
-    # -----------------------------------------------------------
-    # Health checks allow Docker to determine if a service is operational.
-    # The 'pg_isready' command checks if PostgreSQL is ready to accept connections.
-    # This prevents dependent services from starting before the database is ready.
-    # -----------------------------------------------------------
-    healthcheck:
-      test: ["CMD", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  #----------------------------------------------------------------------------
+  # PostgreSQL Database (Alternative)
+  #----------------------------------------------------------------------------
+  # Uncomment if using PostgreSQL instead of MySQL
+  # postgres:
+  #   image: postgres:16
+  #   restart: unless-stopped
+  #   user: postgres
+  #   ports:
+  #     - "${POSTGRES_PORT:-5432}:5432"
+  #   environment:
+  #     POSTGRES_DB: ${POSTGRES_DATABASE:-app}
+  #     POSTGRES_USER: ${POSTGRES_USERNAME:-laravel}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+  #   volumes:
+  #     - postgres-data-production:/var/lib/postgresql/data
+  #   networks:
+  #     - laravel-production
+  #   healthcheck:
+  #     test: ["CMD", "pg_isready"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
+  #----------------------------------------------------------------------------
+  # Redis Cache & Session Store
+  #----------------------------------------------------------------------------
   redis:
     image: redis:alpine
-    restart: unless-stopped # Automatically restart unless the service is explicitly stopped
+    restart: unless-stopped
     networks:
       - laravel-production
-    # Health check for Redis
-    # -----------------------------------------------------------
-    # Checks if Redis is responding to the 'PING' command.
-    # This ensures that the service is not only running but also operational.
-    # -----------------------------------------------------------
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 3
 
+#==============================================================================
+# Networks
+#==============================================================================
+# Isolated network for all production services
 networks:
-  # Attach the service to the 'laravel' network.
-  # -----------------------------------------------------------
-  # This custom network allows all services within it to communicate using their service names as hostnames.
-  # For example, 'php-fpm' can connect to 'postgres' by using 'postgres' as the hostname.
-  # -----------------------------------------------------------
   laravel-production:
+    driver: bridge
 
+#==============================================================================
+# Volumes
+#==============================================================================
+# Persistent storage for production data
 volumes:
-  postgres-data-production:
-  laravel-storage-production:
-  laravel-public:
   mysql-data-production:
+    driver: local
+  # postgres-data-production:
+  #   driver: local
+  laravel-storage-production:
+    driver: local
+  laravel-public:
+    driver: local

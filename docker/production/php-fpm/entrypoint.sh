@@ -1,98 +1,120 @@
 #!/bin/sh
+#==============================================================================
+# Production PHP-FPM Entrypoint
+#==============================================================================
+# Initializes Laravel application for production deployment:
+# - Sets up storage directories with proper permissions
+# - Installs dependencies if missing
+# - Waits for database connectivity
+# - Runs migrations
+# - Optimizes application caching
+#
+# Note: Runs as root for initialization, then PHP-FPM process manager
+# automatically runs worker processes as www-data (configured in www.conf)
+#==============================================================================
+
 set -e
 
-# Initialize storage directory if empty
-# -----------------------------------------------------------
-# If the storage directory is empty, copy the initial contents
-# -----------------------------------------------------------
+#------------------------------------------------------------------------------
+# 1. Initialize Storage Directory
+#------------------------------------------------------------------------------
+# Copy initial storage structure if directory is empty (first-time setup)
 if [ ! "$(ls -A /var/www/storage)" ]; then
-  echo "Initializing storage directory..."
+  echo "[INIT] Setting up storage directory..."
   cp -R /var/www/storage-init/. /var/www/storage
   chown -R www-data:www-data /var/www/storage
   chmod -R 775 /var/www/storage
 fi
 
-# Remove storage-init directory
+# Clean up initialization template
 rm -rf /var/www/storage-init
 
-# Ensure storage and bootstrap/cache are writable
+#------------------------------------------------------------------------------
+# 2. Set Directory Permissions
+#------------------------------------------------------------------------------
+# Ensure Laravel's writable directories have correct permissions
+echo "[INIT] Setting directory permissions..."
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 
-# Install/update Composer dependencies if needed
-# -----------------------------------------------------------
-# This ensures dependencies are up to date if vendor directory
-# is missing or if source code is mounted as a volume
-# -----------------------------------------------------------
+#------------------------------------------------------------------------------
+# 3. Install Composer Dependencies
+#------------------------------------------------------------------------------
+# Ensures vendor directory exists (useful if volume-mounted or missing)
 if [ ! -d "/var/www/vendor" ] || [ ! -f "/var/www/vendor/autoload.php" ]; then
-  echo "Installing Composer dependencies..."
+  echo "[COMPOSER] Installing dependencies..."
   cd /var/www
-  gosu www-data composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+  su -s /bin/sh www-data -c "composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-progress \
+    --prefer-dist"
 else
-  echo "Composer dependencies already installed, skipping..."
+  echo "[COMPOSER] Dependencies already installed, skipping..."
 fi
 
-# Build frontend assets if needed
-# -----------------------------------------------------------
-# This ensures frontend assets are built if public/build
-# directory is missing or outdated
-# -----------------------------------------------------------
+#------------------------------------------------------------------------------
+# 4. Build Frontend Assets (Optional)
+#------------------------------------------------------------------------------
+# Rebuilds assets if public/build directory is missing
+# Note: Typically handled by Nginx container, but useful as fallback
 if [ ! -d "/var/www/public/build" ] || [ ! -f "/var/www/public/build/manifest.json" ]; then
-  echo "Building frontend assets..."
+  echo "[ASSETS] Building frontend assets..."
   cd /var/www
-  # Check if npm is installed
   if command -v npm > /dev/null 2>&1; then
-    gosu www-data npm install || echo "WARNING: npm install failed"
-    gosu www-data npm run build || echo "WARNING: npm run build failed"
+    su -s /bin/sh www-data -c "npm install" || echo "[WARNING] npm install failed"
+    su -s /bin/sh www-data -c "npm run build" || echo "[WARNING] npm run build failed"
   else
-    echo "WARNING: npm not found, skipping frontend build"
+    echo "[WARNING] npm not found, skipping frontend build"
   fi
 else
-  echo "Frontend assets already built, skipping..."
+  echo "[ASSETS] Frontend assets already built, skipping..."
 fi
 
-echo "Waiting for database to be ready..."
-# Wait for database connection with timeout
+#------------------------------------------------------------------------------
+# 5. Wait for Database Connectivity
+#------------------------------------------------------------------------------
+echo "[DATABASE] Waiting for database connection..."
 max_attempts=30
 attempt=0
+
 until php /usr/local/bin/check-db.php > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
   attempt=$((attempt + 1))
-  echo "Database not ready, attempt $attempt of $max_attempts..."
+  echo "[DATABASE] Connection attempt $attempt of $max_attempts..."
   sleep 2
 done
 
 if [ $attempt -eq $max_attempts ]; then
-  echo "WARNING: Could not connect to database after $max_attempts attempts. Continuing anyway..."
-  echo "Clearing any cached config to prevent stale database settings..."
-  gosu www-data php artisan config:clear || true
+  echo "[WARNING] Database connection timeout after $max_attempts attempts"
+  echo "[WARNING] Clearing cached config and continuing..."
+  su -s /bin/sh www-data -c "php artisan config:clear" || true
 else
-  echo "Database is ready (connected in $attempt attempts)!"
+  echo "[DATABASE] Connected successfully (attempt $attempt)"
 
-  # Clear config cache before running migrations to ensure fresh connection
-  echo "Clearing config cache..."
-  gosu www-data php artisan config:clear || true
+  #----------------------------------------------------------------------------
+  # 6. Run Database Migrations
+  #----------------------------------------------------------------------------
+  echo "[LARAVEL] Clearing config cache..."
+  su -s /bin/sh www-data -c "php artisan config:clear" || true
 
-  # Run Laravel migrations
-  # -----------------------------------------------------------
-  # Ensure the database schema is up to date.
-  # -----------------------------------------------------------
-  echo "Running migrations..."
-  gosu www-data php artisan migrate --force || echo "WARNING: Migrations failed, continuing anyway..."
+  echo "[LARAVEL] Running migrations..."
+  su -s /bin/sh www-data -c "php artisan migrate --force" || \
+    echo "[WARNING] Migrations failed, continuing anyway..."
 fi
 
-# Clear and cache configurations
-# -----------------------------------------------------------
-# Improves performance by caching config and routes.
-# Note: Do NOT cache config here if database connection might change
-# -----------------------------------------------------------
-echo "Optimizing application..."
-gosu www-data php artisan optimize:clear || true
-# Only cache routes and views, not config (to allow runtime db changes)
-gosu www-data php artisan route:cache || true
-gosu www-data php artisan view:cache || true
-# gosu www-data php artisan config:cache
-# gosu www-data php artisan route:cache
+#------------------------------------------------------------------------------
+# 7. Optimize Application
+#------------------------------------------------------------------------------
+# Cache routes and views for better performance
+# Note: Config caching disabled to allow runtime configuration changes
+echo "[LARAVEL] Optimizing application..."
+su -s /bin/sh www-data -c "php artisan optimize:clear" || true
+su -s /bin/sh www-data -c "php artisan route:cache" || true
+su -s /bin/sh www-data -c "php artisan view:cache" || true
 
-echo "Starting PHP-FPM..."
-# Run the default command (PHP-FPM will run as www-data via its config)
+#------------------------------------------------------------------------------
+# 8. Start PHP-FPM
+#------------------------------------------------------------------------------
+echo "[STARTUP] Starting PHP-FPM..."
 exec "$@"

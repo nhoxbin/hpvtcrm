@@ -1,41 +1,50 @@
-# Stage 1: Build assets
-FROM node:25-alpine
+#==============================================================================
+# Stage 1: Build Frontend Assets
+#==============================================================================
+# Use Node.js 25 on Debian bookworm (slim) for building assets
+FROM node:25-bookworm-slim AS builder
 
-# Install Node.js and build tools
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     curl \
-#     nodejs \
-#     npm \
-#     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Set working directory
+# Set working directory for the build
 WORKDIR /var/www
 
-# Copy Laravel application code
-COPY . /var/www
+# Copy package files for dependency installation
+COPY package*.json ./
 
-# Install Node.js dependencies and build assets
-RUN npm install && npm run build
+# Install Node.js dependencies
+# - Use clean install for production builds
+# - Ensures reproducible builds with package-lock.json
+RUN npm ci --only=production=false
 
-# Stage 2: Nginx production image
+# Copy application source code
+COPY . .
+
+# Build frontend assets
+# - Compiles Vue components and CSS
+# - Generates optimized production bundles
+# - Creates SSR build for server-side rendering
+RUN npm run build
+
+#==============================================================================
+# Stage 2: Nginx Production Server
+#==============================================================================
+# Use Alpine-based Nginx for a lightweight production image
 FROM nginx:alpine
 
 # Copy custom Nginx configuration
-# -----------------------------------------------------------
-# Replace the default Nginx configuration with our custom one
-# that is optimized for serving a Laravel application.
-# -----------------------------------------------------------
+# - Optimized for serving Laravel applications
+# - Configures proper routing for SPA and API endpoints
 COPY ./docker/production/nginx/nginx.conf /etc/nginx/nginx.conf
 
-# Copy Laravel's public assets from the builder stage
-# -----------------------------------------------------------
-# We only need the 'public' directory from our Laravel app.
-# -----------------------------------------------------------
-# COPY --from=builder /var/www/public /var/www/public
+# Copy built assets from builder stage
+# - Only includes compiled frontend assets (JS, CSS, images)
+# - Keeps final image size minimal
+COPY --from=builder /var/www/public /var/www/public
 
-# Set the working directory to the public folder
+# Set working directory
 WORKDIR /var/www/public
 
-# Expose port 80 and start Nginx
+# Expose HTTP port
 EXPOSE 80
+
+# Start Nginx in foreground mode
 CMD ["nginx", "-g", "daemon off;"]
