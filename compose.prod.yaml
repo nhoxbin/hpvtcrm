@@ -70,7 +70,7 @@ services:
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: production
     restart: unless-stopped
-    user: "www-data:www-data"
+    user: "${UID:-1000}:${GID:-1000}"
     entrypoint: []
     command: >
       sh -c "
@@ -81,12 +81,9 @@ services:
     env_file:
       - .env
     volumes:
-      - laravel-storage-production:/var/www/storage
+      - ./:/var/www
     networks:
       - laravel-production
-    depends_on:
-      mysql:
-        condition: service_healthy
 
   #----------------------------------------------------------------------------
   # MySQL Database

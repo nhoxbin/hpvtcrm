@@ -118,6 +118,36 @@ services:
     networks:
       - hpvtcrm-dev
 
+  worker:
+    build:
+      context: .
+      dockerfile: ./docker/common/php-fpm/Dockerfile
+      target: development
+      # args:
+      #   UID: ${UID:-1000}
+      #   GID: ${GID:-1000}
+      #   XDEBUG_ENABLED: ${XDEBUG_ENABLED:-true}
+      #   XDEBUG_MODE: develop,coverage,debug,profile
+      #   XDEBUG_HOST: ${XDEBUG_HOST:-host.docker.internal}
+      #   XDEBUG_IDE_KEY: ${XDEBUG_IDE_KEY:-DOCKER}
+      #   XDEBUG_LOG: /dev/stdout
+      #   XDEBUG_LOG_LEVEL: 0
+    restart: unless-stopped
+    user: "${UID:-1000}:${GID:-1000}"
+    entrypoint: []
+    command: >
+      sh -c "
+      cd /var/www &&
+      php artisan config:clear &&
+      php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --verbose
+      "
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www
+    networks:
+      - hpvtcrm-dev
+
 #==============================================================================
 # Networks
 #==============================================================================
