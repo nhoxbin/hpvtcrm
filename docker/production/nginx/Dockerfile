@@ -1,11 +1,71 @@
 #==============================================================================
-# Stage 1: Build Frontend Assets
+# Stage 1: Build PHP Dependencies
+#==============================================================================
+# Use PHP for running Composer first
+FROM php:8.2-fpm AS php-builder
+
+# Install system dependencies and PHP extensions required by Laravel packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    unzip \
+    libpq-dev \
+    libonig-dev \
+    libssl-dev \
+    libxml2-dev \
+    libcurl4-openssl-dev \
+    libicu-dev \
+    libzip-dev \
+    libfreetype-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        pdo_pgsql \
+        opcache \
+        intl \
+        zip \
+        bcmath \
+        soap \
+        gd \
+    && pecl install redis \
+    && docker-php-ext-enable redis gd \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- \
+        --install-dir=/usr/local/bin \
+        --filename=composer
+
+# Set working directory
+WORKDIR /var/www
+
+# Copy composer files
+COPY composer.* ./
+
+# Copy full application
+COPY . .
+
+# Install PHP dependencies (composer install)
+RUN composer install \
+        --no-dev \
+        --optimize-autoloader \
+        --no-interaction \
+        --no-progress \
+        --prefer-dist
+
+#==============================================================================
+# Stage 2: Build Frontend Assets
 #==============================================================================
 # Use Node.js 25 on Debian bookworm (slim) for building assets
 FROM node:25-bookworm-slim AS builder
 
 # Set working directory for the build
 WORKDIR /var/www
+
+# Copy vendor from PHP builder (needed for Ziggy Vue)
+COPY --from=php-builder /var/www/vendor ./vendor
 
 # Copy package files for dependency installation
 COPY package*.json ./

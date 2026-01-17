@@ -29,7 +29,7 @@ services:
       - laravel-production
     depends_on:
       php-fpm:
-        condition: service_healthy
+        condition: service_started
 
   #----------------------------------------------------------------------------
   # PHP-FPM Application Server
