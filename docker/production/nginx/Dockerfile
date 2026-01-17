@@ -49,7 +49,6 @@ COPY . .
 
 # Install PHP dependencies (composer install)
 RUN composer install \
-        --no-dev \
         --optimize-autoloader \
         --no-interaction \
         --no-progress \
