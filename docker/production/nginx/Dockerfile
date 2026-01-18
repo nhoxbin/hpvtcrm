@@ -99,6 +99,9 @@ RUN if [ ! -d "/var/www/public/build" ]; then \
 # Use Alpine-based Nginx for a lightweight production image
 FROM nginx:alpine
 
+# Install bash for debugging/troubleshooting
+# RUN apk add --no-cache bash curl
+
 # Copy custom Nginx configuration
 # - Optimized for serving Laravel applications
 # - Configures proper routing for SPA and API endpoints
