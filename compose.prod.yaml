@@ -45,7 +45,6 @@ services:
     env_file:
       - .env
     volumes:
-      - laravel-public-assets:/var/www/public # RW for cache invalidation
       - laravel-storage-production:/var/www/storage
     networks:
       - laravel-production
@@ -171,6 +170,4 @@ volumes:
   # postgres-data-production:
   #   driver: local
   laravel-storage-production:
-    driver: local
-  laravel-public-assets:
     driver: local

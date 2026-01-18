@@ -126,7 +126,7 @@ RUN sed -i '/\[www\]/a pm.status_path = /status' /usr/local/etc/php-fpm.d/zz-doc
 # Copy application code and Composer dependencies from builder
 COPY --from=builder /var/www /var/www
 
-# Copy built assets from assets-builder stage
+# Copy built assets from assets-builder stage (AFTER builder to override public folder)
 COPY --from=assets-builder /var/www/public /var/www/public
 COPY --from=assets-builder /var/www/bootstrap /var/www/bootstrap
 

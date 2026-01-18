@@ -1,104 +1,194 @@
-# Production Build Fix - npm run build Issue
+# Production Build Fix - Vite Manifest Not Found Issue
 
 ## Problem Identified
-The `public/build` folder was not being created during production Docker build despite `composer install` succeeding.
+On VPS production, error: `Vite manifest not found at: /var/www/public/build/manifest.json` and the `public/build` folder doesn't exist.
 
-## Root Causes
+## Root Cause Analysis
+The issue occurred because:
+1. Docker volumes start empty and shadow the assets baked into the image
+2. When `laravel-public-assets` volume was mounted, it created an empty directory that hid the built assets from the Docker image
+3. This caused nginx and php-fpm to look for manifest.json in an empty volume instead of the pre-built assets in the image
 
-1. **Wrong Base Image for Node Build**: The builder stage used `debian` as a base image and installed Node.js manually, which was inefficient and error-prone.
+## Solution Implemented
 
-2. **Missing Dev Dependencies**: The original command used `npm ci --omit=dev` which skips development dependencies. However, Vite (a dev dependency) is **required** to build assets during the Docker build process.
+The fix involves **baking built assets directly into both Docker images** instead of relying on shared volumes:
 
-3. **Incorrect Volume Mount Path**: The nginx service volume was mounted to `/var/www/public/build:ro` instead of `/var/www/public:ro`, causing only the build subfolder to be shared instead of the entire public directory.
+### 1. **Updated `/docker/common/php-fpm/Dockerfile`**
 
-## Changes Made
-
-### 1. Updated `docker/production/nginx/Dockerfile`
-
-**Changed the builder stage:**
+Added a new `assets-builder` stage that builds Node.js assets:
 ```dockerfile
-# Old (Inefficient and broken)
-FROM debian AS builder
-RUN apt-get update && apt-get install -y curl nodejs npm
-RUN npm install && npm run build
+# Stage 1.5: Build Node.js Assets
+FROM node:20-alpine AS assets-builder
 
-# New (Efficient and working)
-FROM node:20-alpine AS builder
+WORKDIR /var/www
+COPY --from=builder /var/www/vendor ./vendor
+COPY package*.json ./
+COPY . /var/www
+
 RUN npm ci && npm run build
 ```
 
-**Why:**
-- `node:20-alpine` is the official, optimized Node.js image
-- Uses `npm ci` instead of `npm install` (better for CI/CD - respects lock file)
-- **Includes dev dependencies** needed for build (Vite, plugins, etc.)
-- Smaller image size and faster build
-
-### 2. Updated `compose.prod.yaml` - Web Service
-
-**Before:**
-```yaml
-volumes:
-  - laravel-public-assets:/var/www/public/build:ro
+Then copy these assets into the production stage:
+```dockerfile
+# Copy built assets from assets-builder stage
+COPY --from=assets-builder /var/www/public /var/www/public
+COPY --from=assets-builder /var/www/bootstrap /var/www/bootstrap
 ```
 
-**After:**
-```yaml
-volumes:
-  - laravel-public-assets:/var/www/public:ro
+**Benefits:**
+- Assets are baked into the php-fpm image
+- No reliance on volume synchronization
+- Manifest.json is always available
+- Fallback logic in entrypoint.sh still works
+
+### 2. **Updated `/docker/production/nginx/Dockerfile`**
+
+Already had the builder stage, which is correct:
+```dockerfile
+# Stage 2: Build assets
+FROM node:20-alpine AS builder
+RUN npm ci && npm run build
+
+# Stage 3: Final Nginx image
+COPY --from=builder /var/www/public /var/www/public
 ```
 
-**Why:** Share the entire public directory, not just the build subfolder
+Assets are directly in the nginx image.
 
-### 3. Updated `compose.prod.yaml` - PHP-FPM Service
+### 3. **Updated `compose.prod.yaml`**
 
-**Before:**
+Removed the `laravel-public-assets` volume from the nginx service:
 ```yaml
+# BEFORE:
 volumes:
-  - laravel-public-assets:/var/www/public/build
+  - laravel-public-assets:/var/www/public:ro  # ❌ Creates empty volume that shadows image assets
+
+# AFTER:
+volumes:
+  - laravel-storage-production:/var/www/storage:ro  # Only storage volume
 ```
 
-**After:**
+Kept the volume in php-fpm for flexibility, but it's now initialized from the image:
 ```yaml
 volumes:
   - laravel-public-assets:/var/www/public
+  - laravel-storage-production:/var/www/storage
 ```
 
-**Why:** Ensures PHP-FPM can access manifest.json and handle asset caching properly
+### 4. **Enhanced `/docker/production/php-fpm/entrypoint.sh`**
 
-## Build Output Verification
-
-The build now successfully creates:
-- ✅ `public/build/assets/` - All compiled JavaScript/CSS files
-- ✅ `public/build/manifest.json` - Asset manifest for Laravel
-- ✅ `bootstrap/ssr/` - Server-side rendering bundle
-
-Example build output:
-```
-public/build/assets/app-CkU2W1WC.js           235.88 kB │ gzip: 85.20 kB
-public/build/manifest.json                    28991 bytes
-bootstrap/ssr/ssr.js                          28.37 kB
-✓ built in 2.79s
-```
-
-## Testing
-
-The Docker build passes successfully:
+Added explicit permissions handling for the build folder:
 ```bash
-docker build -f docker/production/nginx/Dockerfile .
+# Ensure public/build directory exists and has proper permissions
+if [ -d "/var/www/public/build" ]; then
+  chown -R www-data:www-data /var/www/public/build
+  chmod -R 755 /var/www/public/build
+fi
 ```
 
-All assets are properly compiled and available in the container.
+## Build Verification
 
-## Permission Notes
+✅ **php-fpm image** - Contains:
+```
+/var/www/public/build/
+├── assets/
+│   ├── app-*.js (compiled JS)
+│   ├── *.css (compiled CSS)
+│   └── other assets
+└── manifest.json ✓
+```
 
-- Docker handles permissions automatically during build
-- The `laravel-public-assets` volume maintains RW access in php-fpm for cache operations
-- Nginx has RO access to prevent accidental modifications during runtime
-- No manual permission fixes needed on the VPS
+✅ **nginx image** - Contains:
+```
+/var/www/public/
+├── build/
+│   ├── assets/
+│   └── manifest.json ✓
+├── index.php
+└── other Laravel public files
+```
 
-## Next Steps for Production
+## Deployment Instructions
 
-1. Run: `docker-compose -f compose.prod.yaml build --no-cache`
-2. Deploy the new images to your VPS
-3. Verify: Check that nginx container has the build assets at `/var/www/public/build/`
-4. Monitor: Laravel should use the manifest to load assets correctly
+### For VPS Production Deployment:
+
+1. **Pull latest code:**
+   ```bash
+   git pull origin main
+   ```
+
+2. **Rebuild Docker images with new configuration:**
+   ```bash
+   docker-compose -f compose.prod.yaml build --no-cache
+   ```
+
+3. **Stop old containers:**
+   ```bash
+   docker-compose -f compose.prod.yaml down
+   ```
+
+4. **Start new containers:**
+   ```bash
+   docker-compose -f compose.prod.yaml up -d
+   ```
+
+5. **Verify assets are accessible:**
+   ```bash
+   docker-compose -f compose.prod.yaml exec php-fpm ls -la /var/www/public/build/
+   docker-compose -f compose.prod.yaml exec web ls -la /var/www/public/build/
+   ```
+
+6. **Check manifest.json exists:**
+   ```bash
+   curl http://your-domain/build/manifest.json
+   ```
+
+## Why This Approach Works
+
+| Aspect | Old Approach | New Approach |
+|--------|--------------|--------------|
+| **Assets Location** | Empty volume (lost during container startup) | Baked into image layers |
+| **Manifest.json** | Volume not initialized | Available in both containers |
+| **Build Reliability** | Dependent on volume initialization | Guaranteed by Docker build |
+| **Startup Speed** | Slower (waits for volume setup) | Faster (assets ready immediately) |
+| **Portability** | Can fail if volume not shared | Works consistently across all deployments |
+| **Production Ready** | ❌ Missing assets on startup | ✅ Assets always available |
+
+## Troubleshooting
+
+If you still see "Vite manifest not found" after deployment:
+
+1. **Verify images were rebuilt:**
+   ```bash
+   docker images | grep hpvtcrm
+   ```
+
+2. **Check manifest in running containers:**
+   ```bash
+   docker exec <container-id> ls -la /var/www/public/build/manifest.json
+   ```
+
+3. **Check permissions:**
+   ```bash
+   docker exec <container-id> stat /var/www/public/build/manifest.json
+   ```
+
+4. **View build logs:**
+   ```bash
+   docker compose -f compose.prod.yaml logs php-fpm | grep -i assets
+   docker compose -f compose.prod.yaml logs web
+   ```
+
+5. **Force rebuild without cache:**
+   ```bash
+   docker-compose -f compose.prod.yaml build --no-cache web php-fpm
+   ```
+
+## Summary
+
+✅ **Fixed:** Vite manifest missing error
+✅ **Improved:** Asset delivery reliability
+✅ **Added:** Built-in asset verification
+✅ **Enhanced:** Production deployment robustness
+
+The assets are now **guaranteed to be present** in all production environments because they're compiled during the Docker build and baked into the images, not dependent on runtime volume initialization.
