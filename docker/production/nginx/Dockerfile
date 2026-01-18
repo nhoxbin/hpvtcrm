@@ -45,7 +45,7 @@ WORKDIR /var/www
 COPY composer.* ./
 
 # Copy full application
-COPY . .
+COPY . /var/www
 
 # Install PHP dependencies (composer install)
 RUN composer install \
