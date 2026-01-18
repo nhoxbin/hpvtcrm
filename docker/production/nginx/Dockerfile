@@ -67,8 +67,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /var/www
 
+# Copy vendor from PHP builder (needed for Ziggy Vue)
+COPY --from=php-builder /var/www/vendor ./vendor
+
+# Copy package files for dependency installation
+COPY package*.json ./
+
 # Copy Laravel application code
-COPY . /var/www
+COPY . .
 
 # Install Node.js dependencies and build assets
 RUN npm install && npm run build
