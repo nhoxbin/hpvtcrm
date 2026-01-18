@@ -57,6 +57,25 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
         --prefer-dist
 
 #==============================================================================
+# Stage 1.5: Build Node.js Assets
+#==============================================================================
+FROM node:20-alpine AS assets-builder
+
+WORKDIR /var/www
+
+# Copy vendor from PHP builder (needed for Ziggy)
+COPY --from=builder /var/www/vendor ./vendor
+
+# Copy package files
+COPY package*.json ./
+
+# Copy Laravel application code
+COPY . /var/www
+
+# Build assets
+RUN npm ci && npm run build
+
+#==============================================================================
 # Stage 2: Production Runtime
 #==============================================================================
 FROM php:8.2-fpm AS production
@@ -106,6 +125,10 @@ RUN sed -i '/\[www\]/a pm.status_path = /status' /usr/local/etc/php-fpm.d/zz-doc
 
 # Copy application code and Composer dependencies from builder
 COPY --from=builder /var/www /var/www
+
+# Copy built assets from assets-builder stage
+COPY --from=assets-builder /var/www/public /var/www/public
+COPY --from=assets-builder /var/www/bootstrap /var/www/bootstrap
 
 # Set working directory
 WORKDIR /var/www

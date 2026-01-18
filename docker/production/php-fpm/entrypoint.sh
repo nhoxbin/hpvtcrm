@@ -37,6 +37,12 @@ echo "[INIT] Setting directory permissions..."
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
 
+# Ensure public/build directory exists and has proper permissions
+if [ -d "/var/www/public/build" ]; then
+  chown -R www-data:www-data /var/www/public/build
+  chmod -R 755 /var/www/public/build
+fi
+
 # Ensure specific writable subdirectories exist and have correct permissions
 mkdir -p /var/www/storage/framework/cache/data \
          /var/www/storage/framework/sessions \

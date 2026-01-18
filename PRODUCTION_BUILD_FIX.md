@@ -102,4 +102,3 @@ All assets are properly compiled and available in the container.
 2. Deploy the new images to your VPS
 3. Verify: Check that nginx container has the build assets at `/var/www/public/build/`
 4. Monitor: Laravel should use the manifest to load assets correctly
-
