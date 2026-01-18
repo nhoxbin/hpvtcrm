@@ -83,14 +83,20 @@ COPY . .
 # - Creates SSR build for server-side rendering
 RUN npm run build || (echo "Build failed, checking for errors..." && exit 1)
 
-# Verify public/build folder was created
-RUN if [ ! -d "/var/www/public/build" ]; then \
-    echo "ERROR: public/build folder not created after npm run build"; \
-    ls -la /var/www/public/ 2>/dev/null || echo "public folder doesn't exist"; \
+# Verify and list what was actually created
+RUN echo "=== Contents of /var/www after npm run build ===" && \
+    ls -la /var/www/ && \
+    echo "=== Contents of /var/www/public (if exists) ===" && \
+    ls -la /var/www/public/ 2>/dev/null || echo "public folder doesn't exist" && \
+    echo "=== Checking for build output ===" && \
+    find /var/www -name "manifest.json" -o -name "*.js" -o -name "*.css" | head -20 && \
+    echo "=== Verifying public/build folder ===" && \
+    if [ ! -d "/var/www/public/build" ]; then \
+    echo "ERROR: public/build folder not created!"; \
     exit 1; \
     else \
-    echo "SUCCESS: public/build folder created"; \
-    ls -la /var/www/public/build/; \
+    echo "SUCCESS: public/build folder exists"; \
+    ls -la /var/www/public/build/ | head -20; \
     fi
 
 #==============================================================================
@@ -100,7 +106,7 @@ RUN if [ ! -d "/var/www/public/build" ]; then \
 FROM nginx:alpine
 
 # Install bash for debugging/troubleshooting
-# RUN apk add --no-cache bash curl
+RUN apk add --no-cache bash curl
 
 # Copy custom Nginx configuration
 # - Optimized for serving Laravel applications
