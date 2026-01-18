@@ -1,5 +1,5 @@
 #==============================================================================
-# Stage 1: Build Environment
+# Stage 1: Build PHP Dependencies
 #==============================================================================
 # Installs PHP extensions and Composer dependencies
 FROM php:8.2-fpm AS builder
@@ -8,6 +8,7 @@ FROM php:8.2-fpm AS builder
 # - Build tools and libraries for compiling PHP extensions
 # - Database drivers (MySQL, PostgreSQL)
 # - Common Laravel requirements (GD, Intl, Zip, etc.)
+# - Node.js and npm for building frontend assets
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
@@ -21,6 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
+    nodejs \
+    npm \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         pdo_pgsql \
@@ -46,33 +49,19 @@ WORKDIR /var/www
 # the complete application structure
 COPY . /var/www
 
-# Install Composer and production dependencies
+# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- \
         --install-dir=/usr/local/bin \
-        --filename=composer \
-    && composer install \
+        --filename=composer
+
+# Install PHP dependencies
+RUN composer install \
         --optimize-autoloader \
         --no-interaction \
         --no-progress \
         --prefer-dist
 
-#==============================================================================
-# Stage 1.5: Build Node.js Assets
-#==============================================================================
-FROM node:20-alpine AS assets-builder
-
-WORKDIR /var/www
-
-# Copy vendor from PHP builder (needed for Ziggy)
-COPY --from=builder /var/www/vendor ./vendor
-
-# Copy package files
-COPY package*.json ./
-
-# Copy Laravel application code
-COPY . /var/www
-
-# Build assets
+# Install Node.js dependencies and build frontend assets
 RUN npm ci && npm run build
 
 #==============================================================================
@@ -126,9 +115,10 @@ RUN sed -i '/\[www\]/a pm.status_path = /status' /usr/local/etc/php-fpm.d/zz-doc
 # Copy application code and Composer dependencies from builder
 COPY --from=builder /var/www /var/www
 
-# Copy built assets from assets-builder stage (AFTER builder to override public folder)
-COPY --from=assets-builder /var/www/public /var/www/public
-COPY --from=assets-builder /var/www/bootstrap /var/www/bootstrap
+# Debug: Verify assets exist in production container
+RUN echo "=== Verifying assets in production stage ===" && \
+    (ls -la /var/www/public/build/ && echo "✓ Build assets verified") || \
+    (echo "✗ ERROR: Assets not found!" && exit 1)
 
 # Set working directory
 WORKDIR /var/www
