@@ -70,7 +70,23 @@ COPY package*.json ./
 COPY . /var/www
 
 # Install Node.js dependencies (including dev deps needed for build) and build assets
-RUN npm ci && npm run build
+RUN npm ci && npm run build && \
+    echo "" && \
+    echo "===== Verifying Vite build output =====" && \
+    if [ ! -d /var/www/public/build ]; then \
+        if [ -d /var/www/dist ]; then \
+            echo "Moving /var/www/dist → /var/www/public/build"; \
+            mkdir -p /var/www/public && \
+            mv /var/www/dist /var/www/public/build; \
+        fi; \
+    fi && \
+    if [ -d /var/www/public/build ]; then \
+        echo "✓ Build directory ready at /var/www/public/build/"; \
+        ls -la /var/www/public/build/ | head -5; \
+    else \
+        echo "✗ ERROR: Build directory not found"; \
+        exit 1; \
+    fi
 
 # Stage 2: Nginx production image
 FROM nginx:alpine

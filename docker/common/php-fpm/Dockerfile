@@ -22,8 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
-    nodejs \
-    npm \
+    ca-certificates \
+    gnupg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         pdo_pgsql \
@@ -39,6 +39,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Install Node.js LTS from NodeSource repository (better than Debian's outdated version)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Set working directory
 WORKDIR /var/www
@@ -62,7 +69,59 @@ RUN composer install \
         --prefer-dist
 
 # Install Node.js dependencies and build frontend assets
-RUN npm ci && npm run build
+RUN echo "" && \
+    echo "===== NPM Build Step =====" && \
+    echo "Node version: $(node --version)" && \
+    echo "NPM version: $(npm --version)" && \
+    echo "Working directory: $(pwd)" && \
+    echo "" && \
+    echo "Step 1: Install npm dependencies" && \
+    npm ci && \
+    echo "" && \
+    echo "Step 2: Build assets with Vite" && \
+    npm run build && \
+    echo "" && \
+    echo "Step 3: Check where build output was created" && \
+    echo "Contents of /var/www/:" && \
+    ls -la /var/www/ && \
+    echo "" && \
+    echo "Contents of /var/www/public/:" && \
+    ls -la /var/www/public/ && \
+    echo "" && \
+    echo "Step 4: Verify and move build artifacts" && \
+    if [ -d /var/www/public/build ]; then \
+        echo "✓ /var/www/public/build/ already exists"; \
+    elif [ -d /var/www/dist ]; then \
+        echo "Found build output in /var/www/dist, moving to /var/www/public/build/"; \
+        mkdir -p /var/www/public && \
+        mv /var/www/dist /var/www/public/build; \
+        echo "✓ Moved /var/www/dist → /var/www/public/build/"; \
+    elif [ -d /var/www/bootstrap/ssr ]; then \
+        echo "Found SSR output in /var/www/bootstrap/ssr"; \
+        ls -la /var/www/bootstrap/ssr; \
+    else \
+        echo "✗ ERROR: Build output not found!"; \
+        echo "Searched locations:"; \
+        echo "  - /var/www/public/build"; \
+        echo "  - /var/www/dist"; \
+        echo "  - /var/www/bootstrap/ssr"; \
+        echo ""; \
+        echo "Full directory tree:"; \
+        find /var/www -maxdepth 3 -type f -name "manifest.json" -o -name "*.js" 2>/dev/null | head -10; \
+        exit 1; \
+    fi && \
+    echo "" && \
+    echo "Step 5: Final verification" && \
+    if [ -d /var/www/public/build ]; then \
+        echo "✓ SUCCESS: /var/www/public/build/ exists"; \
+        echo "Contents:"; \
+        ls -la /var/www/public/build/ | head -10; \
+    else \
+        echo "✗ FAILED: /var/www/public/build/ still missing!"; \
+        exit 1; \
+    fi && \
+    echo "" && \
+    echo "===== NPM Build Complete ====="
 
 #==============================================================================
 # Stage 2: Production Runtime

@@ -34,7 +34,7 @@ Stage 1 (builder):
   - Runs: npm ci ✓             <- NEW
   - Runs: npm run build ✓      <- NEW
   - Creates: /var/www/public/build/ ✓
-  
+
 Stage 2 (production):
   - Copy EVERYTHING from builder (includes /var/www/public/build/) ✓
   - Verify assets exist ✓
