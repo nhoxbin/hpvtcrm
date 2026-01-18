@@ -77,11 +77,21 @@ RUN npm ci --only=production=false
 # Copy application source code
 COPY . .
 
-# Build frontend assets
+# Build frontend assets with verbose output to see any errors
 # - Compiles Vue components and CSS
 # - Generates optimized production bundles
 # - Creates SSR build for server-side rendering
-RUN npm run build
+RUN npm run build || (echo "Build failed, checking for errors..." && exit 1)
+
+# Verify public/build folder was created
+RUN if [ ! -d "/var/www/public/build" ]; then \
+    echo "ERROR: public/build folder not created after npm run build"; \
+    ls -la /var/www/public/ 2>/dev/null || echo "public folder doesn't exist"; \
+    exit 1; \
+    else \
+    echo "SUCCESS: public/build folder created"; \
+    ls -la /var/www/public/build/; \
+    fi
 
 #==============================================================================
 # Stage 2: Nginx Production Server

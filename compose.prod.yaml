@@ -29,7 +29,7 @@ services:
       - laravel-production
     depends_on:
       php-fpm:
-        condition: service_started
+        condition: service_healthy
 
   #----------------------------------------------------------------------------
   # PHP-FPM Application Server
@@ -70,7 +70,7 @@ services:
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: production
     restart: unless-stopped
-    user: "${UID:-1000}:${GID:-1000}"
+    user: "www-data:www-data"
     entrypoint: []
     command: >
       sh -c "
@@ -81,9 +81,14 @@ services:
     env_file:
       - .env
     volumes:
-      - ./:/var/www
+      - laravel-storage-production:/var/www/storage
     networks:
       - laravel-production
+    depends_on:
+      mysql:
+        condition: service_healthy
+      php-fpm:
+        condition: service_healthy
 
   #----------------------------------------------------------------------------
   # MySQL Database
