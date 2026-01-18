@@ -74,7 +74,7 @@ COPY --from=php-builder /var/www/vendor ./vendor
 COPY package*.json ./
 
 # Copy Laravel application code
-COPY . .
+COPY . /var/www
 
 # Install Node.js dependencies and build assets
 RUN npm install && npm run build
