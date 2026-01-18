@@ -23,5 +23,5 @@ jobs:
           script: |
             cd /var/www/hpvtcrm
             git pull origin main
-            docker compose -f compose.prod.yaml down -v
+            docker compose -f compose.prod.yaml down
             docker compose -f compose.prod.yaml up -d
