@@ -70,61 +70,12 @@ COPY package*.json ./
 COPY . /var/www
 
 # Install Node.js dependencies (including dev deps needed for build) and build assets
-RUN set -e && \
-    BUILD_LOG="/tmp/nginx-build.log" && \
-    { \
-        echo "============================================"; \
-        echo "NGINX BUILD DIAGNOSTIC LOG"; \
-        echo "Date: $(date)"; \
-        echo "============================================"; \
-        echo ""; \
-        echo "=== SYSTEM INFO ==="; \
-        echo "Node version: $(node --version)"; \
-        echo "NPM version: $(npm --version)"; \
-        echo ""; \
-        echo "=== Before Build - Directory Structure ==="; \
-        find /var/www -maxdepth 2 -type d | sort; \
-        echo ""; \
-        echo "=== Step 1: npm ci ==="; \
-        npm ci 2>&1; \
-        echo "npm ci exit code: $?"; \
-        echo ""; \
-        echo "=== Step 2: npm run build ==="; \
-        npm run build 2>&1; \
-        BUILD_EXIT=$?; \
-        echo "npm run build exit code: $BUILD_EXIT"; \
-        echo ""; \
-        echo "=== After Build - Directory Structure ==="; \
-        find /var/www -maxdepth 3 -type d | sort; \
-        echo ""; \
-        echo "=== Check specific directories ==="; \
-        echo "--- /var/www/dist (if exists) ---"; \
-        ls -la /var/www/dist 2>/dev/null || echo "NOT FOUND"; \
-        echo ""; \
-        echo "--- /var/www/public/build (if exists) ---"; \
-        ls -la /var/www/public/build 2>/dev/null || echo "NOT FOUND"; \
-        echo ""; \
-        echo "=== Move build output if needed ==="; \
-        if [ ! -d /var/www/public/build ]; then \
-            if [ -d /var/www/dist ]; then \
-                echo "Moving /var/www/dist → /var/www/public/build"; \
-                mkdir -p /var/www/public; \
-                mv /var/www/dist /var/www/public/build; \
-            fi; \
-        fi && \
-        if [ -d /var/www/public/build ]; then \
-            echo "✓ Build directory ready"; \
-            ls -lR /var/www/public/build; \
-        else \
-            echo "✗ ERROR: Build directory not found"; \
-            exit 1; \
-        fi; \
-        echo ""; \
-        echo "============================================"; \
-        echo "BUILD LOG COMPLETE"; \
-        echo "============================================"; \
-    } | tee "$BUILD_LOG" && \
-    echo "Build log saved to: $BUILD_LOG"
+RUN npm ci && \
+    npm run build && \
+    if [ -d /var/www/dist ]; then \
+        mkdir -p /var/www/public && \
+        mv /var/www/dist /var/www/public/build; \
+    fi
 
 # Stage 2: Nginx production image
 FROM nginx:alpine

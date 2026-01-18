@@ -69,97 +69,12 @@ RUN composer install \
         --prefer-dist
 
 # Install Node.js dependencies and build frontend assets
-RUN set -e && \
-    BUILD_LOG="/tmp/npm-build.log" && \
-    echo "Build log will be written to: $BUILD_LOG" && \
-    { \
-        echo "============================================"; \
-        echo "NPM BUILD DIAGNOSTIC LOG"; \
-        echo "Date: $(date)"; \
-        echo "============================================"; \
-        echo ""; \
-        echo "=== SYSTEM INFO ==="; \
-        echo "Node version: $(node --version)"; \
-        echo "NPM version: $(npm --version)"; \
-        echo "Working directory: $(pwd)"; \
-        echo ""; \
-        echo "=== BEFORE BUILD - Directory Structure ==="; \
-        find /var/www -maxdepth 2 -type d | sort; \
-        echo ""; \
-        echo "=== Step 1: npm ci ==="; \
-        npm ci 2>&1; \
-        echo "npm ci exit code: $?"; \
-        echo ""; \
-        echo "=== After npm ci - node_modules check ==="; \
-        ls -la /var/www/node_modules | head -20; \
-        echo ""; \
-        echo "=== Step 2: npm run build ==="; \
-        npm run build 2>&1; \
-        BUILD_EXIT=$?; \
-        echo "npm run build exit code: $BUILD_EXIT"; \
-        echo ""; \
-        echo "=== AFTER BUILD - Complete Directory Structure ==="; \
-        find /var/www -maxdepth 3 -type d | sort; \
-        echo ""; \
-        echo "=== Searching for build artifacts ==="; \
-        echo "Looking for manifest.json:"; \
-        find /var/www -name "manifest.json" -type f 2>/dev/null; \
-        echo ""; \
-        echo "Looking for all .js files (first 20):"; \
-        find /var/www -name "*.js" -type f 2>/dev/null | head -20; \
-        echo ""; \
-        echo "=== Check specific directories ==="; \
-        echo "--- /var/www/dist (if exists) ---"; \
-        ls -la /var/www/dist 2>/dev/null || echo "NOT FOUND"; \
-        echo ""; \
-        echo "--- /var/www/public/build (if exists) ---"; \
-        ls -la /var/www/public/build 2>/dev/null || echo "NOT FOUND"; \
-        echo ""; \
-        echo "--- /var/www/public (contents) ---"; \
-        ls -la /var/www/public 2>/dev/null || echo "NOT FOUND"; \
-        echo ""; \
-        echo "--- /var/www/bootstrap/ssr (if exists) ---"; \
-        ls -la /var/www/bootstrap/ssr 2>/dev/null || echo "NOT FOUND"; \
-        echo ""; \
-        echo "=== Step 3: Move build output if needed ==="; \
-        if [ -d /var/www/public/build ]; then \
-            echo "✓ /var/www/public/build already exists"; \
-            ls -la /var/www/public/build; \
-        elif [ -d /var/www/dist ]; then \
-            echo "Found /var/www/dist - moving to /var/www/public/build"; \
-            mkdir -p /var/www/public; \
-            mv /var/www/dist /var/www/public/build; \
-            echo "✓ Move successful"; \
-            echo "Contents of /var/www/public/build:"; \
-            ls -la /var/www/public/build; \
-        else \
-            echo "✗ ERROR: No build output found!"; \
-            echo "Checked locations:"; \
-            echo "  - /var/www/public/build (missing)"; \
-            echo "  - /var/www/dist (missing)"; \
-            echo ""; \
-            echo "=== FULL TREE (all files) ==="; \
-            find /var/www -type f -name "*.json" -o -name "*.js" -o -name "*.css" 2>/dev/null | head -30; \
-        fi && \
-        echo ""; \
-        echo "=== Step 4: Final Verification ==="; \
-        if [ -d /var/www/public/build ]; then \
-            echo "✓ SUCCESS: /var/www/public/build exists"; \
-            echo "File count: $(find /var/www/public/build -type f | wc -l)"; \
-            echo "Contents:"; \
-            ls -lR /var/www/public/build; \
-        else \
-            echo "✗ FAILED: Build directory missing"; \
-            exit 1; \
-        fi; \
-        echo ""; \
-        echo "============================================"; \
-        echo "BUILD LOG COMPLETE"; \
-        echo "============================================"; \
-    } | tee "$BUILD_LOG" && \
-    echo "" && \
-    echo "Full build log saved to: $BUILD_LOG" && \
-    echo "Copy this file from the container: docker cp <container>:$BUILD_LOG build.log"
+RUN npm ci && \
+    npm run build && \
+    if [ -d /var/www/dist ]; then \
+        mkdir -p /var/www/public && \
+        mv /var/www/dist /var/www/public/build; \
+    fi
 
 #==============================================================================
 # Stage 2: Production Runtime
