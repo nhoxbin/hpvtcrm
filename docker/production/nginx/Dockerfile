@@ -77,27 +77,20 @@ RUN npm ci --only=production=false
 # Copy application source code
 COPY . .
 
-# Build frontend assets with verbose output to see any errors
-# - Compiles Vue components and CSS
-# - Generates optimized production bundles
-# - Creates SSR build for server-side rendering
-RUN npm run build || (echo "Build failed, checking for errors..." && exit 1)
+# Show what we're working with
+RUN echo "=== Before npm run build ===" && pwd && ls -la /var/www/ | head -20
 
-# Verify and list what was actually created
-RUN echo "=== Contents of /var/www after npm run build ===" && \
-    ls -la /var/www/ && \
-    echo "=== Contents of /var/www/public (if exists) ===" && \
-    ls -la /var/www/public/ 2>/dev/null || echo "public folder doesn't exist" && \
-    echo "=== Checking for build output ===" && \
-    find /var/www -name "manifest.json" -o -name "*.js" -o -name "*.css" | head -20 && \
-    echo "=== Verifying public/build folder ===" && \
-    if [ ! -d "/var/www/public/build" ]; then \
-    echo "ERROR: public/build folder not created!"; \
-    exit 1; \
-    else \
-    echo "SUCCESS: public/build folder exists"; \
-    ls -la /var/www/public/build/ | head -20; \
-    fi
+# Build frontend assets with verbose output
+RUN echo "=== Starting npm run build ===" && npm run build 2>&1 | tee /tmp/build.log && echo "=== Build completed ==="
+
+# Show the output log
+RUN echo "=== Build Log ===" && cat /tmp/build.log
+
+# List everything created
+RUN echo "=== AFTER BUILD - ALL FILES ===" && find /var/www -type f \( -name "*.js" -o -name "*.css" -o -name "manifest.json" \) -not -path "*/node_modules/*" -not -path "*/vendor/*" 2>/dev/null && \
+    echo "=== Check key directories ===" && \
+    echo "public folder:" && ls -la /var/www/public/ 2>/dev/null && \
+    echo "public/build folder:" && ls -la /var/www/public/build/ 2>/dev/null
 
 #==============================================================================
 # Stage 2: Nginx Production Server
@@ -116,7 +109,13 @@ COPY ./docker/production/nginx/nginx.conf /etc/nginx/nginx.conf
 # Copy built assets from builder stage
 # - Only includes compiled frontend assets (JS, CSS, images)
 # - Keeps final image size minimal
-COPY --from=builder /var/www/public /var/www/public
+COPY --from=builder /var/www/public/build /var/www/public/build
+
+# Ensure proper permissions
+RUN chmod -R 755 /var/www/public 2>/dev/null || true && \
+    echo "=== Contents of copied public folder ===" && \
+    ls -la /var/www/public/ && \
+    if [ -d "/var/www/public/build" ]; then echo "=== public/build exists ===" && ls -la /var/www/public/build/; fi
 
 # Set working directory
 WORKDIR /var/www/public

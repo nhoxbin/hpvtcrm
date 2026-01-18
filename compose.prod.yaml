@@ -24,7 +24,7 @@ services:
       - "${NGINX_PORT:-80}:80"
     volumes:
       - laravel-storage-production:/var/www/storage:ro # Read-only access
-      - laravel-public:/var/www/public:ro # Read-only access
+      - laravel-public-assets:/var/www/public/build:ro # Read-only access
     networks:
       - laravel-production
     depends_on:
@@ -46,7 +46,7 @@ services:
     env_file:
       - .env
     volumes:
-      - laravel-public:/var/www/public
+      - laravel-public-assets:/var/www/public/build
       - laravel-storage-production:/var/www/storage
     networks:
       - laravel-production
@@ -54,7 +54,7 @@ services:
       test: ["CMD-SHELL", "php-fpm-healthcheck || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
       start_period: 60s
     depends_on:
       mysql:
@@ -173,5 +173,5 @@ volumes:
   #   driver: local
   laravel-storage-production:
     driver: local
-  laravel-public:
+  laravel-public-assets:
     driver: local
