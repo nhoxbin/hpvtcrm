@@ -69,8 +69,8 @@ COPY package*.json ./
 # Copy Laravel application code (need all files for Vite)
 COPY . /var/www
 
-# Install Node.js dependencies and build assets
-RUN npm ci --omit=dev && npm run build
+# Install Node.js dependencies (including dev deps needed for build) and build assets
+RUN npm ci && npm run build
 
 # Stage 2: Nginx production image
 FROM nginx:alpine
