@@ -55,14 +55,7 @@ RUN composer install \
         --prefer-dist
 
 # Stage 2: Build assets
-FROM debian AS builder
-
-# Install Node.js and build tools
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    nodejs \
-    npm \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /var/www
@@ -73,11 +66,11 @@ COPY --from=php-builder /var/www/vendor ./vendor
 # Copy package files for dependency installation
 COPY package*.json ./
 
-# Copy Laravel application code
+# Copy Laravel application code (need all files for Vite)
 COPY . /var/www
 
 # Install Node.js dependencies and build assets
-RUN npm install && npm run build
+RUN npm ci --omit=dev && npm run build
 
 # Stage 2: Nginx production image
 FROM nginx:alpine

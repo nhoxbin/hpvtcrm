@@ -24,7 +24,7 @@ services:
       - "${NGINX_PORT:-80}:80"
     volumes:
       - laravel-storage-production:/var/www/storage:ro # Read-only access
-      - laravel-public-assets:/var/www/public/build:ro # Read-only access
+      - laravel-public-assets:/var/www/public:ro # Read-only access to public directory
     networks:
       - laravel-production
     depends_on:
@@ -46,7 +46,7 @@ services:
     env_file:
       - .env
     volumes:
-      - laravel-public-assets:/var/www/public/build
+      - laravel-public-assets:/var/www/public # RW for cache invalidation
       - laravel-storage-production:/var/www/storage
     networks:
       - laravel-production
