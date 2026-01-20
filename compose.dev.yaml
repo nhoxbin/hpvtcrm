@@ -86,7 +86,7 @@ services:
       - hpvtcrm-dev
     depends_on:
       mysql:
-        condition: service_started
+        condition: service_healthy
 
   #----------------------------------------------------------------------------
   # MySQL Database
@@ -108,6 +108,12 @@ services:
       - mysql_data_development:/var/lib/mysql
     networks:
       - hpvtcrm-dev
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   #----------------------------------------------------------------------------
   # Redis Cache
@@ -133,20 +139,24 @@ services:
       #   XDEBUG_LOG: /dev/stdout
       #   XDEBUG_LOG_LEVEL: 0
     restart: unless-stopped
-    user: "${UID:-1000}:${GID:-1000}"
-    entrypoint: []
-    command: >
-      sh -c "
-      cd /var/www &&
-      php artisan config:clear &&
-      php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --verbose
-      "
+    entrypoint: ["sh"]
+    command:
+      - -c
+      - |
+        cd /var/www
+        sleep 10
+        echo "Starting queue worker..."
+        php artisan config:clear
+        php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --verbose
     env_file:
       - .env
     volumes:
       - ./:/var/www
     networks:
       - hpvtcrm-dev
+    depends_on:
+      mysql:
+        condition: service_healthy
 
 #==============================================================================
 # Networks

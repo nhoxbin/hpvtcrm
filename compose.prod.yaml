@@ -68,14 +68,15 @@ services:
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: production
     restart: unless-stopped
-    user: "www-data:www-data"
-    entrypoint: []
-    command: >
-      sh -c "
-      cd /var/www &&
-      php artisan config:clear &&
-      php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --verbose
-      "
+    entrypoint: ["sh"]
+    command:
+      - -c
+      - |
+        cd /var/www
+        sleep 10
+        echo "Starting queue worker..."
+        php artisan config:clear
+        php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --verbose
     env_file:
       - .env
     volumes:
