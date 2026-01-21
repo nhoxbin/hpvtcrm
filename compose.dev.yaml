@@ -145,8 +145,9 @@ services:
       - |
         cd /var/www
         sleep 10
-        echo "Starting queue worker..."
-        php artisan schedule:run
+        echo "Starting scheduler and queue worker..."
+        while true; do php artisan schedule:run; sleep 60; done &
+        php artisan queue:work --sleep=3 --tries=3 --timeout=60 --verbose
     env_file:
       - .env
     volumes:
