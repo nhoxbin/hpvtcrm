@@ -139,13 +139,15 @@ services:
       #   XDEBUG_LOG: /dev/stdout
       #   XDEBUG_LOG_LEVEL: 0
     restart: on-failure
-    command: >
-      sh -c "
-      sleep 10 &&
-      echo 'Starting scheduler and queue worker...' &&
-      while true; do php artisan schedule:run; sleep 60; done &
-      php artisan queue:work --sleep=3 --tries=3 --timeout=60 --verbose
-      "
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        cd /var/www
+        sleep 10
+        echo "Starting scheduler and queue worker..."
+        while true; do php artisan schedule:run; sleep 60; done &
+        php artisan queue:work --sleep=3 --tries=3 --timeout=60 --verbose
     env_file:
       - .env
     volumes:
