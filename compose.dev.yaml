@@ -84,6 +84,12 @@ services:
       - ./:/var/www # Live code updates
     networks:
       - hpvtcrm-dev
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm-healthcheck || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     depends_on:
       mysql:
         condition: service_healthy
@@ -137,7 +143,10 @@ services:
         cd /var/www
         sleep 10
         echo "Starting scheduler and queue worker..."
-        while true; do php artisan schedule:run; sleep 60; done &
+        while true; do 
+          php artisan schedule:run --verbose
+          sleep 60
+        done &
         php artisan queue:work --sleep=3 --tries=3 --timeout=60 --verbose
     env_file:
       - .env
@@ -147,6 +156,8 @@ services:
       - hpvtcrm-dev
     depends_on:
       mysql:
+        condition: service_healthy
+      php-fpm:
         condition: service_healthy
 
 #==============================================================================
