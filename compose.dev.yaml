@@ -129,15 +129,6 @@ services:
       context: .
       dockerfile: ./docker/common/php-fpm/Dockerfile
       target: development
-      # args:
-      #   UID: ${UID:-1000}
-      #   GID: ${GID:-1000}
-      #   XDEBUG_ENABLED: ${XDEBUG_ENABLED:-true}
-      #   XDEBUG_MODE: develop,coverage,debug,profile
-      #   XDEBUG_HOST: ${XDEBUG_HOST:-host.docker.internal}
-      #   XDEBUG_IDE_KEY: ${XDEBUG_IDE_KEY:-DOCKER}
-      #   XDEBUG_LOG: /dev/stdout
-      #   XDEBUG_LOG_LEVEL: 0
     restart: on-failure
     entrypoint: /bin/sh
     command:

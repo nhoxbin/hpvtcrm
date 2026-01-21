@@ -80,7 +80,7 @@ services:
     env_file:
       - .env
     volumes:
-      - laravel-storage-production:/var/www/storage
+      - ./:/var/www
     networks:
       - laravel-production
     depends_on:
