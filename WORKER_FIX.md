@@ -29,7 +29,7 @@ This runs BEFORE the queue:work command to ensure the `jobs` table exists.
 - **Changed from:** `restart: unless-stopped`
 - **Changed to:** `restart: on-failure`
 
-**Why:** 
+**Why:**
 - `unless-stopped`: Always restarts unless manually stopped (masks the real issue)
 - `on-failure`: Only restarts if the process exits with an error (allows graceful shutdown and immediate detection of real issues)
 
