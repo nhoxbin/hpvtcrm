@@ -48,12 +48,11 @@ class CustomerController extends Controller
                     'expired_at' => !empty($row[4]) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[4])->format('Y-m-d') : null,
                     'integration' => !empty($row[5]) ? $row[5] : null,
                     'is_request' => !empty($row[3]) ? 1 : 0,
-                    'user_id' => $request->user()->id,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
             }
-            OneBssCustomer::upsert($customers, ['phone'], ['core_balance', 'tra_sau', 'goi', 'expired_at', 'integration', 'is_request', 'user_id', 'created_at', 'updated_at']);
+            OneBssCustomer::upsert($customers, ['phone'], ['core_balance', 'tra_sau', 'goi', 'expired_at', 'integration', 'is_request', 'created_at', 'updated_at']);
 
             $accounts = $request->user()->onebss_accounts()->whereNotNull('access_token')->get();
             $chunks = array_chunk(array_filter($customers, function ($customer) {
