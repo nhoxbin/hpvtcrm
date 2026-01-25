@@ -71,23 +71,55 @@ COPY . /var/www
 
 # Install Node.js dependencies (including dev deps needed for build) and build assets
 RUN echo "=== Building Frontend Assets ===" && \
+    echo "Node version: $(node --version)" && \
+    echo "NPM version: $(npm --version)" && \
+    echo "PWD: $(pwd)" && \
+    echo "---" && \
     rm -rf /var/www/dist /var/www/public/build && \
-    npm ci && \
-    npm run build && \
-    mkdir -p /var/www/public && \
+    echo "Running: npm ci" && \
+    npm ci --verbose && \
+    echo "✓ Dependencies installed" && \
+    echo "Running: npm run build" && \
+    npm run build || { \
+        echo "✗ Build failed! Checking directory structure:"; \
+        find /var/www -type d -name "dist" -o -name "build" 2>/dev/null || echo "No dist/build found"; \
+        ls -la /var/www/resources/ 2>/dev/null || echo "resources/ not found"; \
+        exit 1; \
+    } && \
+    echo "✓ npm build completed" && \
+    echo "---" && \
+    echo "Checking for build output..." && \
     if [ -d /var/www/dist ]; then \
-        cp -r /var/www/dist /var/www/public/build; \
+        echo "✓ dist/ directory found"; \
+        ls -la /var/www/dist | head -20; \
+        mkdir -p /var/www/public && \
+        cp -r /var/www/dist /var/www/public/build && \
+        echo "✓ Copied dist → public/build"; \
+    elif [ -d /var/www/public/dist ]; then \
+        echo "✓ Found dist in public/, moving to build/"; \
+        mkdir -p /var/www/public && \
+        mv /var/www/public/dist /var/www/public/build; \
+    else \
+        echo "✗ ERROR: dist directory not found anywhere!"; \
+        echo "=== Checking /var/www structure ==="; \
+        find /var/www -maxdepth 3 -type d | grep -E "(dist|build|public)" | head -20; \
+        echo "=== Full /var/www listing ==="; \
+        ls -la /var/www | grep -E "^d"; \
+        exit 1; \
     fi && \
+    echo "---" && \
     echo "✓ Build stage complete. Verifying artifacts..." && \
     if [ -f /var/www/public/build/manifest.json ]; then \
         echo "✓ manifest.json found"; \
-        echo "=== Build Manifest Contents (first 20 lines) ===" && \
-        head -20 /var/www/public/build/manifest.json && \
+        echo "=== Build Manifest Contents (first 30 lines) ===" && \
+        head -30 /var/www/public/build/manifest.json && \
         echo ""; \
+        echo "=== Build artifacts ==="; \
+        find /var/www/public/build -type f | head -20; \
     else \
         echo "✗ ERROR: manifest.json not found!"; \
         echo "=== Build directory contents ===" && \
-        (ls -la /var/www/public/build/ || echo "build directory not found"); \
+        ls -laR /var/www/public/build/ 2>/dev/null || echo "build directory not found"; \
         exit 1; \
     fi
 

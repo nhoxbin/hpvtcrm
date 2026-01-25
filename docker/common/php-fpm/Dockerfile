@@ -124,8 +124,18 @@ COPY --from=builder /var/www /var/www
 
 # Debug: Verify assets exist in production container
 RUN echo "=== Verifying assets in production stage ===" && \
-    (ls -la /var/www/public/build/ && echo "✓ Build assets verified") || \
-    (echo "✗ ERROR: Assets not found!" && exit 1)
+    if [ -f /var/www/public/build/manifest.json ]; then \
+        echo "✓ Build assets verified"; \
+        echo "Asset files:"; \
+        find /var/www/public/build -type f | head -15; \
+    else \
+        echo "✗ ERROR: Assets not found!"; \
+        echo "=== Checking directory structure ==="; \
+        ls -laR /var/www/public/ 2>/dev/null || echo "public/ not found"; \
+        echo "=== Searching for manifest ==="; \
+        find /var/www -name "manifest.json" 2>/dev/null || echo "manifest.json not found anywhere"; \
+        exit 1; \
+    fi
 
 # Set working directory
 WORKDIR /var/www
