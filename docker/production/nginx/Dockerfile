@@ -70,19 +70,24 @@ COPY package*.json ./
 COPY . /var/www
 
 # Install Node.js dependencies (including dev deps needed for build) and build assets
-RUN npm ci && \
+RUN echo "=== Building Frontend Assets ===" && \
+    rm -rf /var/www/dist /var/www/public/build && \
+    npm ci && \
     npm run build && \
-    mkdir -p /var/www/public/build && \
+    mkdir -p /var/www/public && \
     if [ -d /var/www/dist ]; then \
-        cp -r /var/www/dist/* /var/www/public/build/; \
-        rm -rf /var/www/dist; \
+        cp -r /var/www/dist /var/www/public/build; \
     fi && \
-    echo "✓ Build stage complete. Checking for manifest..." && \
+    echo "✓ Build stage complete. Verifying artifacts..." && \
     if [ -f /var/www/public/build/manifest.json ]; then \
         echo "✓ manifest.json found"; \
+        echo "=== Build Manifest Contents (first 20 lines) ===" && \
+        head -20 /var/www/public/build/manifest.json && \
+        echo ""; \
     else \
         echo "✗ ERROR: manifest.json not found!"; \
-        ls -la /var/www/public/build/ || echo "build directory not found"; \
+        echo "=== Build directory contents ===" && \
+        (ls -la /var/www/public/build/ || echo "build directory not found"); \
         exit 1; \
     fi
 
