@@ -120,22 +120,8 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN sed -i '/\[www\]/a pm.status_path = /status' /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # Copy application code and Composer dependencies from builder
+# Note: Assets are built and served by the nginx container, not here
 COPY --from=builder /var/www /var/www
-
-# Debug: Verify assets exist in production container
-RUN echo "=== Verifying assets in production stage ===" && \
-    if [ -f /var/www/public/build/manifest.json ]; then \
-        echo "✓ Build assets verified"; \
-        echo "Asset files:"; \
-        find /var/www/public/build -type f | head -15; \
-    else \
-        echo "✗ ERROR: Assets not found!"; \
-        echo "=== Checking directory structure ==="; \
-        ls -laR /var/www/public/ 2>/dev/null || echo "public/ not found"; \
-        echo "=== Searching for manifest ==="; \
-        find /var/www -name "manifest.json" 2>/dev/null || echo "manifest.json not found anywhere"; \
-        exit 1; \
-    fi
 
 # Set working directory
 WORKDIR /var/www
