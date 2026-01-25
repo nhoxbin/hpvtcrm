@@ -72,9 +72,18 @@ COPY . /var/www
 # Install Node.js dependencies (including dev deps needed for build) and build assets
 RUN npm ci && \
     npm run build && \
+    mkdir -p /var/www/public/build && \
     if [ -d /var/www/dist ]; then \
-        mkdir -p /var/www/public && \
-        mv /var/www/dist /var/www/public/build; \
+        cp -r /var/www/dist/* /var/www/public/build/; \
+        rm -rf /var/www/dist; \
+    fi && \
+    echo "✓ Build stage complete. Checking for manifest..." && \
+    if [ -f /var/www/public/build/manifest.json ]; then \
+        echo "✓ manifest.json found"; \
+    else \
+        echo "✗ ERROR: manifest.json not found!"; \
+        ls -la /var/www/public/build/ || echo "build directory not found"; \
+        exit 1; \
     fi
 
 # Stage 2: Nginx production image
