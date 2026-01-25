@@ -71,6 +71,14 @@ RUN composer install \
 # Asset building is now handled by nginx container only
 # This keeps PHP container focused on application logic
 
+# Install Node.js dependencies and build frontend assets
+RUN npm ci && \
+    npm run build && \
+    if [ -d /var/www/dist ]; then \
+        mkdir -p /var/www/public && \
+        mv /var/www/dist /var/www/public/build; \
+    fi
+
 #==============================================================================
 # Stage 2: Production Runtime
 #==============================================================================
