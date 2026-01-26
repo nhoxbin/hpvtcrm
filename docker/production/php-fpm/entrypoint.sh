@@ -48,6 +48,7 @@ mkdir -p /var/www/storage/framework/cache/data \
          /var/www/storage/framework/sessions \
          /var/www/storage/framework/views \
          /var/www/storage/logs \
+         /var/www/storage/logs/db \
          /var/www/storage/app/public
 
 chown -R www-data:www-data /var/www/storage
