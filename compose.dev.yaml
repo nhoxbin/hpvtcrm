@@ -130,31 +130,31 @@ services:
     networks:
       - hpvtcrm-dev
 
-  worker:
-    build:
-      context: .
-      dockerfile: ./docker/common/php-fpm/Dockerfile
-      target: development
-    restart: on-failure
-    entrypoint: /bin/sh
-    command:
-      - -c
-      - |
-        cd /var/www
-        sleep 10
-        echo "Starting queue worker..."
-        php artisan queue:work --sleep=3 --tries=3 --timeout=60 --verbose
-    env_file:
-      - .env
-    volumes:
-      - ./:/var/www
-    networks:
-      - hpvtcrm-dev
-    depends_on:
-      mysql:
-        condition: service_healthy
-      php-fpm:
-        condition: service_healthy
+  # worker:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/common/php-fpm/Dockerfile
+  #     target: development
+  #   restart: on-failure
+  #   entrypoint: /bin/sh
+  #   command:
+  #     - -c
+  #     - |
+  #       cd /var/www
+  #       sleep 10
+  #       echo "Starting queue worker..."
+  #       php artisan queue:work --sleep=3 --tries=3 --timeout=60 --verbose
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - ./:/var/www
+  #   networks:
+  #     - hpvtcrm-dev
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
+  #     php-fpm:
+  #       condition: service_healthy
 
 #==============================================================================
 # Networks
