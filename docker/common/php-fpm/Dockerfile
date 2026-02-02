@@ -72,12 +72,28 @@ RUN composer install \
 # This keeps PHP container focused on application logic
 
 # Install Node.js dependencies and build frontend assets
-# RUN npm ci && \
-#     npm run build && \
-#     if [ -d /var/www/dist ]; then \
-#         mkdir -p /var/www/public && \
-#         mv /var/www/dist /var/www/public/build; \
-#     fi
+RUN npm ci && \
+    npm run build && \
+    if [ -f /var/www/public/build/manifest.json ]; then \
+        echo "✓ manifest.json found in public/build"; \
+        echo "=== Build Manifest (first 20 lines) ===" && \
+        head -20 /var/www/public/build/manifest.json && \
+        echo ""; \
+        echo "=== Build artifacts ===" && \
+        find /var/www/public/build -type f | wc -l && echo "files total"; \
+    else \
+        if [ -d /var/www/dist ]; then \
+            mkdir -p /var/www/public && \
+            mv /var/www/dist /var/www/public/build; \
+        else \
+            echo "✗ ERROR: Build failed! manifest.json not found"; \
+            echo "=== Checking for build output ==="; \
+            ls -laR /var/www/public/ 2>/dev/null || echo "public/ not found"; \
+            echo "=== Checking for dist ==="; \
+            ls -laR /var/www/dist/ 2>/dev/null || echo "dist/ not found"; \
+            exit 1; \
+        fi \
+    fi
 
 #==============================================================================
 # Stage 2: Production Runtime
