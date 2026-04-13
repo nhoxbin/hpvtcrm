@@ -1,90 +1,75 @@
-name: HPVT
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  build:
-    name: Build and Test
+  build-and-deploy:
+    name: Build and Deploy to Production
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, xml, ctype, fileinfo, curl, pcntl, pdo, pdo_mysql, tokenizer
+          extensions: mbstring, xml, ctype, fileinfo, curl, pdo, pdo_mysql, tokenizer, zip
           coverage: none
-
-      - name: Get Composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
-        run: composer update --no-progress --no-interaction --prefer-dist
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install NPM dependencies
         run: npm ci
 
-      # - name: Run PHP tests
-      #   run: php artisan test
-
-      # NOTE: No "npm test" script found in package.json.
-
       - name: Build frontend assets
         run: npm run build
 
-      - name: Upload artifact for deployment
-        uses: actions/upload-artifact@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          name: production-build
-          path: |
-            .
-            !/vendor
-            !/node_modules
-            !/storage/logs/*
-            !/storage/framework/cache/data/*
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  deploy:
-    name: Deploy to Production
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      - name: Build Images
+        run: docker compose -f compose.prod.yaml build
 
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
+      - name: Push Images
+        run: docker compose -f compose.prod.yaml push
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
         with:
-          name: production-build
-          path: .
-
-      - name: Set up LFTP
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
-      - name: Deploy to FTP
-        env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          chmod +x deploy.sh
-          ./deploy.sh "$FTP_HOST" "$FTP_USERNAME" "$FTP_PASSWORD" ./ /public_html
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: 22
+          script: |
+            cd /var/www/hpvtcrm
+            git pull origin main
+            docker compose -f compose.prod.yaml pull
+            docker compose -f compose.prod.yaml up -d
+            docker system prune -f
