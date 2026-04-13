@@ -56,6 +56,20 @@ class OAuthController extends Controller
         return Redirect::route('admin.onebss.accounts.index')->with('status', 'Something happen! Please try again.');
     }
 
+    public function loginCompany(LoginRequest $request)
+    {
+        $validated = $request->validated();
+        $onebss = VNPTOneBss::loginCompany($validated);
+        if ($onebss) {
+            if ($onebss['error_code'] == "BSS-00000000") {
+                $secretCode = $onebss['data']['secretCode'];
+                return Redirect::route('admin.onebss.accounts.index')->with('secretCode', $secretCode);
+            }
+            return Redirect::route('admin.onebss.accounts.index')->with('status', $onebss['message']);
+        }
+        return Redirect::route('admin.onebss.accounts.index')->with('status', 'Something happen! Please try again.');
+    }
+
     /**
      * Store a newly created resource in storage.
      */

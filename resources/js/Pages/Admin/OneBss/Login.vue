@@ -38,6 +38,18 @@
 
           <InputError class="mt-2" :message="formLogin.errors.password" />
         </div>
+
+        <div class="flex items-center gap-2 mt-4">
+          <input
+            id="company-auth"
+            type="checkbox"
+            v-model="useCompanyAuth"
+            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+          />
+          <label for="company-auth" class="text-sm text-gray-700">
+            Đăng nhập qua xác thực tập đoàn
+          </label>
+        </div>
       </section>
       <section v-if="step == 2">
         <div>
@@ -157,9 +169,13 @@ const formOAuth = useForm({
 
 const step = ref(1);
 const totalSteps = ref(2);
+const useCompanyAuth = ref(false);
 
 async function getOTP() {
-  await formLogin.post(route('admin.onebss.accounts.login'), {
+  const loginRoute = useCompanyAuth.value
+    ? route('admin.onebss.accounts.login-company')
+    : route('admin.onebss.accounts.login');
+  await formLogin.post(loginRoute, {
     preserveScroll: true,
     onSuccess: () => {
       if (props.secretCode) {

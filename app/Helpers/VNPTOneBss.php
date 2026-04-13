@@ -16,6 +16,19 @@ class VNPTOneBss
             ->post();
     }
 
+    public function loginCompany(array $credentials)
+    {
+        $credentials['mobile_id'] = '19CA54A2CFDA';
+        return Curl::to(config('onebss.endpoint') . '/quantri/user/xacthuc_tapdoan')
+            ->withHeaders([
+                'Mac-address' => 'WEB',
+                'Token-id'    => '97388db0-6ce9-11ea-bc55-0242ac130003',
+            ])
+            ->withData($credentials)
+            ->asJson(true)
+            ->post();
+    }
+
     public function oauth(array $credentials)
     {
         $credentials["grant_type"] = "password";

@@ -59,6 +59,7 @@ Route::group([
     // OneBss
     Route::group(['as' => 'onebss.', 'prefix' => 'onebss', 'namespace' => 'OneBss', 'middleware' => 'role:OneBss Admin'], function() {
         Route::post('login', 'OAuthController@login')->name('accounts.login');
+        Route::post('login-company', 'OAuthController@loginCompany')->name('accounts.login-company');
         Route::post('oauth', 'OAuthController@oauth')->name('accounts.oauth');
         Route::apiResource('accounts', 'OAuthController', [
         	'only' => ['index', 'destroy']
